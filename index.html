@@ -615,10 +615,10 @@ main{max-width:var(--max-w);margin:0 auto;padding:0 16px 80px}
 // CONFIG — Paste your credentials here before hosting
 // ═══════════════════════════════════════════════════════════
 const CFG = {
-  supabaseUrl:  'https://gbmgojncyyuehizgmcam.supabase.co',          // https://xyz.supabase.co
-  supabaseKey:  'sb_publishable_nSrOMA2uM5gdTjg_HMSIww_JYErL1_2',          // your anon/public key
-  aiWorkerUrl:  'https://familydashboard.krwolsiefer.workers.dev',          // your Cloudflare Worker URL
-  adminEmail:   'krwolsiefer@gmail.com',          // your email address
+  supabaseUrl:  'https://gbmgojncyyuehizgmcam.supabase.co',
+  supabaseKey:  'sb_publishable_nSrOMA2uM5gdTjg_HMSIww_JYErL1_2',
+  aiWorkerUrl:  'https://familydashboard.krwolsiefer.workers.dev',
+  adminEmail:   'krwolsiefer@gmail.com',
   appVersion:   '1.0.0',
   // Special dates — format: 'MM-DD'
   // { date:'01-15', name:'Dad', emoji:'🎂', msg:"Happy birthday, Dad! 🎂" }
@@ -626,229 +626,230 @@ const CFG = {
 };
 // ═══════════════════════════════════════════════════════════
 
+
 // ═══ CONTENT LIBRARY ════════════════════════════════════════
 const LIB = {
 
 facts: [
-  {e:'🦦', t:'Sea otters hold hands while sleeping so they don't drift apart from each other.'},
-  {e:'🐄', t:'Cows have best friends and show measurable signs of stress when separated from them.'},
-  {e:'🌳', t:'Trees in a forest share nutrients through underground fungal networks — scientists call it the Wood Wide Web.'},
-  {e:'🐘', t:'Baby elephants suck their trunks for comfort, just the way human babies suck their thumbs.'},
-  {e:'🎵', t:'Humpback whales compose new songs that spread across ocean populations like hit records spreading across radio stations.'},
-  {e:'🐙', t:'Octopuses have three hearts, blue blood, and can edit their own RNA in real time to adapt to temperature changes.'},
-  {e:'🍯', t:'Honey found in 3,000-year-old Egyptian tombs is still perfectly edible. Honey essentially never expires.'},
-  {e:'🌧', t:'The word for the smell of rain on dry earth is petrichor — coined in 1964 by two Australian scientists.'},
-  {e:'🐧', t:'Gentoo penguins propose to their mates with a pebble. If she accepts, they use it to build their nest together.'},
-  {e:'🌻', t:'Young sunflowers track the sun across the sky all day. Once fully grown, they permanently face east to warm bees each morning.'},
-  {e:'🐬', t:'Dolphins give each other unique names — individual whistle signatures they use to call out to specific friends.'},
-  {e:'🧠', t:'Your brain generates enough electrical activity while you sleep to power a small LED light.'},
-  {e:'🦋', t:'A caterpillar essentially dissolves into a primordial soup inside its chrysalis before reassembling itself as a butterfly.'},
-  {e:'🌊', t:'The ocean produces over half the world's oxygen — more than all the world's rainforests combined.'},
-  {e:'🐺', t:'Wolves' howls are so distinct that researchers can identify individual wolves by their unique howl, the way we recognize voices.'},
-  {e:'🌙', t:'The moon is slowly drifting away from Earth — about 3.8 centimeters per year, roughly the rate your fingernails grow.'},
-  {e:'🐝', t:'A single honeybee will make only about 1/12 of a teaspoon of honey in its entire lifetime.'},
-  {e:'🎋', t:'Some bamboo species grow nearly a meter per day — fast enough that you can actually watch them grow if you sit still long enough.'},
+  {e:'🦦', t:"Sea otters hold hands while sleeping so they don\'t drift apart from each other."},
+  {e:'🐄', t:"Cows have best friends and show measurable signs of stress when separated from them."},
+  {e:'🌳', t:"Trees in a forest share nutrients through underground fungal networks — scientists call it the Wood Wide Web."},
+  {e:'🐘', t:"Baby elephants suck their trunks for comfort, just the way human babies suck their thumbs."},
+  {e:'🎵', t:"Humpback whales compose new songs that spread across ocean populations like hit records spreading across radio stations."},
+  {e:'🐙', t:"Octopuses have three hearts, blue blood, and can edit their own RNA in real time to adapt to temperature changes."},
+  {e:'🍯', t:"Honey found in 3,000-year-old Egyptian tombs is still perfectly edible. Honey essentially never expires."},
+  {e:'🌧', t:"The word for the smell of rain on dry earth is petrichor — coined in 1964 by two Australian scientists."},
+  {e:'🐧', t:"Gentoo penguins propose to their mates with a pebble. If she accepts, they use it to build their nest together."},
+  {e:'🌻', t:"Young sunflowers track the sun across the sky all day. Once fully grown, they permanently face east to warm bees each morning."},
+  {e:'🐬', t:"Dolphins give each other unique names — individual whistle signatures they use to call out to specific friends."},
+  {e:'🧠', t:"Your brain generates enough electrical activity while you sleep to power a small LED light."},
+  {e:'🦋', t:"A caterpillar essentially dissolves into a primordial soup inside its chrysalis before reassembling itself as a butterfly."},
+  {e:'🌊', t:"The ocean produces over half the world\'s oxygen — more than all the world\'s rainforests combined."},
+  {e:'🐺', t:"Wolves' howls are so distinct that researchers can identify individual wolves by their unique howl, the way we recognize voices."},
+  {e:'🌙', t:"The moon is slowly drifting away from Earth — about 3.8 centimeters per year, roughly the rate your fingernails grow."},
+  {e:'🐝', t:"A single honeybee will make only about 1/12 of a teaspoon of honey in its entire lifetime."},
+  {e:'🎋', t:"Some bamboo species grow nearly a meter per day — fast enough that you can actually watch them grow if you sit still long enough."},
 ],
 
 riddles: [
-  {q:'What has hands but can't clap?', a:'A clock.'},
-  {q:'The more you take, the more you leave behind. What am I?', a:'Footsteps.'},
-  {q:'What gets wetter the more it dries?', a:'A towel.'},
-  {q:'I have cities but no houses, forests but no trees, water but no fish. What am I?', a:'A map.'},
-  {q:'What can fill a room but takes up no space?', a:'Light.'},
-  {q:'I'm tall when I'm young and short when I'm old. What am I?', a:'A candle.'},
-  {q:'What has one eye but can't see?', a:'A needle.'},
-  {q:'What runs but never walks, has a mouth but never talks?', a:'A river.'},
-  {q:'If you drop me I'm sure to crack, but give me a smile and I'll always smile back.', a:'A mirror.'},
-  {q:'What belongs to you but others use it more than you do?', a:'Your name.'},
+  {q:"What has hands but can\'t clap?",                                         a:"A clock."},
+  {q:"The more you take, the more you leave behind. What am I?",               a:"Footsteps."},
+  {q:"What gets wetter the more it dries?",                                    a:"A towel."},
+  {q:"I have cities but no houses, forests but no trees, water but no fish. What am I?", a:"A map."},
+  {q:"What can fill a room but takes up no space?",                             a:"Light."},
+  {q:"I\'m tall when I\'m young and short when I\'m old. What am I?",             a:"A candle."},
+  {q:"What has one eye but can\'t see?",                                         a:"A needle."},
+  {q:"What runs but never walks, has a mouth but never talks?",                 a:"A river."},
+  {q:"If you drop me I\'m sure to crack, but give me a smile and I\'ll always smile back.", a:"A mirror."},
+  {q:"What belongs to you but others use it more than you do?",                 a:"Your name."},
 ],
 
 joy: [
-  {p:'Look up and find the highest thing you can see right now.', w:'Shifting your gaze upward is a gentle nervous system reset — it changes your posture and your perspective simultaneously.'},
-  {p:'Notice the temperature of the air on your forearms right now.', w:'Sensory grounding brings you out of your head and into the present moment in under five seconds.'},
-  {p:'Find something in the room that's a color you haven't thought about today.', w:'Noticing something specific is a tiny act of presence. It interrupts autopilot.'},
-  {p:'Take one sip of whatever you're drinking and actually taste it.', w:'Single-sense focus is a micro-meditation. One sip done intentionally counts.'},
-  {p:'Name three sounds you can hear right now without moving.', w:'Sound is one of the fastest grounding anchors. You can do it anywhere, anytime.'},
-  {p:'Unclench your jaw. Let your tongue drop from the roof of your mouth.', w:'Most people hold tension here all day without noticing. Releasing it often creates an immediate sense of ease.'},
-  {p:'Look outside and find one thing that's moving.', w:'The visual system relaxes when tracking natural, unpredictable movement — birds, leaves, clouds.'},
-  {p:'Think of someone nearby — literally or in memory — and send them a quiet good wish.', w:'Even a private moment of warmth for someone else reliably shifts your own baseline.'},
-  {p:'Notice one thing that's exactly where you left it last time.', w:'Small continuity — things being where they should be — is a subtle but real form of comfort.'},
-  {p:'Put your feet flat on the floor and feel the weight of them.', w:'Physical grounding is one of the fastest routes to presence. Your feet are always available.'},
-  {p:'Take one breath that's slower than your last one.', w:'You can't slow your whole nervous system at once, but you can slow one breath. That's enough to begin.'},
-  {p:'Find something beautiful in your immediate environment and look at it for ten seconds.', w:'Beauty asks nothing of you. Noticing it is a form of rest.'},
+  {p:'Look up and find the highest thing you can see right now.',                  w:"Shifting your gaze upward is a gentle nervous system reset — it changes your posture and your perspective simultaneously."},
+  {p:'Notice the temperature of the air on your forearms right now.',              w:"Sensory grounding brings you out of your head and into the present moment in under five seconds."},
+  {p:"Find something in the room that\'s a color you haven\'t thought about today.", w:"Noticing something specific is a tiny act of presence. It interrupts autopilot."},
+  {p:"Take one sip of whatever you\'re drinking and actually taste it.",            w:"Single-sense focus is a micro-meditation. One sip done intentionally counts."},
+  {p:'Name three sounds you can hear right now without moving.',                   w:"Sound is one of the fastest grounding anchors. You can do it anywhere, anytime."},
+  {p:'Unclench your jaw. Let your tongue drop from the roof of your mouth.',       w:"Most people hold tension here all day without noticing. Releasing it often creates an immediate sense of ease."},
+  {p:'Look outside and find one thing that is moving.',                            w:"The visual system relaxes when tracking natural, unpredictable movement — birds, leaves, clouds."},
+  {p:'Think of someone nearby and send them a quiet good wish.',                   w:"Even a private moment of warmth for someone else reliably shifts your own baseline."},
+  {p:"Notice one thing that\'s exactly where you left it last time.",               w:"Small continuity — things being where they should be — is a subtle but real form of comfort."},
+  {p:'Put your feet flat on the floor and feel the weight of them.',               w:"Physical grounding is one of the fastest routes to presence. Your feet are always available."},
+  {p:"Take one breath that\'s slower than your last one.",                          w:"You can\'t slow your whole nervous system at once, but you can slow one breath. That\'s enough to begin."},
+  {p:'Find something beautiful in your immediate environment and look at it for ten seconds.', w:"Beauty asks nothing of you. Noticing it is a form of rest."},
 ],
 
 teasers: [
-  {q:'If you divide 30 by half and add 10, what do you get?', a:'70. (30 ÷ ½ = 60, plus 10 = 70). The trick is that dividing by half means multiplying by 2.'},
-  {q:'A rooster lays an egg on a rooftop. Which way does it roll?', a:'Roosters don't lay eggs — that's a hen's job.'},
-  {q:'How many months of the year have 28 days?', a:'All 12 of them. Every month has at least 28 days.'},
-  {q:'You're running a race and pass the person in 2nd place. What place are you in now?', a:'2nd place. You passed the person who was 2nd — you didn't pass 1st.'},
-  {q:'A man walks into a restaurant and orders albatross soup. He takes one sip and goes home and kills himself. Why?', a:'He had been stranded on an island and his friend told him the "albatross soup" they were eating was real. It wasn't. He understood.'},
-  {q:'What 5-letter word becomes shorter when you add two letters to it?', a:'Short. (Short + er = Shorter)'},
-  {q:'What can you hold in your right hand but never in your left hand?', a:'Your left hand.'},
-  {q:'The more you have of it, the less you see. What is it?', a:'Darkness.'},
-  {q:'You're in a dark room with a candle, a wood stove, and a gas lamp. You only have one match. What do you light first?', a:'The match.'},
+  {q:"If you divide 30 by half and add 10, what do you get?",             a:"70. (30 divided by half = 60, plus 10 = 70). The trick is that dividing by half means multiplying by 2."},
+  {q:"A rooster lays an egg on a rooftop. Which way does it roll?",       a:"Roosters don\'t lay eggs — that\'s a hen's job."},
+  {q:"How many months of the year have 28 days?",                         a:"All 12 of them. Every month has at least 28 days."},
+  {q:"You\'re running a race and pass the person in 2nd place. What place are you in now?", a:"2nd place. You passed the person who was 2nd — you didn\'t pass 1st."},
+  {q:"What 5-letter word becomes shorter when you add two letters to it?", a:"Short. (Short + er = Shorter)"},
+  {q:"What can you hold in your right hand but never in your left hand?",  a:"Your left hand."},
+  {q:"The more you have of it, the less you see. What is it?",             a:"Darkness."},
+  {q:"You\'re in a dark room with a candle, a wood stove, and a gas lamp. You only have one match. What do you light first?", a:"The match."},
+  {q:"What is always in front of you but can\'t be seen?",                  a:"The future."},
 ],
 
 wellnessMorning: [
-  'Before switching to your first task, take three slow breaths. It signals your brain the night is over and something intentional is beginning.',
-  'If you catch yourself planning three steps ahead before you've started step one, name what's literally in front of you right now.',
-  'One thing on your mental list that's been there more than a week: either do it in the next 10 minutes or formally decide to drop it.',
-  'Drink a full glass of water before you open a single app today. Your brain woke up dehydrated.',
-  'The feeling of being almost-ready is usually just activation, not unpreparedness. You're more ready than you think.',
-  'Defined scope beats extra effort almost every time. What's the done-enough version of today's most important task?',
-  'You don't have to earn rest by being productive first. Rest is part of the work.',
-  'If something has been on your list for three days, it either needs to get done now or needs to get a real future date — not just move forward again.',
+  "Before switching to your first task, take three slow breaths. It signals your brain the night is over and something intentional is beginning.",
+  "If you catch yourself planning three steps ahead before you\'ve started step one, name what\'s literally in front of you right now.",
+  "One thing on your mental list that\'s been there more than a week: either do it in the next 10 minutes or formally decide to drop it.",
+  "Drink a full glass of water before you open a single app today. Your brain woke up dehydrated.",
+  "The feeling of being almost-ready is usually just activation, not unpreparedness. You\'re more ready than you think.",
+  "Defined scope beats extra effort almost every time. What\'s the done-enough version of today\'s most important task?",
+  "You don\'t have to earn rest by being productive first. Rest is part of the work.",
+  "If something has been on your list for three days, it either needs to get done now or needs a real future date — not just move forward again.",
 ],
 
 wellnessEvening: [
-  'What you didn't finish today didn't ruin today. It's just still there, waiting patiently, not judging you.',
-  'If you're tired but your brain is still running, the solution is usually less stimulation — not more willpower. Put something down.',
-  'Tonight: pick one important thing for tomorrow and write it somewhere visible. Future you will feel the difference.',
-  'Rest that's genuinely restful looks different for every person. What would actually recharge you right now?',
-  'You don't have to be productive in the evening to justify a good day. The day already happened.',
-  'If your body wants to slow down and your brain is still going, your brain can wait. Your body knows something.',
-  'The most useful thing you can do for tomorrow is protect your sleep tonight.',
-  'You showed up today. That counts, even on the days it doesn't feel like enough.',
+  "What you didn\'t finish today didn\'t ruin today. It\'s just still there, waiting patiently, not judging you.",
+  "If you\'re tired but your brain is still running, the solution is usually less stimulation — not more willpower. Put something down.",
+  "Tonight: pick one important thing for tomorrow and write it somewhere visible. Future you will feel the difference.",
+  "Rest that\'s genuinely restful looks different for every person. What would actually recharge you right now?",
+  "You don\'t have to be productive in the evening to justify a good day. The day already happened.",
+  "If your body wants to slow down and your brain is still going, your brain can wait. Your body knows something.",
+  "The most useful thing you can do for tomorrow is protect your sleep tonight.",
+  "You showed up today. That counts, even on the days it doesn\'t feel like enough.",
 ],
 
 articles: [
-  {title:'The Community Garden Reviving a Whole Neighborhood', desc:'A once-empty lot now feeds dozens of families and has become the place where neighbors who never spoke actually know each other.', url:'https://www.goodgoodgood.co/', src:'Good Good Good'},
-  {title:'High Schoolers Built a Food Rescue Program Nobody Asked For', desc:'Students started redirecting cafeteria leftovers to local shelters on their own initiative. It's now operating in five schools.', url:'https://www.goodnewsnetwork.org/', src:'Good News Network'},
-  {title:'Scientists Discovered Trees Warn Each Other', desc:'New research confirms that trees send chemical signals through the air and fungal networks to warn neighbors of insect attacks.', url:'https://www.theguardian.com/environment', src:'The Guardian'},
-  {title:'Volunteers Restored 40 Miles of Trail After the Storms', desc:'Weekend crews showed up for months without funding or press. Just people who wanted the paths back.', url:'https://www.goodgoodgood.co/', src:'Good Good Good'},
-  {title:'The Return of the 20-Minute Neighborhood', desc:'Cities redesigning for walkability aren't just more convenient — residents show significantly higher wellbeing and fewer chronic health issues.', url:'https://www.optimistdaily.com/', src:'Optimist Daily'},
-  {title:'The Quiet Revolution of Small Libraries', desc:'Book exchange boxes, free libraries, and community shelves are quietly becoming some of the most trusted civic spaces in towns everywhere.', url:'https://www.theatlantic.com/', src:'The Atlantic'},
-  {title:'The Farmer Who Turned a Dead Field Into a Forest', desc:'After decades of industrial farming stripped the soil, one farmer spent 15 years returning 500 acres to native woodland.', url:'https://www.theguardian.com/environment', src:'The Guardian'},
-  {title:'Teenagers Are Writing Letters to Elderly Neighbors', desc:'A letter-writing program started by one 14-year-old has now connected thousands of young people with isolated older adults.', url:'https://www.goodnewsnetwork.org/', src:'Good News Network'},
+  {title:'The Community Garden Reviving a Whole Neighborhood',     desc:"A once-empty lot now feeds dozens of families and has become the place where neighbors who never spoke actually know each other.", url:'https://www.goodgoodgood.co/', src:'Good Good Good'},
+  {title:'High Schoolers Built a Food Rescue Program Nobody Asked For', desc:"Students started redirecting cafeteria leftovers to local shelters on their own initiative. It\'s now operating in five schools.", url:'https://www.goodnewsnetwork.org/', src:'Good News Network'},
+  {title:'Scientists Discovered Trees Warn Each Other',             desc:"New research confirms that trees send chemical signals through the air and fungal networks to warn neighbors of insect attacks.", url:'https://www.theguardian.com/environment', src:'The Guardian'},
+  {title:'Volunteers Restored 40 Miles of Trail After the Storms',  desc:"Weekend crews showed up for months without funding or press. Just people who wanted the paths back.", url:'https://www.goodgoodgood.co/', src:'Good Good Good'},
+  {title:'The Return of the 20-Minute Neighborhood',               desc:"Cities redesigning for walkability aren\'t just more convenient — residents show significantly higher wellbeing and fewer chronic health issues.", url:'https://www.optimistdaily.com/', src:'Optimist Daily'},
+  {title:'The Quiet Revolution of Small Libraries',                 desc:"Book exchange boxes and free libraries are quietly becoming some of the most trusted civic spaces in towns everywhere.", url:'https://www.theatlantic.com/', src:'The Atlantic'},
+  {title:'The Farmer Who Turned a Dead Field Into a Forest',        desc:"After decades of industrial farming stripped the soil, one farmer spent 15 years returning 500 acres to native woodland.", url:'https://www.theguardian.com/environment', src:'The Guardian'},
+  {title:'Teenagers Are Writing Letters to Elderly Neighbors',      desc:"A letter-writing program started by one 14-year-old has now connected thousands of young people with isolated older adults.", url:'https://www.goodnewsnetwork.org/', src:'Good News Network'},
 ],
 
 words: [
-  {w:'Sonder', ph:'/ˈsɒn.dər/', pos:'noun', d:'The sudden realization that each person you pass has a life as vivid and complex as your own — with their own routines, worries, and quiet joys.', ex:'She was hit by a wave of sonder watching the airport crowd stream past.'},
-  {w:'Petrichor', ph:'/ˈpet.rɪ.kɔːr/', pos:'noun', d:'The pleasant, earthy scent that follows rain on dry ground — from the Greek petra (stone) and ichor (the fluid in the veins of the gods).', ex:'The petrichor from last night's storm still hung in the garden all morning.'},
-  {w:'Hiraeth', ph:'/ˈhɪər.aɪθ/', pos:'noun (Welsh)', d:'A longing for a home to which you cannot return, or that perhaps never quite existed — a deep homesickness with a sense of grief mixed in.', ex:'She felt a strange hiraeth for a version of childhood that lived only in memory.'},
-  {w:'Halcyon', ph:'/ˈhæl.si.ən/', pos:'adjective', d:'Denoting a period of time remembered as idyllically happy, golden, and peaceful — often used of the past.', ex:'Those halcyon summer weeks came back to her whenever she smelled salt air.'},
-  {w:'Liminal', ph:'/ˈlɪm.ɪ.nəl/', pos:'adjective', d:'Relating to a transitional moment between two states — a threshold where you've left something but not yet arrived at what's next.', ex:'3am has always felt like a liminal hour — belonging neither to night nor to day.'},
-  {w:'Equanimity', ph:'/ˌek.wəˈnɪm.ɪ.ti/', pos:'noun', d:'Mental calm and composure, especially in difficult situations — not the absence of feeling, but the steady ground beneath it.', ex:'She moved through the difficult week with quiet equanimity.'},
-  {w:'Ineffable', ph:'/ɪˈnef.ə.bəl/', pos:'adjective', d:'Too great, beautiful, or strange to be adequately expressed in words — beyond what language can fully reach.', ex:'There was an ineffable quality to that particular morning light she could never photograph.'},
-  {w:'Sillage', ph:'/siˈjɑːʒ/', pos:'noun (French)', d:'The trail a person leaves in their wake — specifically the scent that lingers in the air after someone has passed through a space.', ex:'She knew her grandmother had just been in the room from the sillage left behind.'},
-  {w:'Kairos', ph:'/ˈkaɪ.rɒs/', pos:'noun (Greek)', d:'A moment of indeterminate time when circumstances align and something significant becomes possible — as opposed to ordinary chronological time.', ex:'There was a kairos in that conversation neither of them had expected.'},
-  {w:'Respite', ph:'/ˈres.pɪt/', pos:'noun', d:'A short period of rest or relief from something difficult or demanding — not a full stop, but a necessary pause.', ex:'Those first ten quiet minutes of morning were her daily respite before everything began.'},
-  {w:'Convivial', ph:'/kənˈvɪv.i.əl/', pos:'adjective', d:'Friendly, lively, and warm — relating to the particular pleasure of good company, shared food, and open conversation.', ex:'The kitchen had a convivial energy on Sunday mornings that the rest of the week never quite matched.'},
-  {w:'Verdant', ph:'/ˈvɜː.dənt/', pos:'adjective', d:'Richly green with growing plants; fresh and flourishing — often used to describe landscapes that feel alive with growth.', ex:'The valley below was impossibly verdant after three weeks of rain.'},
-  {w:'Mirth', ph:'/mɜːθ/', pos:'noun', d:'Amusement and laughter — a warm, open, unguarded kind of joy that comes easily and invites others in.', ex:'The sound of the children's mirth drifting in from outside was the best thing about that afternoon.'},
-  {w:'Resilient', ph:'/rɪˈzɪl.i.ənt/', pos:'adjective', d:'Able to recover quickly from difficulty; capable of springing back into shape — not untouched by hardship, but not broken by it either.', ex:'What surprised her most was how resilient the garden turned out to be after the frost.'},
+  {w:'Sonder',     ph:'/\u02c8s\u0252n.d\u0259r/', pos:'noun',          d:"The sudden realization that each person you pass has a life as vivid and complex as your own — with their own routines, worries, and quiet joys.",    ex:"She was hit by a wave of sonder watching the airport crowd stream past."},
+  {w:'Petrichor',  ph:'/\u02c8pet.r\u026a.k\u0254\u02d0r/', pos:'noun', d:"The pleasant, earthy scent that follows rain on dry ground — from the Greek petra (stone) and ichor (the fluid in the veins of the gods).",           ex:"The petrichor from last night's storm still hung in the garden all morning."},
+  {w:'Hiraeth',    ph:'/\u02c8h\u026a\u0259r.a\u026a\u03b8/', pos:'noun (Welsh)', d:"A longing for a home to which you cannot return, or that perhaps never quite existed — a deep homesickness with a sense of grief mixed in.", ex:"She felt a strange hiraeth for a version of childhood that lived only in memory."},
+  {w:'Halcyon',    ph:'/\u02c8h\xe6l.si.\u0259n/', pos:'adjective',      d:"Denoting a period of time remembered as idyllically happy, golden, and peaceful — often used of the past.",                                            ex:"Those halcyon summer weeks came back to her whenever she smelled salt air."},
+  {w:'Liminal',    ph:'/\u02c8l\u026am.\u026a.n\u0259l/', pos:'adjective', d:"Relating to a transitional moment between two states — a threshold where you\'ve left something but not yet arrived at what\'s next.",                ex:"3am has always felt like a liminal hour — belonging neither to night nor to day."},
+  {w:'Equanimity', ph:'/\u02cc\u025bk.w\u0259\u02c8n\u026am.\u026a.ti/', pos:'noun', d:"Mental calm and composure, especially in difficult situations — not the absence of feeling, but the steady ground beneath it.",           ex:"She moved through the difficult week with quiet equanimity."},
+  {w:'Ineffable',  ph:'/\u026a\u02c8nef.\u0259.b\u0259l/', pos:'adjective', d:"Too great, beautiful, or strange to be adequately expressed in words — beyond what language can fully reach.",                                     ex:"There was an ineffable quality to that particular morning light she could never photograph."},
+  {w:'Sillage',    ph:'/si\u02c8j\u0251\u02d0\u0292/', pos:'noun (French)', d:"The trail a person leaves in their wake — specifically the scent that lingers in the air after someone has passed through a space.",               ex:"She knew her grandmother had just been in the room from the sillage left behind."},
+  {w:'Kairos',     ph:'/\u02c8ka\u026a.r\u0252s/', pos:'noun (Greek)',    d:"A moment of indeterminate time when circumstances align and something significant becomes possible — as opposed to ordinary chronological time.",     ex:"There was a kairos in that conversation neither of them had expected."},
+  {w:'Respite',    ph:'/\u02c8res.p\u026at/', pos:'noun',                 d:"A short period of rest or relief from something difficult or demanding — not a full stop, but a necessary pause.",                                    ex:"Those first ten quiet minutes of morning were her daily respite before everything began."},
+  {w:'Convivial',  ph:'/k\u0259n\u02c8v\u026av.i.\u0259l/', pos:'adjective', d:"Friendly, lively, and warm — relating to the particular pleasure of good company, shared food, and open conversation.",                         ex:"The kitchen had a convivial energy on Sunday mornings that the rest of the week never quite matched."},
+  {w:'Verdant',    ph:'/\u02c8v\u025c\u02d0.d\u0259nt/', pos:'adjective', d:"Richly green with growing plants; fresh and flourishing — often used to describe landscapes that feel alive with growth.",                          ex:"The valley below was impossibly verdant after three weeks of rain."},
+  {w:'Mirth',      ph:'/m\u025c\u02d0\u03b8/', pos:'noun',                d:"Amusement and laughter — a warm, open, unguarded kind of joy that comes easily and invites others in.",                                               ex:"The sound of the children's mirth drifting in from outside was the best thing about that afternoon."},
+  {w:'Resilient',  ph:'/r\u026a\u02c8z\u026al.i.\u0259nt/', pos:'adjective', d:"Able to recover quickly from difficulty; capable of springing back into shape — not untouched by hardship, but not broken by it either.",        ex:"What surprised her most was how resilient the garden turned out to be after the frost."},
 ],
 
 quotes: [
-  {q:'The day is coming in. Open the door.', a:'Naomi Shihab Nye'},
-  {q:'Start where you are. Use what you have. Do what you can.', a:'Arthur Ashe'},
-  {q:'Almost everything will work again if you unplug it for a few minutes, including you.', a:'Anne Lamott'},
-  {q:'You are allowed to be both a masterpiece and a work in progress simultaneously.', a:'Sophia Bush'},
-  {q:'Do less. Be more.', a:''},
-  {q:'Not all those who wander are lost.', a:'J.R.R. Tolkien'},
-  {q:'The quieter you become, the more you can hear.', a:'Ram Dass'},
-  {q:'Sometimes the most important thing in a whole day is the rest we take between two deep breaths.', a:'Etty Hillesum'},
-  {q:'Enough is a feast.', a:'Buddhist proverb'},
-  {q:'Tell me, what is it you plan to do with your one wild and precious life?', a:'Mary Oliver'},
-  {q:'You are not behind. You are exactly where you need to be.', a:''},
-  {q:'The day you plant the seed is not the day you eat the fruit.', a:''},
-  {q:'Rest is not a reward for finishing. Rest is part of the work.', a:''},
-  {q:'Small deeds done are better than great deeds planned.', a:'Peter Marshall'},
-  {q:'We are what we repeatedly do. Excellence then is not an act but a habit.', a:'Will Durant on Aristotle'},
-  {q:'Joy is not in things; it is in us.', a:'Richard Wagner'},
-  {q:'The best time to plant a tree was twenty years ago. The second best time is now.', a:'Chinese proverb'},
-  {q:'Your life is your practice.', a:'Susan Small'},
-  {q:'The cure for anything is salt water: sweat, tears, or the sea.', a:'Isak Dinesen'},
-  {q:'It always seems impossible until it's done.', a:'Nelson Mandela'},
-  {q:'In the end, what matters most is how well you lived and how well you loved.', a:''},
-  {q:'Inhale. Exhale. Repeat as needed.', a:''},
-  {q:'A small daily task, if it be really daily, will beat the labours of a spasmodic Hercules.', a:'Anthony Trollope'},
-  {q:'You don't have to be productive to be worthy of rest.', a:''},
-  {q:'The present moment always will have been.', a:''},
-  {q:'Courage is fear that has said its prayers.', a:'Dorothy Bernard'},
-  {q:'Whoever you are, no matter how lonely, the world offers itself to your imagination.', a:'Mary Oliver'},
-  {q:'What you do today is important because you are exchanging a day of your life for it.', a:''},
-  {q:'Simplicity is the ultimate sophistication.', a:'Leonardo da Vinci'},
-  {q:'The purpose of life is to live it, to taste experience to the utmost.', a:'Eleanor Roosevelt'},
+  {q:"The day is coming in. Open the door.",                                           a:"Naomi Shihab Nye"},
+  {q:"Start where you are. Use what you have. Do what you can.",                       a:"Arthur Ashe"},
+  {q:"Almost everything will work again if you unplug it for a few minutes, including you.", a:"Anne Lamott"},
+  {q:"You are allowed to be both a masterpiece and a work in progress simultaneously.", a:"Sophia Bush"},
+  {q:"Do less. Be more.",                                                               a:""},
+  {q:"Not all those who wander are lost.",                                              a:"J.R.R. Tolkien"},
+  {q:"The quieter you become, the more you can hear.",                                  a:"Ram Dass"},
+  {q:"Sometimes the most important thing in a whole day is the rest we take between two deep breaths.", a:"Etty Hillesum"},
+  {q:"Enough is a feast.",                                                              a:"Buddhist proverb"},
+  {q:"Tell me, what is it you plan to do with your one wild and precious life?",        a:"Mary Oliver"},
+  {q:"You are not behind. You are exactly where you need to be.",                       a:""},
+  {q:"The day you plant the seed is not the day you eat the fruit.",                    a:""},
+  {q:"Rest is not a reward for finishing. Rest is part of the work.",                   a:""},
+  {q:"Small deeds done are better than great deeds planned.",                           a:"Peter Marshall"},
+  {q:"We are what we repeatedly do. Excellence then is not an act but a habit.",        a:"Will Durant on Aristotle"},
+  {q:"Joy is not in things; it is in us.",                                              a:"Richard Wagner"},
+  {q:"The best time to plant a tree was twenty years ago. The second best time is now.", a:"Chinese proverb"},
+  {q:"Your life is your practice.",                                                     a:"Susan Small"},
+  {q:"The cure for anything is salt water: sweat, tears, or the sea.",                  a:"Isak Dinesen"},
+  {q:"It always seems impossible until it\'s done.",                                     a:"Nelson Mandela"},
+  {q:"In the end, what matters most is how well you lived and how well you loved.",      a:""},
+  {q:"Inhale. Exhale. Repeat as needed.",                                               a:""},
+  {q:"A small daily task, if it be really daily, will beat the labours of a spasmodic Hercules.", a:"Anthony Trollope"},
+  {q:"You don\'t have to be productive to be worthy of rest.",                           a:""},
+  {q:"The present moment always will have been.",                                        a:""},
+  {q:"Courage is fear that has said its prayers.",                                      a:"Dorothy Bernard"},
+  {q:"Whoever you are, no matter how lonely, the world offers itself to your imagination.", a:"Mary Oliver"},
+  {q:"What you do today is important because you are exchanging a day of your life for it.", a:""},
+  {q:"Simplicity is the ultimate sophistication.",                                      a:"Leonardo da Vinci"},
+  {q:"The purpose of life is to live it, to taste experience to the utmost.",           a:"Eleanor Roosevelt"},
 ],
 
 nature: {
-  1:  ['Right now, millions of hibernating bats are tucked into caves — their hearts beating just once every four seconds, waiting for spring.',
-       'In January, chickadees hide seeds in thousands of different spots and can remember each location for up to a month.',
-       'The longest nights of winter are almost behind us. From here, each day is quietly, measurably longer than the last.'],
-  2:  ['Great horned owls are already sitting on eggs this month — incubating through snow and cold to give their owlets the longest possible growing season.',
-       'Somewhere today, a skunk is waking from semi-hibernation — one of the first animals to sense the shift toward spring before the snow has melted.',
-       'On February mornings, birdsong has already begun to change. Robins start singing before dawn when day length crosses a threshold only they can sense.'],
-  3:  ['Right now, monarch butterflies that overwintered in Mexico are beginning the journey north — following the milkweed as it grows, mile by mile.',
-       'March is when earthworms begin moving back toward the surface. Their tunneling will aerate the first spring soil before any gardener picks up a spade.',
-       'Somewhere today, a river is thawing. The sound of ice breaking up is one of the loudest things in nature — audible for miles on a quiet morning.'],
-  4:  ['Hummingbirds are arriving this month from as far as Central America — navigating thousands of miles alone, each one weighing less than a nickel.',
-       'The wood frog is one of the only animals that can survive being frozen solid. Right now it's thawing out and calling from ponds in the forest.',
-       'This is peak migration season. Billions of birds are moving through the night sky right now, navigating by stars you can't see yet.'],
-  5:  ['Somewhere tonight, fireflies are lighting up for the first time this year — their flash patterns unique to each species, like a first name.',
-       'Baby rabbits are born this month blind and furless in a shallow ground nest. In three weeks they'll be completely independent.',
-       'The forest floor is at its brightest right now — wildflowers bloom before the tree canopy closes and cuts off the light for another year.'],
-  6:  ['The summer solstice is approaching — the moment when the earth's tilt reaches its maximum and then, imperceptibly, begins returning.',
-       'Young foxes born in early spring are now learning to hunt. Their parents call to them with a sound like a short, sharp bark.',
-       'Dragonflies emerging this month spent up to five years as underwater larvae before their first flight today.'],
-  7:  ['At the height of summer, a hummingbird's heart beats 1,200 times per minute during flight — and slows to 50 beats per minute at rest.',
-       'Firefly populations peak this month. Each species flashes a distinct pattern — males signal from the air, females respond from the ground.',
-       'The Milky Way is most visible in July and August. On a clear night away from city lights, you're looking at 100 billion stars.'],
-  8:  ['Monarch butterflies are beginning to sense the shortening days. The generation born this month will fly 3,000 miles to Mexico — a journey none of their ancestors ever made before.',
-       'The Perseid meteor shower peaks this month — Earth passing through the debris trail of a comet that last visited our inner solar system in 1992.',
-       'Shorebirds are already beginning fall migration — some departing Alaska for South America, flying 7,000 miles without stopping.'],
-  9:  ['Somewhere today, a spider is riding a strand of silk on the wind — ballooning to a new territory on a breeze it can't see.',
-       'The autumnal equinox is near — a day of equal light and darkness before the long tilt toward winter. Every culture on earth has marked this moment.',
-       'Tree leaves aren't turning — the colors were always there, hidden beneath the green. As chlorophyll breaks down, what was always true becomes visible.'],
-  10: ['Monarch butterflies are completing one of the great migrations on earth right now — millions converging on a small mountain forest in central Mexico.',
-       'Bears are entering hyperphagia — eating up to 20,000 calories a day in preparation for hibernation. They can gain 30 pounds in a single week.',
-       'Migrating birds navigate by magnetic fields, star patterns, and landmarks simultaneously. A bird the weight of two quarters finds its way across continents.'],
-  11: ['The last migrating birds of the year are moving through right now. Some thrushes fly from Canada to the Caribbean in a single night.',
-       'Trees are not dying in November — they're entering suspended animation, pulling sugars and nutrients down to their roots for safekeeping.',
-       'The first hard frosts are transforming the soil — mycelium that fed trees all summer now begins its winter phase beneath your feet.'],
-  12: ['On the winter solstice, the earth's tilt reaches its maximum angle. From this moment, the days grow longer — almost imperceptibly at first, then unmistakably.',
-       'In the darkest weeks of December, starlings flock together for warmth at night — hundreds of birds sharing body heat against the cold.',
-       'Right now, thousands of miles of spawned salmon are decomposing into forest soil — their bodies feeding the trees, insects, and bears that will bloom next spring.'],
+  1:  ["Right now, millions of hibernating bats are tucked into caves — their hearts beating just once every four seconds, waiting for spring.",
+       "In January, chickadees hide seeds in thousands of different spots and can remember each location for up to a month.",
+       "The longest nights of winter are almost behind us. From here, each day is quietly, measurably longer than the last."],
+  2:  ["Great horned owls are already sitting on eggs this month — incubating through snow and cold to give their owlets the longest possible growing season.",
+       "Somewhere today, a skunk is waking from semi-hibernation — one of the first animals to sense the shift toward spring before the snow has melted.",
+       "On February mornings, birdsong has already begun to change. Robins start singing before dawn when day length crosses a threshold only they can sense."],
+  3:  ["Right now, monarch butterflies that overwintered in Mexico are beginning the journey north — following the milkweed as it grows, mile by mile.",
+       "March is when earthworms begin moving back toward the surface. Their tunneling will aerate the first spring soil before any gardener picks up a spade.",
+       "Somewhere today, a river is thawing. The sound of ice breaking up is one of the loudest things in nature — audible for miles on a quiet morning."],
+  4:  ["Hummingbirds are arriving this month from as far as Central America — navigating thousands of miles alone, each one weighing less than a nickel.",
+       "The wood frog is one of the only animals that can survive being frozen solid. Right now it\'s thawing out and calling from ponds in the forest.",
+       "This is peak migration season. Billions of birds are moving through the night sky right now, navigating by stars you can\'t see yet."],
+  5:  ["Somewhere tonight, fireflies are lighting up for the first time this year — their flash patterns unique to each species, like a first name.",
+       "Baby rabbits are born this month blind and furless in a shallow ground nest. In three weeks they\'ll be completely independent.",
+       "The forest floor is at its brightest right now — wildflowers bloom before the tree canopy closes and cuts off the light for another year."],
+  6:  ["The summer solstice is approaching — the moment when the earth's tilt reaches its maximum and then, imperceptibly, begins returning.",
+       "Young foxes born in early spring are now learning to hunt. Their parents call to them with a sound like a short, sharp bark.",
+       "Dragonflies emerging this month spent up to five years as underwater larvae before their first flight today."],
+  7:  ["At the height of summer, a hummingbird's heart beats 1,200 times per minute during flight — and slows to 50 beats per minute at rest.",
+       "Firefly populations peak this month. Each species flashes a distinct pattern — males signal from the air, females respond from the ground.",
+       "The Milky Way is most visible in July and August. On a clear night away from city lights, you\'re looking at 100 billion stars."],
+  8:  ["Monarch butterflies are beginning to sense the shortening days. The generation born this month will fly 3,000 miles to Mexico — a journey none of their ancestors ever made before.",
+       "The Perseid meteor shower peaks this month — Earth passing through the debris trail of a comet that last visited our inner solar system in 1992.",
+       "Shorebirds are already beginning fall migration — some departing Alaska for South America, flying 7,000 miles without stopping."],
+  9:  ["Somewhere today, a spider is riding a strand of silk on the wind — ballooning to a new territory on a breeze it can\'t see.",
+       "The autumnal equinox is near — a day of equal light and darkness before the long tilt toward winter. Every culture on earth has marked this moment.",
+       "Tree leaves aren\'t turning — the colors were always there, hidden beneath the green. As chlorophyll breaks down, what was always true becomes visible."],
+  10: ["Monarch butterflies are completing one of the great migrations on earth right now — millions converging on a small mountain forest in central Mexico.",
+       "Bears are entering hyperphagia — eating up to 20,000 calories a day in preparation for hibernation. They can gain 30 pounds in a single week.",
+       "Migrating birds navigate by magnetic fields, star patterns, and landmarks simultaneously. A bird the weight of two quarters finds its way across continents."],
+  11: ["The last migrating birds of the year are moving through right now. Some thrushes fly from Canada to the Caribbean in a single night.",
+       "Trees are not dying in November — they\'re entering suspended animation, pulling sugars and nutrients down to their roots for safekeeping.",
+       "The first hard frosts are transforming the soil — mycelium that fed trees all summer now begins its winter phase beneath your feet."],
+  12: ["On the winter solstice, the earth's tilt reaches its maximum angle. From this moment, the days grow longer — almost imperceptibly at first, then unmistakably.",
+       "In the darkest weeks of December, starlings flock together for warmth at night — hundreds of birds sharing body heat against the cold.",
+       "Right now, thousands of miles of spawned salmon are decomposing into forest soil — their bodies feeding the trees, insects, and bears that will bloom next spring."],
 },
 
 intentions: ['Present','Grounded','Curious','Enough','Open','Steady','Kind','Clear','Patient','Here','Breathing','Unhurried','Whole','Gentle'],
 
 top3Prompts: [
-  'What would make today feel complete — not perfect, just done enough?',
-  'If today goes well, what will have happened?',
-  'What's the one thing that, if you do it, makes everything else easier?',
+  "What would make today feel complete — not perfect, just done enough?",
+  "If today goes well, what will have happened?",
+  "What\'s the one thing that, if you do it, makes everything else easier?",
   'What does "done" look like for today?',
-  'What are the three things only you can do today?',
-  'At 9pm tonight, what three things will you be glad you did?',
-  'What would a sustainable version of today look like?',
+  "What are the three things only you can do today?",
+  "At 9pm tonight, what three things will you be glad you did?",
+  "What would a sustainable version of today look like?",
 ],
 
 notDoingPrompts: [
-  'What are you giving yourself permission to leave alone today?',
-  'What's on your list that can genuinely wait until tomorrow?',
-  'What would you stop doing today if you knew it was okay to?',
-  'What are you carrying that isn't yours to carry right now?',
-  'What can be good enough, rather than finished?',
-  'What would you let go of if you trusted things would be fine?',
-  'What's one thing you're not doing today — on purpose?',
+  "What are you giving yourself permission to leave alone today?",
+  "What\'s on your list that can genuinely wait until tomorrow?",
+  "What would you stop doing today if you knew it was okay to?",
+  "What are you carrying that isn\'t yours to carry right now?",
+  "What can be good enough, rather than finished?",
+  "What would you let go of if you trusted things would be fine?",
+  "What\'s one thing you\'re not doing today — on purpose?",
 ],
 
 gratitudePrompts: [
-  'What's one small thing that went right yesterday?',
-  'Who made something easier for you recently, even in a small way?',
-  'What's something in your daily life you rarely notice but would miss if it were gone?',
-  'What's one thing your body did for you today that you didn't have to ask it to do?',
-  'What made you feel like yourself recently?',
-  'What's a small pleasure you had this week that didn't cost anything?',
-  'What's something you're quietly proud of, even if no one else knows about it?',
+  "What\'s one small thing that went right yesterday?",
+  "Who made something easier for you recently, even in a small way?",
+  "What\'s something in your daily life you rarely notice but would miss if it were gone?",
+  "What\'s one thing your body did for you today that you didn\'t have to ask it to do?",
+  "What made you feel like yourself recently?",
+  "What\'s a small pleasure you had this week that didn\'t cost anything?",
+  "What\'s something you\'re quietly proud of, even if no one else knows about it?",
 ],
 
 endMessages: {
-  morning: {icon:'☀️', msg:'You've seen what there is to see. Go be in it.'},
-  midday:  {icon:'🌤', msg:'That's enough screen. Your afternoon is waiting.'},
-  evening: {icon:'🌙', msg:'Today happened. That's enough.'},
-  night:   {icon:'⭐', msg:'It's late. Everything else can wait until morning.'},
+  morning: {icon:'☀️', msg:"You've seen what there is to see. Go be in it."},
+  midday:  {icon:'🌤', msg:"That\'s enough screen. Your afternoon is waiting."},
+  evening: {icon:'🌙', msg:"Today happened. That\'s enough."},
+  night:   {icon:'⭐', msg:"It\'s late. Everything else can wait until morning."},
 },
 
 stretches: {
@@ -871,15 +872,15 @@ stretches: {
     'Figure-four stretch — 45 seconds each side',
     'Supine spinal twist — knees to each side, arms wide',
     '5 slow belly breaths — make the exhale longer than the inhale',
-    'Let your body get heavy. You're done for today.',
+    "Let your body get heavy. You\'re done for today.",
   ]},
 },
 
 postTemplates: [
-  {emoji:'🎂', label:'Birthday',      text:'Happy birthday to '},
-  {emoji:'🌟', label:'Big news',      text:'Good news — '},
+  {emoji:'🎂', label:'Birthday',        text:'Happy birthday to '},
+  {emoji:'🌟', label:'Big news',        text:'Good news — '},
   {emoji:'❤️', label:'Thinking of you', text:'Just thinking about you all. '},
-  {emoji:'📸', label:'Photo only',    text:''},
+  {emoji:'📸', label:'Photo only',      text:''},
 ],
 
 vibes: [
@@ -899,6 +900,7 @@ seasonalAccents: {
 },
 
 };
+
 
 // ═══ STATE ══════════════════════════════════════════════════
 const S = {
@@ -939,7 +941,7 @@ const S = {
 const $  = id => document.getElementById(id);
 const ls = {
   get: k => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
-  set: (k,v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) { showToast('error','💾','Storage full','Your notes couldn't be saved — your device storage is full. You can clear space in your phone settings.',null,6000); } },
+  set: (k,v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) { showToast('error','💾','Storage full','Your notes couldn\'t be saved — your device storage is full. You can clear space in your phone settings.',null,6000); } },
   del: k => localStorage.removeItem(k),
 };
 const rand  = arr => arr[Math.floor(Math.random() * arr.length)];
@@ -1071,7 +1073,7 @@ async function initAuth() {
     hideLoading();
     showAuthOverlay();
     const errBox = $('auth-err-1');
-    errBox.textContent = 'That sign-in link has expired — for security, links only work for one hour. Enter your email below and we'll send a fresh one.';
+    errBox.textContent = 'That sign-in link has expired — for security, links only work for one hour. Enter your email below and we\'ll send a fresh one.';
     errBox.classList.add('vis');
     history.replaceState({}, '', window.location.pathname);
     return;
@@ -1137,13 +1139,13 @@ async function authStep1Submit() {
       });
       btn.disabled = false; btn.textContent = 'Send my sign-in link →';
       if(error) {
-        $('auth-err-1').textContent = 'Couldn't send the link right now — this is usually a temporary issue. Please try again in a moment.';
+        $('auth-err-1').textContent = 'Couldn\'t send the link right now — this is usually a temporary issue. Please try again in a moment.';
         $('auth-err-1').classList.add('vis');
         return;
       }
     } catch(e) {
       btn.disabled = false; btn.textContent = 'Send my sign-in link →';
-      $('auth-err-1').textContent = 'We're having trouble reaching the sign-in service right now. Check your connection and try again.';
+      $('auth-err-1').textContent = 'We\'re having trouble reaching the sign-in service right now. Check your connection and try again.';
       $('auth-err-1').classList.add('vis');
       return;
     }
@@ -1188,7 +1190,7 @@ async function authResend() {
     await S.sb.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.href } });
     showToast('success','📬','Link resent','Check your inbox and spam folder.', null);
     startResendCooldown();
-  } catch { showToast('error','⚠️','Couldn't resend','Connection issue — please try again.', null); }
+  } catch { showToast('error','⚠️','Couldn\'t resend','Connection issue — please try again.', null); }
 }
 
 function authReset() {
@@ -1214,7 +1216,7 @@ async function onAuthSuccess(session) {
         return;
       }
     } catch {
-      // If allowed_emails table doesn't exist yet, allow through (setup mode)
+      // If allowed_emails table doesn\'t exist yet, allow through (setup mode)
     }
   }
 
@@ -1762,7 +1764,7 @@ function buildFamilyCard(p) {
     <div class="fam-author">
       <div class="fam-av" style="background:${esc(p.author_color||'#9b7fa0')}"
         onclick="openProfile('${esc(p.author_id||'')}')" 
-        role="button" tabindex="0" aria-label="View ${esc(p.author_name)}'s posts"
+        role="button" tabindex="0" aria-label="View ${esc(p.author_name)}\'s posts"
         onkeydown="if(event.key==='Enter')openProfile('${esc(p.author_id||'')}')">
         ${esc((p.author_name||'?')[0].toUpperCase())}
       </div>
@@ -1828,7 +1830,7 @@ async function react(postId, emoji, btn) {
       if(prev) await S.sb.from('reactions').delete().match({post_id:postId, user_id:S.user.id});
       if(myR[postId]) await S.sb.from('reactions').insert({post_id:postId, user_id:S.user.id, emoji, id:crypto.randomUUID()});
     } catch {
-      showToast('error','⚠️','Couldn't save reaction','Connection issue — tap the emoji again to retry.', null, 4000);
+      showToast('error','⚠️','Couldn\'t save reaction','Connection issue — tap the emoji again to retry.', null, 4000);
     }
   }
 }
@@ -1880,7 +1882,7 @@ async function loadComments(postId) {
           `<button class="comment-del" onclick="deleteComment('${esc(c.id)}','${esc(postId)}',this)" aria-label="Delete comment">×</button>` : ''}
       </div>`).join('');
   } catch {
-    list.innerHTML = '<div style="font-size:12px;color:var(--text-3);padding:4px 0">Couldn't load comments — connection issue.</div>';
+    list.innerHTML = '<div style="font-size:12px;color:var(--text-3);padding:4px 0">Couldn\'t load comments — connection issue.</div>';
   }
 }
 
@@ -1897,7 +1899,7 @@ async function submitComment(postId) {
       const { error } = await S.sb.from('comments').insert(comment);
       if(error) throw error;
     } catch {
-      showToast('error','⚠️','Comment didn't post','Connection issue — your text is still here. Tap Send to try again.', null);
+      showToast('error','⚠️','Comment didn\'t post','Connection issue — your text is still here. Tap Send to try again.', null);
       if(btn) btn.disabled = false;
       return;
     }
@@ -1915,7 +1917,7 @@ async function deleteComment(commentId, postId, btn) {
     if(error) throw error;
     loadComments(postId);
   } catch {
-    showToast('error','⚠️','Couldn't delete comment','Connection issue. Please try again.', null);
+    showToast('error','⚠️','Couldn\'t delete comment','Connection issue. Please try again.', null);
     btn.disabled = false;
   }
 }
@@ -2015,7 +2017,7 @@ async function submitPost() {
     } catch(e) {
       $('compose-uploading').style.display = 'none';
       $('compose-submit').disabled = false;
-      showToast('error','📷','Photo didn't upload','Your connection may have dropped for a moment. Try again — your text is still here.', null, 6000);
+      showToast('error','📷','Photo didn\'t upload','Your connection may have dropped for a moment. Try again — your text is still here.', null, 6000);
       return;
     }
   }
@@ -2035,7 +2037,7 @@ async function savePost(post, triggerBtn, successLabel) {
       });
       if(error) throw error;
     } catch {
-      showToast('error','⚠️','Post didn't save','Your connection may have dropped for a moment. Your text is still here — tap Post to try again.', null, 6000);
+      showToast('error','⚠️','Post didn\'t save','Your connection may have dropped for a moment. Your text is still here — tap Post to try again.', null, 6000);
       $('compose-submit').disabled = false;
       return;
     }
@@ -2153,7 +2155,7 @@ async function finalDeletePost(postId) {
     if(error) throw error;
     return true;
   } catch {
-    showToast('error','⚠️','Couldn't delete','Connection issue. The post is still showing because we want to make sure it's actually removed before it disappears. Please try again.', null, 7000);
+    showToast('error','⚠️','Couldn\'t delete','Connection issue. The post is still showing because we want to make sure it\'s actually removed before it disappears. Please try again.', null, 7000);
     return false;
   }
 }
@@ -2167,7 +2169,7 @@ async function flagPost(postId, btn) {
     showToast('success','⚑','Flag sent','The app owner will review this post.', null, 4000);
     updateFlagsBadge();
   } catch {
-    showToast('error','⚠️','Flag didn't send','Connection issue — please try again so the right person can review it.', null, 5000);
+    showToast('error','⚠️','Flag didn\'t send','Connection issue — please try again so the right person can review it.', null, 5000);
     btn.disabled = false;
   }
 }
@@ -2270,10 +2272,10 @@ function openProfile(authorId) {
   if(!authorId) return;
   const posts = S.familyPosts.filter(p => p.author_id === authorId);
   const name  = posts[0]?.author_name || 'Family member';
-  $('profile-title').textContent = name + ''s posts';
+  $('profile-title').textContent = name + "'s posts";
   const cont = $('profile-posts');
   if(!posts.length) {
-    cont.innerHTML = `<div class="profile-empty">${esc(name)} hasn't posted yet.</div>`;
+    cont.innerHTML = `<div class="profile-empty">${esc(name)} hasn\'t posted yet.</div>`;
   } else {
     cont.innerHTML = posts.map(p => `
       <div class="profile-post">
@@ -2431,7 +2433,7 @@ function buildModule(id, secondary=false) {
     const saved = ls.get('intention_'+dk) || suggested;
     div.innerHTML = `
       <div class="module-header">
-        <span class="module-tag" style="background:var(--sage-lt);color:var(--sage)">Today's Intention</span>
+        <span class="module-tag" style="background:var(--sage-lt);color:var(--sage)">Today\'s Intention</span>
         ${hideBtn}
       </div>
       <div style="font-family:'Lora',serif;font-size:22px;color:var(--mauve);margin-bottom:6px">${esc(saved)}</div>
@@ -2462,7 +2464,7 @@ function buildModule(id, secondary=false) {
     const q = LIB.quotes[idx];
     div.innerHTML = `
       <div class="module-header">
-        <span class="module-tag" style="background:var(--slate-lt);color:var(--slate)">Today's Quote</span>
+        <span class="module-tag" style="background:var(--slate-lt);color:var(--slate)">Today\'s Quote</span>
         ${hideBtn}
       </div>
       <div style="font-family:'Lora',serif;font-size:15px;font-style:italic;color:var(--text);line-height:1.6;margin-bottom:4px">"${esc(q.q)}"</div>
@@ -2544,7 +2546,7 @@ function hideModule(id) {
 function updateMomentsPreview() {
   const {primary} = getModulesByTime();
   const first = primary[0];
-  const labels = {wod:'Word of the Day',stretch:'Daily Stretch',timer:'Calm Timer',intention:'Today's Intention',top3:'Top 3',notdoing:'Not Doing Today',quote:'Daily Quote',gratitude:'Gratitude',nature:'Nature Moment'};
+  const labels = {wod:'Word of the Day',stretch:'Daily Stretch',timer:'Calm Timer',intention:'Today\'s Intention',top3:'Top 3',notdoing:'Not Doing Today',quote:'Daily Quote',gratitude:'Gratitude',nature:'Nature Moment'};
   $('moments-preview').textContent = first ? labels[first] || '' : 'All hidden';
 }
 
@@ -2816,7 +2818,7 @@ async function loadFlagsAdmin() {
         </div>
       </div>`).join('');
   } catch {
-    cont.innerHTML = '<div style="font-size:13px;color:var(--text-3);padding:10px 0">Couldn't load flagged posts — connection issue. Check your connection and refresh.</div>';
+    cont.innerHTML = '<div style="font-size:13px;color:var(--text-3);padding:10px 0">Couldn\'t load flagged posts — connection issue. Check your connection and refresh.</div>';
   }
 }
 
@@ -2839,7 +2841,7 @@ async function dismissFlag(flagId, btn) {
     btn?.closest('.flag-item')?.remove();
     updateFlagsBadge();
   } catch {
-    showToast('error','⚠️','Couldn't dismiss flag','Connection issue. Please try again.', null);
+    showToast('error','⚠️','Couldn\'t dismiss flag','Connection issue. Please try again.', null);
     if(btn) btn.disabled = false;
   }
 }
@@ -2995,7 +2997,7 @@ async function postAuthInit() {
   // Vibes init
   initVibes();
 
-  // Today's Moments
+  // Today\'s Moments
   initMoments();
 
   // Saved badge
