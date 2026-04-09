@@ -1,0 +1,3039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Morning, You">
+<meta name="theme-color" content="#f7f2ec" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1e1a16" media="(prefers-color-scheme: dark)">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+<title>Morning, You</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+/* ═══ TOKENS ════════════════════════════════════════════ */
+:root {
+  --bg:#f7f2ec; --surface:#fdfaf6; --border:#e8e0d5; --border-soft:#f2ece4;
+  --text:#3a2e26; --text-2:#6e6258; --text-3:#8a7e74;
+  --mauve:#9b7fa0; --mauve-lt:#f4eef8;
+  --gold:#c4956a;  --gold-lt:#fdf3e8;
+  --sage:#7da89c;  --sage-lt:#eef5f3;
+  --rose:#c47a8a;  --rose-lt:#faeef1;
+  --slate:#6a8099; --slate-lt:#eef2f7;
+  --seasonal:var(--mauve); --seasonal-lt:var(--mauve-lt);
+  --r:16px; --rs:10px;
+  --shadow:0 2px 14px rgba(58,46,38,.07);
+  --shadow-m:0 4px 24px rgba(58,46,38,.11);
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#1e1a16; --surface:#252018; --border:#3a3028; --border-soft:#2e2820;
+  --text:#f0ebe3; --text-2:#c8bfb6; --text-3:#9a9088;
+  --mauve-lt:#2a2030; --gold-lt:#2a2010; --sage-lt:#182820;
+  --rose-lt:#2a1820; --slate-lt:#182028;
+}}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;overflow-x:hidden;transition:background .4s}
+
+/* ═══ LOADING SCREEN ════════════════════════════════════ */
+#loading{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;z-index:999;transition:opacity .4s}
+#loading.fade{opacity:0;pointer-events:none}
+.load-icon{font-size:40px;animation:breathe 2s ease-in-out infinite}
+.load-text{font-family:"Lora",serif;font-size:15px;color:var(--text-3);font-style:italic}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+
+/* ═══ AUTH OVERLAY ══════════════════════════════════════ */
+#auth-overlay{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px;z-index:500;overflow-y:auto}
+#auth-overlay.hidden{display:none}
+#auth-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:32px 28px;max-width:400px;width:100%;box-shadow:var(--shadow-m);animation:slideUp .3s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.auth-step{display:none}
+.auth-step.active{display:block}
+.auth-icon{font-size:36px;text-align:center;display:block;margin-bottom:12px}
+.auth-h{font-family:"Lora",serif;font-size:20px;font-weight:600;text-align:center;margin-bottom:6px}
+.auth-sub{font-size:14px;color:var(--text-2);text-align:center;line-height:1.65;margin-bottom:22px}
+.auth-label{display:block;font-size:12px;font-weight:500;color:var(--text-2);margin-bottom:5px;letter-spacing:.03em}
+.auth-input{width:100%;border:1px solid var(--border);border-radius:var(--rs);padding:11px 14px;font-size:16px;font-family:"DM Sans",sans-serif;color:var(--text);background:var(--bg);outline:none;transition:border-color .15s;margin-bottom:12px}
+.auth-input:focus{border-color:var(--mauve)}
+.auth-btn{width:100%;background:var(--mauve);color:#fff;border:none;border-radius:var(--rs);padding:13px;font-size:15px;cursor:pointer;font-family:"DM Sans",sans-serif;font-weight:500;transition:opacity .2s;margin-top:4px}
+.auth-btn:hover{opacity:.88}
+.auth-btn:disabled{opacity:.5;cursor:not-allowed}
+.auth-skip{display:block;text-align:center;margin-top:13px;font-size:13px;color:var(--text-3);cursor:pointer;text-decoration:underline}
+.auth-info{background:var(--bg);border-radius:var(--rs);padding:10px 13px;margin-bottom:14px;font-size:13px;color:var(--text-2);line-height:1.6}
+.auth-info a{color:var(--mauve);text-decoration:none}
+.auth-info code{font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:1px 5px}
+.auth-error{background:#fdf0ee;border:1px solid #e0b8b0;border-radius:var(--rs);padding:10px 13px;margin-bottom:12px;font-size:13px;color:#8a3a2a;display:none;line-height:1.5}
+.auth-error.vis{display:block}
+.auth-success{background:#eef5f0;border:1px solid #b0d8b8;border-radius:var(--rs);padding:10px 13px;margin-bottom:12px;font-size:13px;color:#2a6a3a;display:none;line-height:1.5}
+.auth-success.vis{display:block}
+.resend-row{text-align:center;margin-top:10px;font-size:13px;color:var(--text-3)}
+.resend-link{color:var(--mauve);cursor:pointer;text-decoration:underline}
+details.setup-note{background:var(--bg);border-radius:var(--rs);padding:10px 13px;margin-bottom:13px}
+details.setup-note summary{font-size:13px;font-weight:500;cursor:pointer;color:var(--text-2)}
+details.setup-note p,details.setup-note li{font-size:12px;color:var(--text-3);margin-top:6px;line-height:1.65}
+details.setup-note ol{padding-left:16px}
+
+/* ═══ TOPBAR ════════════════════════════════════════════ */
+#topbar{position:sticky;top:0;z-index:200;background:rgba(247,242,236,.9);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;padding:10px 16px;transition:background .4s}
+@media(prefers-color-scheme:dark){#topbar{background:rgba(30,26,22,.9)}}
+.tb-name{font-family:"Lora",serif;font-size:13px;color:var(--text-2);font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px}
+.tb-clock{font-size:12px;color:var(--text-3);letter-spacing:.06em;white-space:nowrap}
+.tb-gap{flex:1;min-width:4px}
+.tb-btn{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 12px;font-family:"DM Sans",sans-serif;font-size:12px;color:var(--text-2);cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s;white-space:nowrap;position:relative;-webkit-tap-highlight-color:transparent}
+.tb-btn:hover{background:var(--bg)}
+.tb-btn.on{background:var(--mauve);color:#fff;border-color:var(--mauve)}
+.tb-badge{position:absolute;top:-3px;right:-3px;background:var(--gold);color:#fff;border-radius:10px;font-size:9px;padding:1px 5px;font-weight:500;display:none;min-width:16px;text-align:center}
+.tb-badge.vis{display:block}
+.notif-dot{width:8px;height:8px;border-radius:50%;background:var(--gold);position:absolute;top:-1px;right:-1px;display:none}
+.notif-dot.vis{display:block}
+
+/* ═══ PANELS ════════════════════════════════════════════ */
+.panel-host{max-width:var(--max-w);margin:0 auto;padding:0 16px}
+.panel{display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;margin:8px 0 4px;box-shadow:var(--shadow-m);animation:panelIn .2s ease}
+.panel.open{display:block}
+@keyframes panelIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.panel-h{font-family:"Lora",serif;font-size:15px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+
+/* ═══ MAIN ══════════════════════════════════════════════ */
+main{max-width:var(--max-w);margin:0 auto;padding:0 16px 80px}
+
+/* ═══ CONNECTIVITY BANNER ═══════════════════════════════*/
+#conn-banner{background:#fdf3e8;border-bottom:1px solid #e0c8a0;padding:8px 16px;font-size:13px;color:#7a5a20;text-align:center;display:none}
+#conn-banner.vis{display:block}
+#admin-banner{background:#fff3f0;border-bottom:1px solid #e0b8b0;padding:8px 16px;font-size:13px;color:#8a3a2a;text-align:center;display:none}
+#admin-banner.vis{display:block}
+#cfg-banner{background:#fff8e8;border-bottom:1px solid #e0d090;padding:8px 16px;font-size:12px;color:#6a5010;text-align:center;display:none}
+#cfg-banner.vis{display:block}
+#version-banner{background:var(--mauve-lt);border-bottom:1px solid #d0c0e0;padding:8px 16px;font-size:13px;color:var(--mauve);text-align:center;display:none;cursor:pointer}
+#version-banner.vis{display:block}
+
+/* ═══ HERO ══════════════════════════════════════════════ */
+#hero{padding:28px 0 18px;text-align:center}
+#hero-icon{font-size:34px;margin-bottom:6px;display:block;animation:breathe 4s ease-in-out infinite}
+#greeting{font-family:"Lora",serif;font-size:clamp(22px,5vw,32px);font-weight:600;line-height:1.25;margin-bottom:4px}
+#hero-date{font-size:13px;color:var(--text-3);letter-spacing:.04em;margin-bottom:10px}
+#weather-pill{display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:5px 14px;font-size:13px;color:var(--text-2);margin-bottom:8px}
+#new-posts-line{font-size:13px;color:var(--gold);margin-top:6px;display:none;cursor:pointer}
+#new-posts-line.vis{display:block}
+#birthday-card{background:linear-gradient(135deg,var(--gold-lt),#fff8f0);border:1px solid #e0c898;border-radius:var(--r);padding:16px 20px;margin:12px 0;text-align:center;display:none}
+#birthday-card.vis{display:block}
+#birthday-text{font-family:"Lora",serif;font-size:17px;font-weight:600;color:var(--gold)}
+
+/* ═══ MOOD CHECK-IN ═════════════════════════════════════ */
+#mood-row{display:flex;justify-content:center;gap:10px;margin:10px 0 18px;animation:fadeIn .3s ease}
+#mood-row.hidden{display:none}
+.mood-btn{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:8px 18px;font-size:20px;cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent;min-height:44px;min-width:64px;display:flex;align-items:center;justify-content:center}
+.mood-btn:hover{transform:scale(1.08);border-color:var(--seasonal)}
+.mood-btn.sel{background:var(--seasonal-lt);border-color:var(--seasonal)}
+
+/* ═══ SECTION LABEL ═════════════════════════════════════ */
+.sec-label{font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);margin:28px 0 12px 2px;display:flex;align-items:center;gap:10px}
+.sec-label::after{content:"";flex:1;height:1px;background:var(--border)}
+
+/* ═══ DAILY MOMENTS CARD (inline anchors) ═══════════════ */
+#moments-inline{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:0;margin-bottom:16px;overflow:hidden;box-shadow:var(--shadow)}
+.moments-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.moments-title{font-family:"Lora",serif;font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
+.moments-preview{font-size:13px;color:var(--text-3);font-style:italic;max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.moments-chevron{font-size:11px;color:var(--text-3);transition:transform .2s}
+.moments-chevron.open{transform:rotate(180deg)}
+#moments-body{display:none;padding:0 18px 18px;border-top:1px solid var(--border-soft)}
+#moments-body.open{display:block;animation:fadeIn .2s ease}
+.moment-module{padding:14px 0;border-bottom:1px solid var(--border-soft)}
+.moment-module:last-child{border-bottom:none;padding-bottom:0}
+.module-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.module-tag{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:10px;display:inline-flex;align-items:center;gap:5px}
+.module-hide{background:none;border:none;color:var(--text-3);cursor:pointer;font-size:18px;line-height:1;padding:4px 8px;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;border-radius:8px;-webkit-tap-highlight-color:transparent}
+.module-hide:hover{background:var(--bg);color:var(--text-2)}
+.see-more-btn{display:block;width:100%;text-align:center;padding:10px;font-size:13px;color:var(--mauve);cursor:pointer;border-top:1px solid var(--border-soft);margin-top:8px;background:none;border-left:none;border-right:none;border-bottom:none;font-family:"DM Sans",sans-serif;-webkit-tap-highlight-color:transparent}
+.see-more-btn:hover{background:var(--bg)}
+.restore-btn{display:block;text-align:center;font-size:12px;color:var(--text-3);cursor:pointer;text-decoration:underline;margin-top:10px;background:none;border:none;font-family:"DM Sans",sans-serif}
+
+/* ═══ WORD OF DAY ════════════════════════════════════════ */
+.wod-word{font-family:"Lora",serif;font-size:26px;font-weight:600;color:var(--mauve);margin-bottom:2px}
+.wod-phonetic{font-size:13px;color:var(--text-3);font-style:italic;margin-bottom:3px}
+.wod-pos{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:7px}
+.wod-def{font-size:14px;color:var(--text-2);line-height:1.65}
+.wod-example{font-style:italic;color:var(--text-3);font-size:13px;margin-top:6px}
+
+/* ═══ STRETCH ════════════════════════════════════════════ */
+.stretch-preview{font-size:14px;color:var(--text-2);cursor:pointer;display:flex;align-items:center;gap:8px}
+.stretch-expand{color:var(--mauve);font-size:12px;text-decoration:underline;cursor:pointer;white-space:nowrap}
+.stretch-steps{display:none;margin-top:10px}
+.stretch-steps.open{display:block;animation:fadeIn .2s ease}
+.stretch-list{list-style:none}
+.stretch-list li{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border-soft);font-size:15px;color:var(--text-2);line-height:1.5}
+.stretch-list li:last-child{border-bottom:none}
+.s-num{min-width:24px;height:24px;border-radius:50%;background:var(--sage);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;margin-top:1px}
+
+/* ═══ TIMER ═════════════════════════════════════════════ */
+.timer-wrap{text-align:center;padding:6px 0}
+.timer-ring{width:90px;height:90px;margin:8px auto;position:relative}
+.timer-ring svg{transform:rotate(-90deg)}
+.t-bg{fill:none;stroke:var(--border);stroke-width:5}
+.t-prog{fill:none;stroke:var(--mauve);stroke-width:5;stroke-linecap:round;stroke-dasharray:251;stroke-dashoffset:251;transition:stroke-dashoffset 1s linear}
+#timer-num{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:"Lora",serif;font-size:20px;color:var(--text)}
+.timer-durs{display:flex;align-items:center;justify-content:center;gap:8px;margin:8px 0}
+.tdur{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:5px 12px;font-size:12px;cursor:pointer;color:var(--text-2);font-family:"DM Sans",sans-serif;transition:all .15s;-webkit-tap-highlight-color:transparent;min-height:36px}
+.tdur.sel{background:var(--mauve);color:#fff;border-color:var(--mauve)}
+#timer-start{background:var(--mauve);color:#fff;border:none;border-radius:20px;padding:9px 28px;font-size:14px;cursor:pointer;font-family:"DM Sans",sans-serif;transition:opacity .2s;min-height:44px}
+#timer-start:hover{opacity:.85}
+.timer-msg{font-size:13px;color:var(--text-3);margin-top:6px}
+.timer-pulse{animation:timerPulse .6s ease-in-out}
+@keyframes timerPulse{0%,100%{box-shadow:none}50%{box-shadow:0 0 0 12px rgba(155,127,160,.2)}}
+
+/* ═══ FEED CARDS ════════════════════════════════════════ */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;margin-bottom:12px;box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s;animation:cardIn .35s ease both}
+@keyframes cardIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.card:hover{transform:translateY(-1px);box-shadow:var(--shadow-m)}
+.ctag{display:inline-block;font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:10px;margin-bottom:10px}
+.ctag-fact{background:var(--sage-lt);color:var(--sage)}
+.ctag-joy{background:var(--gold-lt);color:var(--gold)}
+.ctag-riddle{background:var(--mauve-lt);color:var(--mauve)}
+.ctag-tease{background:var(--slate-lt);color:var(--slate)}
+.ctag-well{background:var(--sage-lt);color:var(--sage)}
+.ctag-article{background:var(--slate-lt);color:var(--slate)}
+.ctag-family{background:var(--gold-lt);color:var(--gold)}
+.ctag-secret{background:var(--rose-lt);color:var(--rose)}
+.ctag-bday{background:var(--gold-lt);color:var(--gold)}
+.ctitle{font-family:"Lora",serif;font-size:16px;font-weight:600;line-height:1.4;margin-bottom:7px}
+.cbody{font-size:14px;color:var(--text-2);line-height:1.7}
+.csource{font-size:11px;color:var(--text-3);margin-top:5px}
+.cactions{display:flex;align-items:center;gap:7px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border-soft);flex-wrap:wrap}
+.cact{background:none;border:1px solid var(--border);border-radius:20px;padding:6px 13px;font-size:12px;color:var(--text-2);cursor:pointer;display:flex;align-items:center;gap:4px;transition:all .15s;font-family:"DM Sans",sans-serif;min-height:36px;-webkit-tap-highlight-color:transparent}
+.cact:hover{background:var(--bg)}
+.cact.saved{background:var(--mauve-lt);border-color:var(--mauve);color:var(--mauve)}
+.cact.hearted{background:var(--rose-lt);border-color:var(--rose);color:var(--rose)}
+.cact-more{margin-left:auto}
+.cact-link{color:var(--mauve);text-decoration:none;font-size:12px;font-weight:500;margin-left:auto;display:flex;align-items:center;gap:4px}
+.cact-link:hover{text-decoration:underline}
+.reveal-btn{background:var(--mauve);color:#fff;border:none;border-radius:20px;padding:7px 18px;font-size:13px;cursor:pointer;font-family:"DM Sans",sans-serif;transition:opacity .2s;margin-top:9px;min-height:36px;-webkit-tap-highlight-color:transparent}
+.reveal-btn:hover{opacity:.85}
+.reveal-box{display:none;margin-top:10px;background:var(--bg);border-radius:var(--rs);padding:11px 14px;font-size:14px;color:var(--text);line-height:1.6;border:1px solid var(--border)}
+.reveal-box.shown{display:block;animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* ═══ FAMILY CARDS ══════════════════════════════════════ */
+.card.family{border-color:#ddd0b8;background:linear-gradient(135deg,var(--surface) 0%,#fdf9f2 100%)}
+.fam-author{display:flex;align-items:center;gap:9px;margin-bottom:12px}
+.fam-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;color:#fff;flex-shrink:0;cursor:pointer}
+.fam-av-name{font-weight:500;font-size:14px;cursor:pointer}
+.fam-av-name:hover{text-decoration:underline;color:var(--mauve)}
+.fam-time{font-size:11px;color:var(--text-3);margin-top:1px}
+.fam-photo{width:100%;border-radius:var(--rs);margin:10px 0;display:block;max-height:300px;object-fit:cover;border:1px solid var(--border);cursor:pointer;background:var(--border-soft)}
+.fam-photo-placeholder{width:100%;height:120px;border-radius:var(--rs);margin:10px 0;background:var(--border-soft);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--text-3)}
+.react-row{display:flex;align-items:center;gap:6px;margin-top:12px;padding-top:10px;border-top:1px solid rgba(220,200,170,.4);flex-wrap:wrap}
+.react-btn{background:none;border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:15px;cursor:pointer;transition:all .15s;min-height:36px;-webkit-tap-highlight-color:transparent}
+.react-btn:hover{background:var(--gold-lt);border-color:var(--gold)}
+.react-btn.reacted{background:var(--gold-lt);border-color:var(--gold)}
+.react-summary{font-size:12px;color:var(--text-3);margin-left:auto}
+.comment-section{margin-top:10px;padding-top:10px;border-top:1px solid rgba(220,200,170,.3)}
+.comment-item{font-size:13px;color:var(--text-2);padding:5px 0;display:flex;gap:6px;align-items:flex-start;border-bottom:1px solid var(--border-soft)}
+.comment-item:last-of-type{border-bottom:none}
+.comment-author{font-weight:500;color:var(--text);white-space:nowrap}
+.comment-text{flex:1;line-height:1.5}
+.comment-del{background:none;border:none;color:var(--text-3);cursor:pointer;font-size:14px;padding:0 4px;min-width:28px;min-height:28px;display:flex;align-items:center;justify-content:center}
+.comment-input-row{display:flex;gap:8px;margin-top:8px}
+.comment-input{flex:1;border:1px solid var(--border);border-radius:var(--rs);padding:8px 11px;font-size:14px;font-family:"DM Sans",sans-serif;color:var(--text);background:var(--bg);outline:none;transition:border-color .15s}
+.comment-input:focus{border-color:var(--gold)}
+.comment-send{background:var(--gold);color:#fff;border:none;border-radius:var(--rs);padding:8px 14px;font-size:13px;cursor:pointer;font-family:"DM Sans",sans-serif;transition:opacity .2s;min-height:36px;-webkit-tap-highlight-color:transparent}
+.comment-send:hover{opacity:.85}
+.comment-send:disabled{opacity:.4;cursor:not-allowed}
+
+/* ═══ END CARD ══════════════════════════════════════════ */
+.end-card{background:linear-gradient(135deg,var(--surface),var(--bg));border:2px solid var(--seasonal);border-radius:var(--r);padding:28px 24px;margin:20px 0 40px;text-align:center;box-shadow:var(--shadow-m)}
+.end-icon{font-size:32px;margin-bottom:10px;display:block}
+.end-msg{font-family:"Lora",serif;font-size:18px;font-style:italic;color:var(--text);margin-bottom:14px;line-height:1.5}
+.end-refresh{background:none;border:1px solid var(--border);border-radius:20px;padding:7px 18px;font-size:13px;cursor:pointer;color:var(--text-3);font-family:"DM Sans",sans-serif;display:none}
+.end-refresh.vis{display:inline-block}
+
+/* ═══ POST COMPOSE ══════════════════════════════════════ */
+#fab{position:fixed;bottom:max(20px,env(safe-area-inset-bottom));right:18px;z-index:300;background:var(--gold);color:#fff;border:none;border-radius:28px;padding:13px 20px;font-size:14px;font-weight:500;cursor:pointer;font-family:"DM Sans",sans-serif;box-shadow:0 4px 20px rgba(196,149,106,.4);display:flex;align-items:center;gap:7px;transition:all .2s;-webkit-tap-highlight-color:transparent}
+#fab:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(196,149,106,.5)}
+#fab.hidden{display:none}
+#compose-panel{position:fixed;bottom:calc(max(20px,env(safe-area-inset-bottom)) + 62px);right:18px;z-index:300;width:min(340px,calc(100vw - 36px));background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;box-shadow:var(--shadow-m);display:none;animation:slideUp .2s ease}
+#compose-panel.open{display:block}
+.compose-h{font-family:"Lora",serif;font-size:15px;font-weight:600;margin-bottom:12px}
+.template-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px}
+.tmpl-btn{background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:6px 12px;font-size:12px;cursor:pointer;color:var(--text-2);font-family:"DM Sans",sans-serif;transition:all .15s;min-height:36px;-webkit-tap-highlight-color:transparent}
+.tmpl-btn:hover{background:var(--gold-lt);border-color:var(--gold);color:var(--gold)}
+#compose-text{width:100%;min-height:72px;border:1px solid var(--border);border-radius:var(--rs);padding:10px 12px;font-size:16px;font-family:"DM Sans",sans-serif;color:var(--text);background:var(--bg);resize:none;outline:none;transition:border-color .15s}
+#compose-text:focus{border-color:var(--gold)}
+.compose-file-row{display:flex;align-items:center;gap:8px;margin-top:10px}
+.compose-photo-lbl{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border:1px dashed var(--border);border-radius:var(--rs);font-size:13px;color:var(--text-3);cursor:pointer;transition:all .15s;min-height:36px}
+.compose-photo-lbl:hover{border-color:var(--gold);color:var(--gold)}
+#compose-photo{display:none}
+#compose-preview{display:none;margin-top:8px;position:relative}
+#compose-preview img{width:100%;border-radius:var(--rs);max-height:150px;object-fit:cover}
+#compose-preview .rm-photo{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.5);color:#fff;border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+.compose-actions{display:flex;gap:8px;margin-top:12px}
+#compose-submit{flex:1;background:var(--gold);color:#fff;border:none;border-radius:20px;padding:10px;font-size:14px;cursor:pointer;font-family:"DM Sans",sans-serif;transition:opacity .2s;min-height:44px}
+#compose-submit:hover{opacity:.85}
+#compose-submit:disabled{opacity:.4;cursor:not-allowed}
+#compose-cancel{background:none;border:1px solid var(--border);border-radius:20px;padding:10px 16px;font-size:14px;cursor:pointer;color:var(--text-2);font-family:"DM Sans",sans-serif;min-height:44px}
+.compose-uploading{font-size:13px;color:var(--text-3);text-align:center;padding:8px 0}
+
+/* ═══ TOASTS ════════════════════════════════════════════ */
+#toast-host{position:fixed;top:70px;right:16px;z-index:400;display:flex;flex-direction:column;gap:8px;pointer-events:none;max-width:300px}
+.toast{background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:10px 14px;font-size:13px;line-height:1.5;box-shadow:var(--shadow-m);pointer-events:auto;animation:toastIn .25s ease;display:flex;align-items:flex-start;gap:8px}
+@keyframes toastIn{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:translateX(0)}}
+.toast.out{animation:toastOut .25s ease forwards}
+@keyframes toastOut{to{opacity:0;transform:translateX(10px)}}
+.toast-icon{flex-shrink:0;font-size:16px}
+.toast-body{flex:1}
+.toast-msg{color:var(--text-2)}
+.toast-why{color:var(--text-3);font-size:12px;margin-top:2px}
+.toast-action{color:var(--mauve);cursor:pointer;font-size:12px;font-weight:500;margin-top:4px;display:block;text-decoration:underline}
+.toast.error{background:#fdf0ee;border-color:#e0b8b0}
+.toast.error .toast-msg{color:#8a3a2a}
+.toast.success{background:#eef5f0;border-color:#b0d8b8}
+.toast.success .toast-msg{color:#2a6a3a}
+.toast.info{background:var(--mauve-lt);border-color:#d0c0e0}
+.toast.info .toast-msg{color:var(--mauve)}
+.toast.family{background:var(--gold-lt);border-color:#e0c898;cursor:pointer}
+.toast.family .toast-msg{color:#7a5010}
+
+/* ═══ SAVED PANEL ════════════════════════════════════════ */
+.saved-item{background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:11px 13px;display:flex;gap:10px;align-items:flex-start;margin-bottom:8px}
+.saved-text{flex:1;font-size:13px;color:var(--text-2);line-height:1.55}
+.saved-rm{background:none;border:none;color:var(--text-3);cursor:pointer;font-size:18px;padding:0;min-width:36px;min-height:36px;display:flex;align-items:center;justify-content:center}
+#saved-empty{text-align:center;color:var(--text-3);font-size:14px;padding:24px 0}
+.export-btn{display:block;margin:12px auto 0;background:none;border:1px solid var(--border);border-radius:20px;padding:7px 16px;font-size:13px;cursor:pointer;color:var(--text-2);font-family:"DM Sans",sans-serif}
+
+/* ═══ VIBE PANEL ═════════════════════════════════════════ */
+.vibe-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.vibe-chip{display:flex;align-items:center;gap:7px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:7px 14px;font-size:13px;cursor:pointer;color:var(--text-2);transition:all .15s;-webkit-tap-highlight-color:transparent;min-height:40px}
+.vibe-chip:hover{background:var(--bg)}
+.vibe-chip.sel{border-color:var(--mauve);color:var(--mauve);background:var(--mauve-lt)}
+.vibe-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+
+/* ═══ PHOTO GALLERY MODAL ═══════════════════════════════ */
+#gallery-modal,#profile-modal,#photo-lightbox{position:fixed;inset:0;background:rgba(30,26,22,.7);z-index:600;display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto}
+#gallery-modal.open,#profile-modal.open,#photo-lightbox.open{display:flex}
+.modal-box{background:var(--surface);border-radius:var(--r);padding:20px;width:100%;max-width:660px;box-shadow:var(--shadow-m);animation:slideUp .25s ease;margin:auto}
+.modal-h{font-family:"Lora",serif;font-size:17px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+.modal-close{background:none;border:none;color:var(--text-3);cursor:pointer;font-size:22px;padding:4px;min-width:36px;min-height:36px;display:flex;align-items:center;justify-content:center}
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.photo-thumb{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;cursor:pointer;transition:transform .15s;background:var(--border-soft)}
+.photo-thumb:hover{transform:scale(1.03)}
+.gallery-empty{text-align:center;color:var(--text-3);padding:32px;font-size:14px}
+#lightbox-img{max-width:100%;max-height:80vh;border-radius:var(--rs);display:block;margin:auto}
+#lightbox-close{position:fixed;top:16px;right:16px;background:rgba(0,0,0,.5);color:#fff;border:none;border-radius:50%;width:36px;height:36px;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center}
+.profile-post{border-bottom:1px solid var(--border-soft);padding:12px 0}
+.profile-post:last-child{border-bottom:none}
+.profile-empty{text-align:center;color:var(--text-3);padding:24px;font-size:14px}
+
+/* ═══ ADMIN PANEL ════════════════════════════════════════ */
+#admin-panel{background:var(--surface);border:2px solid var(--rose);border-radius:var(--r);padding:18px 20px;margin-bottom:14px;display:none}
+#admin-panel.open{display:block}
+.admin-h{font-family:"Lora",serif;font-size:15px;font-weight:600;color:var(--rose);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.flag-item{background:var(--rose-lt);border:1px solid #e0b8c0;border-radius:var(--rs);padding:12px;margin-bottom:8px}
+.flag-meta{font-size:12px;color:var(--text-3);margin-bottom:6px}
+.flag-content{font-size:14px;color:var(--text-2);margin-bottom:8px;line-height:1.5}
+.flag-actions{display:flex;gap:8px}
+.admin-del-btn{background:var(--rose);color:#fff;border:none;border-radius:20px;padding:6px 14px;font-size:12px;cursor:pointer;font-family:"DM Sans",sans-serif;min-height:36px}
+.admin-dismiss-btn{background:none;border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:12px;cursor:pointer;color:var(--text-2);font-family:"DM Sans",sans-serif;min-height:36px}
+.flags-empty{text-align:center;color:var(--text-3);font-size:14px;padding:16px}
+
+/* ═══ SETTINGS PANEL ═════════════════════════════════════ */
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border-soft)}
+.settings-row:last-child{border-bottom:none}
+.settings-label{font-size:14px;color:var(--text-2)}
+.settings-sub{font-size:12px;color:var(--text-3);margin-top:2px}
+.toggle-btn{background:var(--border);border:none;border-radius:20px;width:44px;height:26px;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
+.toggle-btn.on{background:var(--mauve)}
+.toggle-knob{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.toggle-btn.on .toggle-knob{transform:translateX(18px)}
+.settings-danger{color:var(--rose);font-size:13px;cursor:pointer;text-decoration:underline;display:block;text-align:center;margin-top:14px;background:none;border:none;font-family:"DM Sans",sans-serif}
+
+/* ═══ OFFLINE INDICATOR ══════════════════════════════════ */
+#offline-bar{background:#f5f0e8;border-bottom:1px solid #d8c8a8;padding:7px 16px;font-size:13px;color:#7a6840;text-align:center;display:none;position:sticky;top:57px;z-index:190}
+#offline-bar.vis{display:block}
+
+/* ═══ SKELETON ══════════════════════════════════════════ */
+.skeleton{background:linear-gradient(90deg,var(--border-soft) 25%,var(--border) 50%,var(--border-soft) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px;height:14px;margin-bottom:8px}
+@keyframes shimmer{from{background-position:200%}to{background-position:-200%}}
+
+/* ═══ RESPONSIVE ════════════════════════════════════════ */
+@media(max-width:480px){
+  .tb-btn span.tb-label{display:none}
+  #compose-panel{right:10px;left:10px;width:auto}
+  .photo-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(min-width:768px){
+  #fab{right:calc(50% - 340px + 18px)}
+  #compose-panel{right:calc(50% - 340px + 18px)}
+  #toast-host{right:calc(50% - 340px + 16px)}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ LOADING ══════════════════════════════════════════ -->
+<div id="loading">
+  <span class="load-icon">🌿</span>
+  <span class="load-text">Getting your morning ready…</span>
+</div>
+
+<!-- ═══ BANNERS ══════════════════════════════════════════ -->
+<div id="conn-banner">📡 Family posts are temporarily unavailable — connection issue. Your feed still works. <span style="text-decoration:underline;cursor:pointer" onclick="retryConnection()">Retry</span></div>
+<div id="admin-banner">🛡 Admin mode is on — you can delete any post. <span style="text-decoration:underline;cursor:pointer" onclick="toggleAdminMode(false)">Turn off</span></div>
+<div id="cfg-banner">⚙️ App not fully configured yet — family features need setup. <a href="#" onclick="showPanel('settings');return false" style="color:#6a5010;text-decoration:underline">See Settings</a></div>
+<div id="offline-bar">📵 You're offline — family posts aren't loading. Your content still works. You'll reconnect automatically.</div>
+<div id="version-banner" onclick="location.reload()">✨ A new version is available — tap to refresh</div>
+
+<!-- ═══ AUTH OVERLAY ═════════════════════════════════════ -->
+<div id="auth-overlay">
+  <div id="auth-box">
+
+    <!-- Step 1: Welcome + Name -->
+    <div class="auth-step active" id="as-1">
+      <span class="auth-icon">🌿</span>
+      <div class="auth-h">Welcome. This is your space.</div>
+      <div class="auth-sub">A calm corner for you and the people you love. Just yours.</div>
+      <label class="auth-label">What should we call you?</label>
+      <input class="auth-input" id="auth-name" placeholder="Your first name" type="text" autocomplete="given-name">
+      <label class="auth-label">Your email</label>
+      <input class="auth-input" id="auth-email" placeholder="you@email.com" type="email" inputmode="email" autocomplete="email">
+      <div class="auth-error" id="auth-err-1"></div>
+      <button class="auth-btn" onclick="authStep1Submit()">Send my sign-in link →</button>
+      <div class="resend-row" id="resend-row" style="display:none">
+        Didn't get it? Check your spam folder first.
+        <span class="resend-link" onclick="authResend()">Send again</span>
+      </div>
+    </div>
+
+    <!-- Step 2: Check email -->
+    <div class="auth-step" id="as-2">
+      <span class="auth-icon">📬</span>
+      <div class="auth-h">Check your email</div>
+      <div class="auth-sub" id="as-2-sub">We sent a sign-in link to <strong id="sent-to"></strong>.<br><br>Tap the link in that email and you'll be brought right back here. Check your spam folder if you don't see it — the email comes from <strong>Your Family App</strong>.</div>
+      <div class="auth-success vis">💡 The link works on the device you tap it from. If you tap it on a different device, sign in there instead.</div>
+      <div class="auth-error" id="auth-err-2"></div>
+      <div class="resend-row">
+        Didn't arrive after a couple minutes?
+        <span class="resend-link" id="resend-timer">Resend in 60s</span>
+      </div>
+    </div>
+
+    <!-- Step 3: Not authorized -->
+    <div class="auth-step" id="as-3">
+      <span class="auth-icon">🔒</span>
+      <div class="auth-h">Private family space</div>
+      <div class="auth-sub">This app is only open to invited family members. The email you used isn't on the list yet.<br><br>Ask whoever sent you this link to add your email address, then try again.</div>
+      <button class="auth-btn" onclick="authReset()">Try a different email</button>
+    </div>
+
+    <!-- Step 4: Optional Supabase setup (admin only) -->
+    <div class="auth-step" id="as-4">
+      <span class="auth-icon">👨‍👩‍👧‍👦</span>
+      <div class="auth-h">Connect your family</div>
+      <div class="auth-sub">Add your Supabase credentials to enable family posts, photos, and real-time updates. Everything else works without this.</div>
+      <details class="setup-note">
+        <summary>How to get these (5 min)</summary>
+        <ol>
+          <li>Go to supabase.com → New Project</li>
+          <li>Settings → API → copy Project URL and anon/public key</li>
+          <li>Run the SQL from SETUP.md in the SQL Editor</li>
+        </ol>
+      </details>
+      <label class="auth-label">Supabase Project URL</label>
+      <input class="auth-input" id="cfg-url" placeholder="https://xyz.supabase.co" type="url">
+      <label class="auth-label">Supabase Anon Key</label>
+      <input class="auth-input" id="cfg-key" placeholder="eyJ..." type="password">
+      <button class="auth-btn" onclick="saveCfgAndFinish()">Save & Continue →</button>
+      <span class="auth-skip" onclick="skipCfg()">Skip — set up later in Settings</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ TOPBAR ════════════════════════════════════════════ -->
+<div id="topbar">
+  <span class="tb-name" id="tb-name">✦</span>
+  <span class="tb-clock" id="tb-clock"></span>
+  <div class="tb-gap"></div>
+  <button class="tb-btn" id="btn-moments" onclick="togglePanel('moments')">🌿 <span class="tb-label">Today</span></button>
+  <button class="tb-btn" id="btn-family" onclick="togglePanel('family')" style="position:relative">
+    📸 <span class="tb-label">Family</span>
+    <span class="notif-dot" id="family-dot"></span>
+  </button>
+  <button class="tb-btn" id="btn-saved" onclick="togglePanel('saved')">
+    🔖 <span class="tb-label">Saved</span>
+    <span class="tb-badge" id="saved-badge"></span>
+  </button>
+  <button class="tb-btn" id="btn-settings" onclick="togglePanel('settings')">
+    ⚙️
+    <span class="tb-badge" id="flags-badge"></span>
+  </button>
+</div>
+
+<!-- ═══ PANEL HOST ════════════════════════════════════════ -->
+<div class="panel-host">
+
+  <!-- Today's Moments panel -->
+  <div class="panel" id="panel-moments">
+    <div class="panel-h">🌿 Today's Moments</div>
+    <div id="moments-panel-body"></div>
+  </div>
+
+  <!-- Family panel -->
+  <div class="panel" id="panel-family">
+    <div class="panel-h">📸 Family Photos</div>
+    <div id="gallery-thumbs"></div>
+    <button class="export-btn" style="margin-top:8px" onclick="openGallery()">Open full gallery →</button>
+  </div>
+
+  <!-- Saved panel -->
+  <div class="panel" id="panel-saved">
+    <div class="panel-h">🔖 Saved Items</div>
+    <div id="saved-list"></div>
+    <div id="saved-empty" style="display:none"></div>
+    <button class="export-btn" id="export-btn" style="display:none" onclick="exportSaved()">Export as text file</button>
+  </div>
+
+  <!-- Vibe panel -->
+  <div class="panel" id="panel-vibe">
+    <div class="panel-h">🎨 Vibe</div>
+    <div class="vibe-row" id="vibe-row"></div>
+  </div>
+
+  <!-- Settings panel -->
+  <div class="panel" id="panel-settings">
+    <div class="panel-h">⚙️ Settings</div>
+    <div id="settings-body"></div>
+  </div>
+
+</div>
+
+<!-- ═══ MAIN ══════════════════════════════════════════════ -->
+<main>
+
+  <!-- Hero -->
+  <div id="hero">
+    <span id="hero-icon">🌅</span>
+    <div id="greeting">Good morning</div>
+    <div id="hero-date"></div>
+    <div id="weather-pill"><span id="weather-text">Fetching weather…</span></div>
+    <div id="new-posts-line" onclick="scrollToFamily()"></div>
+  </div>
+
+  <!-- Birthday card (shows on birthdays from CFG) -->
+  <div id="birthday-card">
+    <div id="birthday-text"></div>
+  </div>
+
+  <!-- Mood check-in -->
+  <div id="mood-row">
+    <button class="mood-btn" data-mood="good"  onclick="setMood('good')" title="Good"  aria-label="Feeling good">🌱</button>
+    <button class="mood-btn" data-mood="ok"    onclick="setMood('ok')"   title="OK"    aria-label="Feeling okay">🌤</button>
+    <button class="mood-btn" data-mood="rough" onclick="setMood('rough')" title="Rough" aria-label="Feeling rough">🌧</button>
+  </div>
+
+  <!-- Today's Moments inline -->
+  <div id="moments-inline">
+    <div class="moments-header" onclick="toggleMomentsInline()" aria-expanded="false" role="button" aria-controls="moments-body">
+      <span class="moments-title">🌿 Today's Moments</span>
+      <span class="moments-preview" id="moments-preview"></span>
+      <span class="moments-chevron" id="moments-chevron">▼</span>
+    </div>
+    <div id="moments-body"></div>
+  </div>
+
+  <!-- Admin panel (shown when admin mode on) -->
+  <div id="admin-panel">
+    <div class="admin-h">🛡 Admin — Flagged Posts</div>
+    <div id="flags-list"></div>
+  </div>
+
+  <!-- Feed -->
+  <div class="sec-label">Today's Mix</div>
+  <div id="feed"></div>
+
+</main>
+
+<!-- ═══ FAB + COMPOSE ═════════════════════════════════════ -->
+<button id="fab" onclick="toggleCompose()" aria-label="Share with family">
+  <span>📸</span><span>Share with family</span>
+</button>
+
+<div id="compose-panel" role="dialog" aria-label="Share with family">
+  <div class="compose-h">Share something ✦</div>
+  <div class="template-row" id="tmpl-row"></div>
+  <textarea id="compose-text" placeholder="A win, a moment, a thought…" maxlength="500" aria-label="Post text"></textarea>
+  <div class="compose-file-row">
+    <label class="compose-photo-lbl" for="compose-photo">📷 Add a photo</label>
+    <input id="compose-photo" type="file" accept="image/*" onchange="onPhotoSelected(this)">
+  </div>
+  <div id="compose-preview">
+    <img id="compose-img" src="" alt="Photo preview">
+    <button class="rm-photo" onclick="removePhoto()" aria-label="Remove photo">×</button>
+  </div>
+  <div class="compose-uploading" id="compose-uploading" style="display:none">⏳ Preparing your photo…</div>
+  <div class="compose-actions">
+    <button id="compose-cancel" onclick="toggleCompose()">Cancel</button>
+    <button id="compose-submit" onclick="submitPost()" disabled>Post ✦</button>
+  </div>
+</div>
+
+<!-- ═══ TOAST HOST ════════════════════════════════════════ -->
+<div id="toast-host" aria-live="polite" aria-atomic="false"></div>
+
+<!-- ═══ MODALS ════════════════════════════════════════════ -->
+<div id="gallery-modal" role="dialog" aria-label="Family photos">
+  <div class="modal-box">
+    <div class="modal-h">
+      📸 Family Photos
+      <button class="modal-close" onclick="closeModal('gallery-modal')" aria-label="Close">×</button>
+    </div>
+    <div class="photo-grid" id="gallery-grid"></div>
+    <div class="gallery-empty" id="gallery-empty" style="display:none">No photos yet — share one with the button below!</div>
+  </div>
+</div>
+
+<div id="profile-modal" role="dialog" aria-label="Family member posts">
+  <div class="modal-box">
+    <div class="modal-h">
+      <span id="profile-title">Posts</span>
+      <button class="modal-close" onclick="closeModal('profile-modal')" aria-label="Close">×</button>
+    </div>
+    <div id="profile-posts"></div>
+  </div>
+</div>
+
+<div id="photo-lightbox" role="dialog" aria-label="Photo viewer" onclick="closeModal('photo-lightbox')">
+  <img id="lightbox-img" src="" alt="Full size photo" onclick="event.stopPropagation()">
+  <button id="lightbox-close" onclick="closeModal('photo-lightbox')" aria-label="Close photo">×</button>
+</div>
+
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// CONFIG — Paste your credentials here before hosting
+// ═══════════════════════════════════════════════════════════
+const CFG = {
+  supabaseUrl:  '',          // https://xyz.supabase.co
+  supabaseKey:  '',          // your anon/public key
+  aiWorkerUrl:  '',          // your Cloudflare Worker URL
+  adminEmail:   '',          // your email address
+  appVersion:   '1.0.0',
+  // Special dates — format: 'MM-DD'
+  // { date:'01-15', name:'Dad', emoji:'🎂', msg:"Happy birthday, Dad! 🎂" }
+  specialDates: [],
+};
+// ═══════════════════════════════════════════════════════════
+
+// ═══ CONTENT LIBRARY ════════════════════════════════════════
+const LIB = {
+
+facts: [
+  {e:'🦦', t:'Sea otters hold hands while sleeping so they don't drift apart from each other.'},
+  {e:'🐄', t:'Cows have best friends and show measurable signs of stress when separated from them.'},
+  {e:'🌳', t:'Trees in a forest share nutrients through underground fungal networks — scientists call it the Wood Wide Web.'},
+  {e:'🐘', t:'Baby elephants suck their trunks for comfort, just the way human babies suck their thumbs.'},
+  {e:'🎵', t:'Humpback whales compose new songs that spread across ocean populations like hit records spreading across radio stations.'},
+  {e:'🐙', t:'Octopuses have three hearts, blue blood, and can edit their own RNA in real time to adapt to temperature changes.'},
+  {e:'🍯', t:'Honey found in 3,000-year-old Egyptian tombs is still perfectly edible. Honey essentially never expires.'},
+  {e:'🌧', t:'The word for the smell of rain on dry earth is petrichor — coined in 1964 by two Australian scientists.'},
+  {e:'🐧', t:'Gentoo penguins propose to their mates with a pebble. If she accepts, they use it to build their nest together.'},
+  {e:'🌻', t:'Young sunflowers track the sun across the sky all day. Once fully grown, they permanently face east to warm bees each morning.'},
+  {e:'🐬', t:'Dolphins give each other unique names — individual whistle signatures they use to call out to specific friends.'},
+  {e:'🧠', t:'Your brain generates enough electrical activity while you sleep to power a small LED light.'},
+  {e:'🦋', t:'A caterpillar essentially dissolves into a primordial soup inside its chrysalis before reassembling itself as a butterfly.'},
+  {e:'🌊', t:'The ocean produces over half the world's oxygen — more than all the world's rainforests combined.'},
+  {e:'🐺', t:'Wolves' howls are so distinct that researchers can identify individual wolves by their unique howl, the way we recognize voices.'},
+  {e:'🌙', t:'The moon is slowly drifting away from Earth — about 3.8 centimeters per year, roughly the rate your fingernails grow.'},
+  {e:'🐝', t:'A single honeybee will make only about 1/12 of a teaspoon of honey in its entire lifetime.'},
+  {e:'🎋', t:'Some bamboo species grow nearly a meter per day — fast enough that you can actually watch them grow if you sit still long enough.'},
+],
+
+riddles: [
+  {q:'What has hands but can't clap?', a:'A clock.'},
+  {q:'The more you take, the more you leave behind. What am I?', a:'Footsteps.'},
+  {q:'What gets wetter the more it dries?', a:'A towel.'},
+  {q:'I have cities but no houses, forests but no trees, water but no fish. What am I?', a:'A map.'},
+  {q:'What can fill a room but takes up no space?', a:'Light.'},
+  {q:'I'm tall when I'm young and short when I'm old. What am I?', a:'A candle.'},
+  {q:'What has one eye but can't see?', a:'A needle.'},
+  {q:'What runs but never walks, has a mouth but never talks?', a:'A river.'},
+  {q:'If you drop me I'm sure to crack, but give me a smile and I'll always smile back.', a:'A mirror.'},
+  {q:'What belongs to you but others use it more than you do?', a:'Your name.'},
+],
+
+joy: [
+  {p:'Look up and find the highest thing you can see right now.', w:'Shifting your gaze upward is a gentle nervous system reset — it changes your posture and your perspective simultaneously.'},
+  {p:'Notice the temperature of the air on your forearms right now.', w:'Sensory grounding brings you out of your head and into the present moment in under five seconds.'},
+  {p:'Find something in the room that's a color you haven't thought about today.', w:'Noticing something specific is a tiny act of presence. It interrupts autopilot.'},
+  {p:'Take one sip of whatever you're drinking and actually taste it.', w:'Single-sense focus is a micro-meditation. One sip done intentionally counts.'},
+  {p:'Name three sounds you can hear right now without moving.', w:'Sound is one of the fastest grounding anchors. You can do it anywhere, anytime.'},
+  {p:'Unclench your jaw. Let your tongue drop from the roof of your mouth.', w:'Most people hold tension here all day without noticing. Releasing it often creates an immediate sense of ease.'},
+  {p:'Look outside and find one thing that's moving.', w:'The visual system relaxes when tracking natural, unpredictable movement — birds, leaves, clouds.'},
+  {p:'Think of someone nearby — literally or in memory — and send them a quiet good wish.', w:'Even a private moment of warmth for someone else reliably shifts your own baseline.'},
+  {p:'Notice one thing that's exactly where you left it last time.', w:'Small continuity — things being where they should be — is a subtle but real form of comfort.'},
+  {p:'Put your feet flat on the floor and feel the weight of them.', w:'Physical grounding is one of the fastest routes to presence. Your feet are always available.'},
+  {p:'Take one breath that's slower than your last one.', w:'You can't slow your whole nervous system at once, but you can slow one breath. That's enough to begin.'},
+  {p:'Find something beautiful in your immediate environment and look at it for ten seconds.', w:'Beauty asks nothing of you. Noticing it is a form of rest.'},
+],
+
+teasers: [
+  {q:'If you divide 30 by half and add 10, what do you get?', a:'70. (30 ÷ ½ = 60, plus 10 = 70). The trick is that dividing by half means multiplying by 2.'},
+  {q:'A rooster lays an egg on a rooftop. Which way does it roll?', a:'Roosters don't lay eggs — that's a hen's job.'},
+  {q:'How many months of the year have 28 days?', a:'All 12 of them. Every month has at least 28 days.'},
+  {q:'You're running a race and pass the person in 2nd place. What place are you in now?', a:'2nd place. You passed the person who was 2nd — you didn't pass 1st.'},
+  {q:'A man walks into a restaurant and orders albatross soup. He takes one sip and goes home and kills himself. Why?', a:'He had been stranded on an island and his friend told him the "albatross soup" they were eating was real. It wasn't. He understood.'},
+  {q:'What 5-letter word becomes shorter when you add two letters to it?', a:'Short. (Short + er = Shorter)'},
+  {q:'What can you hold in your right hand but never in your left hand?', a:'Your left hand.'},
+  {q:'The more you have of it, the less you see. What is it?', a:'Darkness.'},
+  {q:'You're in a dark room with a candle, a wood stove, and a gas lamp. You only have one match. What do you light first?', a:'The match.'},
+],
+
+wellnessMorning: [
+  'Before switching to your first task, take three slow breaths. It signals your brain the night is over and something intentional is beginning.',
+  'If you catch yourself planning three steps ahead before you've started step one, name what's literally in front of you right now.',
+  'One thing on your mental list that's been there more than a week: either do it in the next 10 minutes or formally decide to drop it.',
+  'Drink a full glass of water before you open a single app today. Your brain woke up dehydrated.',
+  'The feeling of being almost-ready is usually just activation, not unpreparedness. You're more ready than you think.',
+  'Defined scope beats extra effort almost every time. What's the done-enough version of today's most important task?',
+  'You don't have to earn rest by being productive first. Rest is part of the work.',
+  'If something has been on your list for three days, it either needs to get done now or needs to get a real future date — not just move forward again.',
+],
+
+wellnessEvening: [
+  'What you didn't finish today didn't ruin today. It's just still there, waiting patiently, not judging you.',
+  'If you're tired but your brain is still running, the solution is usually less stimulation — not more willpower. Put something down.',
+  'Tonight: pick one important thing for tomorrow and write it somewhere visible. Future you will feel the difference.',
+  'Rest that's genuinely restful looks different for every person. What would actually recharge you right now?',
+  'You don't have to be productive in the evening to justify a good day. The day already happened.',
+  'If your body wants to slow down and your brain is still going, your brain can wait. Your body knows something.',
+  'The most useful thing you can do for tomorrow is protect your sleep tonight.',
+  'You showed up today. That counts, even on the days it doesn't feel like enough.',
+],
+
+articles: [
+  {title:'The Community Garden Reviving a Whole Neighborhood', desc:'A once-empty lot now feeds dozens of families and has become the place where neighbors who never spoke actually know each other.', url:'https://www.goodgoodgood.co/', src:'Good Good Good'},
+  {title:'High Schoolers Built a Food Rescue Program Nobody Asked For', desc:'Students started redirecting cafeteria leftovers to local shelters on their own initiative. It's now operating in five schools.', url:'https://www.goodnewsnetwork.org/', src:'Good News Network'},
+  {title:'Scientists Discovered Trees Warn Each Other', desc:'New research confirms that trees send chemical signals through the air and fungal networks to warn neighbors of insect attacks.', url:'https://www.theguardian.com/environment', src:'The Guardian'},
+  {title:'Volunteers Restored 40 Miles of Trail After the Storms', desc:'Weekend crews showed up for months without funding or press. Just people who wanted the paths back.', url:'https://www.goodgoodgood.co/', src:'Good Good Good'},
+  {title:'The Return of the 20-Minute Neighborhood', desc:'Cities redesigning for walkability aren't just more convenient — residents show significantly higher wellbeing and fewer chronic health issues.', url:'https://www.optimistdaily.com/', src:'Optimist Daily'},
+  {title:'The Quiet Revolution of Small Libraries', desc:'Book exchange boxes, free libraries, and community shelves are quietly becoming some of the most trusted civic spaces in towns everywhere.', url:'https://www.theatlantic.com/', src:'The Atlantic'},
+  {title:'The Farmer Who Turned a Dead Field Into a Forest', desc:'After decades of industrial farming stripped the soil, one farmer spent 15 years returning 500 acres to native woodland.', url:'https://www.theguardian.com/environment', src:'The Guardian'},
+  {title:'Teenagers Are Writing Letters to Elderly Neighbors', desc:'A letter-writing program started by one 14-year-old has now connected thousands of young people with isolated older adults.', url:'https://www.goodnewsnetwork.org/', src:'Good News Network'},
+],
+
+words: [
+  {w:'Sonder', ph:'/ˈsɒn.dər/', pos:'noun', d:'The sudden realization that each person you pass has a life as vivid and complex as your own — with their own routines, worries, and quiet joys.', ex:'She was hit by a wave of sonder watching the airport crowd stream past.'},
+  {w:'Petrichor', ph:'/ˈpet.rɪ.kɔːr/', pos:'noun', d:'The pleasant, earthy scent that follows rain on dry ground — from the Greek petra (stone) and ichor (the fluid in the veins of the gods).', ex:'The petrichor from last night's storm still hung in the garden all morning.'},
+  {w:'Hiraeth', ph:'/ˈhɪər.aɪθ/', pos:'noun (Welsh)', d:'A longing for a home to which you cannot return, or that perhaps never quite existed — a deep homesickness with a sense of grief mixed in.', ex:'She felt a strange hiraeth for a version of childhood that lived only in memory.'},
+  {w:'Halcyon', ph:'/ˈhæl.si.ən/', pos:'adjective', d:'Denoting a period of time remembered as idyllically happy, golden, and peaceful — often used of the past.', ex:'Those halcyon summer weeks came back to her whenever she smelled salt air.'},
+  {w:'Liminal', ph:'/ˈlɪm.ɪ.nəl/', pos:'adjective', d:'Relating to a transitional moment between two states — a threshold where you've left something but not yet arrived at what's next.', ex:'3am has always felt like a liminal hour — belonging neither to night nor to day.'},
+  {w:'Equanimity', ph:'/ˌek.wəˈnɪm.ɪ.ti/', pos:'noun', d:'Mental calm and composure, especially in difficult situations — not the absence of feeling, but the steady ground beneath it.', ex:'She moved through the difficult week with quiet equanimity.'},
+  {w:'Ineffable', ph:'/ɪˈnef.ə.bəl/', pos:'adjective', d:'Too great, beautiful, or strange to be adequately expressed in words — beyond what language can fully reach.', ex:'There was an ineffable quality to that particular morning light she could never photograph.'},
+  {w:'Sillage', ph:'/siˈjɑːʒ/', pos:'noun (French)', d:'The trail a person leaves in their wake — specifically the scent that lingers in the air after someone has passed through a space.', ex:'She knew her grandmother had just been in the room from the sillage left behind.'},
+  {w:'Kairos', ph:'/ˈkaɪ.rɒs/', pos:'noun (Greek)', d:'A moment of indeterminate time when circumstances align and something significant becomes possible — as opposed to ordinary chronological time.', ex:'There was a kairos in that conversation neither of them had expected.'},
+  {w:'Respite', ph:'/ˈres.pɪt/', pos:'noun', d:'A short period of rest or relief from something difficult or demanding — not a full stop, but a necessary pause.', ex:'Those first ten quiet minutes of morning were her daily respite before everything began.'},
+  {w:'Convivial', ph:'/kənˈvɪv.i.əl/', pos:'adjective', d:'Friendly, lively, and warm — relating to the particular pleasure of good company, shared food, and open conversation.', ex:'The kitchen had a convivial energy on Sunday mornings that the rest of the week never quite matched.'},
+  {w:'Verdant', ph:'/ˈvɜː.dənt/', pos:'adjective', d:'Richly green with growing plants; fresh and flourishing — often used to describe landscapes that feel alive with growth.', ex:'The valley below was impossibly verdant after three weeks of rain.'},
+  {w:'Mirth', ph:'/mɜːθ/', pos:'noun', d:'Amusement and laughter — a warm, open, unguarded kind of joy that comes easily and invites others in.', ex:'The sound of the children's mirth drifting in from outside was the best thing about that afternoon.'},
+  {w:'Resilient', ph:'/rɪˈzɪl.i.ənt/', pos:'adjective', d:'Able to recover quickly from difficulty; capable of springing back into shape — not untouched by hardship, but not broken by it either.', ex:'What surprised her most was how resilient the garden turned out to be after the frost.'},
+],
+
+quotes: [
+  {q:'The day is coming in. Open the door.', a:'Naomi Shihab Nye'},
+  {q:'Start where you are. Use what you have. Do what you can.', a:'Arthur Ashe'},
+  {q:'Almost everything will work again if you unplug it for a few minutes, including you.', a:'Anne Lamott'},
+  {q:'You are allowed to be both a masterpiece and a work in progress simultaneously.', a:'Sophia Bush'},
+  {q:'Do less. Be more.', a:''},
+  {q:'Not all those who wander are lost.', a:'J.R.R. Tolkien'},
+  {q:'The quieter you become, the more you can hear.', a:'Ram Dass'},
+  {q:'Sometimes the most important thing in a whole day is the rest we take between two deep breaths.', a:'Etty Hillesum'},
+  {q:'Enough is a feast.', a:'Buddhist proverb'},
+  {q:'Tell me, what is it you plan to do with your one wild and precious life?', a:'Mary Oliver'},
+  {q:'You are not behind. You are exactly where you need to be.', a:''},
+  {q:'The day you plant the seed is not the day you eat the fruit.', a:''},
+  {q:'Rest is not a reward for finishing. Rest is part of the work.', a:''},
+  {q:'Small deeds done are better than great deeds planned.', a:'Peter Marshall'},
+  {q:'We are what we repeatedly do. Excellence then is not an act but a habit.', a:'Will Durant on Aristotle'},
+  {q:'Joy is not in things; it is in us.', a:'Richard Wagner'},
+  {q:'The best time to plant a tree was twenty years ago. The second best time is now.', a:'Chinese proverb'},
+  {q:'Your life is your practice.', a:'Susan Small'},
+  {q:'The cure for anything is salt water: sweat, tears, or the sea.', a:'Isak Dinesen'},
+  {q:'It always seems impossible until it's done.', a:'Nelson Mandela'},
+  {q:'In the end, what matters most is how well you lived and how well you loved.', a:''},
+  {q:'Inhale. Exhale. Repeat as needed.', a:''},
+  {q:'A small daily task, if it be really daily, will beat the labours of a spasmodic Hercules.', a:'Anthony Trollope'},
+  {q:'You don't have to be productive to be worthy of rest.', a:''},
+  {q:'The present moment always will have been.', a:''},
+  {q:'Courage is fear that has said its prayers.', a:'Dorothy Bernard'},
+  {q:'Whoever you are, no matter how lonely, the world offers itself to your imagination.', a:'Mary Oliver'},
+  {q:'What you do today is important because you are exchanging a day of your life for it.', a:''},
+  {q:'Simplicity is the ultimate sophistication.', a:'Leonardo da Vinci'},
+  {q:'The purpose of life is to live it, to taste experience to the utmost.', a:'Eleanor Roosevelt'},
+],
+
+nature: {
+  1:  ['Right now, millions of hibernating bats are tucked into caves — their hearts beating just once every four seconds, waiting for spring.',
+       'In January, chickadees hide seeds in thousands of different spots and can remember each location for up to a month.',
+       'The longest nights of winter are almost behind us. From here, each day is quietly, measurably longer than the last.'],
+  2:  ['Great horned owls are already sitting on eggs this month — incubating through snow and cold to give their owlets the longest possible growing season.',
+       'Somewhere today, a skunk is waking from semi-hibernation — one of the first animals to sense the shift toward spring before the snow has melted.',
+       'On February mornings, birdsong has already begun to change. Robins start singing before dawn when day length crosses a threshold only they can sense.'],
+  3:  ['Right now, monarch butterflies that overwintered in Mexico are beginning the journey north — following the milkweed as it grows, mile by mile.',
+       'March is when earthworms begin moving back toward the surface. Their tunneling will aerate the first spring soil before any gardener picks up a spade.',
+       'Somewhere today, a river is thawing. The sound of ice breaking up is one of the loudest things in nature — audible for miles on a quiet morning.'],
+  4:  ['Hummingbirds are arriving this month from as far as Central America — navigating thousands of miles alone, each one weighing less than a nickel.',
+       'The wood frog is one of the only animals that can survive being frozen solid. Right now it's thawing out and calling from ponds in the forest.',
+       'This is peak migration season. Billions of birds are moving through the night sky right now, navigating by stars you can't see yet.'],
+  5:  ['Somewhere tonight, fireflies are lighting up for the first time this year — their flash patterns unique to each species, like a first name.',
+       'Baby rabbits are born this month blind and furless in a shallow ground nest. In three weeks they'll be completely independent.',
+       'The forest floor is at its brightest right now — wildflowers bloom before the tree canopy closes and cuts off the light for another year.'],
+  6:  ['The summer solstice is approaching — the moment when the earth's tilt reaches its maximum and then, imperceptibly, begins returning.',
+       'Young foxes born in early spring are now learning to hunt. Their parents call to them with a sound like a short, sharp bark.',
+       'Dragonflies emerging this month spent up to five years as underwater larvae before their first flight today.'],
+  7:  ['At the height of summer, a hummingbird's heart beats 1,200 times per minute during flight — and slows to 50 beats per minute at rest.',
+       'Firefly populations peak this month. Each species flashes a distinct pattern — males signal from the air, females respond from the ground.',
+       'The Milky Way is most visible in July and August. On a clear night away from city lights, you're looking at 100 billion stars.'],
+  8:  ['Monarch butterflies are beginning to sense the shortening days. The generation born this month will fly 3,000 miles to Mexico — a journey none of their ancestors ever made before.',
+       'The Perseid meteor shower peaks this month — Earth passing through the debris trail of a comet that last visited our inner solar system in 1992.',
+       'Shorebirds are already beginning fall migration — some departing Alaska for South America, flying 7,000 miles without stopping.'],
+  9:  ['Somewhere today, a spider is riding a strand of silk on the wind — ballooning to a new territory on a breeze it can't see.',
+       'The autumnal equinox is near — a day of equal light and darkness before the long tilt toward winter. Every culture on earth has marked this moment.',
+       'Tree leaves aren't turning — the colors were always there, hidden beneath the green. As chlorophyll breaks down, what was always true becomes visible.'],
+  10: ['Monarch butterflies are completing one of the great migrations on earth right now — millions converging on a small mountain forest in central Mexico.',
+       'Bears are entering hyperphagia — eating up to 20,000 calories a day in preparation for hibernation. They can gain 30 pounds in a single week.',
+       'Migrating birds navigate by magnetic fields, star patterns, and landmarks simultaneously. A bird the weight of two quarters finds its way across continents.'],
+  11: ['The last migrating birds of the year are moving through right now. Some thrushes fly from Canada to the Caribbean in a single night.',
+       'Trees are not dying in November — they're entering suspended animation, pulling sugars and nutrients down to their roots for safekeeping.',
+       'The first hard frosts are transforming the soil — mycelium that fed trees all summer now begins its winter phase beneath your feet.'],
+  12: ['On the winter solstice, the earth's tilt reaches its maximum angle. From this moment, the days grow longer — almost imperceptibly at first, then unmistakably.',
+       'In the darkest weeks of December, starlings flock together for warmth at night — hundreds of birds sharing body heat against the cold.',
+       'Right now, thousands of miles of spawned salmon are decomposing into forest soil — their bodies feeding the trees, insects, and bears that will bloom next spring.'],
+},
+
+intentions: ['Present','Grounded','Curious','Enough','Open','Steady','Kind','Clear','Patient','Here','Breathing','Unhurried','Whole','Gentle'],
+
+top3Prompts: [
+  'What would make today feel complete — not perfect, just done enough?',
+  'If today goes well, what will have happened?',
+  'What's the one thing that, if you do it, makes everything else easier?',
+  'What does "done" look like for today?',
+  'What are the three things only you can do today?',
+  'At 9pm tonight, what three things will you be glad you did?',
+  'What would a sustainable version of today look like?',
+],
+
+notDoingPrompts: [
+  'What are you giving yourself permission to leave alone today?',
+  'What's on your list that can genuinely wait until tomorrow?',
+  'What would you stop doing today if you knew it was okay to?',
+  'What are you carrying that isn't yours to carry right now?',
+  'What can be good enough, rather than finished?',
+  'What would you let go of if you trusted things would be fine?',
+  'What's one thing you're not doing today — on purpose?',
+],
+
+gratitudePrompts: [
+  'What's one small thing that went right yesterday?',
+  'Who made something easier for you recently, even in a small way?',
+  'What's something in your daily life you rarely notice but would miss if it were gone?',
+  'What's one thing your body did for you today that you didn't have to ask it to do?',
+  'What made you feel like yourself recently?',
+  'What's a small pleasure you had this week that didn't cost anything?',
+  'What's something you're quietly proud of, even if no one else knows about it?',
+],
+
+endMessages: {
+  morning: {icon:'☀️', msg:'You've seen what there is to see. Go be in it.'},
+  midday:  {icon:'🌤', msg:'That's enough screen. Your afternoon is waiting.'},
+  evening: {icon:'🌙', msg:'Today happened. That's enough.'},
+  night:   {icon:'⭐', msg:'It's late. Everything else can wait until morning.'},
+},
+
+stretches: {
+  morning: {tag:'Morning Reset', steps:[
+    '10 slow shoulder rolls — forward 5, backward 5',
+    'Gentle neck stretch — tilt each side, hold 20 seconds',
+    'Forward fold — hang heavy, let gravity do the work',
+    'Arms overhead, full body stretch, 3 deep breaths',
+    '5 slow belly breaths — in through your nose, out through your mouth',
+  ]},
+  midday: {tag:'Midday Refresh', steps:[
+    'Stand up and shake out both hands for 10 seconds',
+    'Standing quad stretch — 30 seconds each side',
+    'Arm cross-body stretch — 20 seconds each side',
+    '15 calf raises, slow and controlled',
+    'Three slow neck rolls each direction — let your head be heavy',
+  ]},
+  evening: {tag:'Evening Wind-Down', steps:[
+    'Seated forward fold — let your back round gently, breathe into it',
+    'Figure-four stretch — 45 seconds each side',
+    'Supine spinal twist — knees to each side, arms wide',
+    '5 slow belly breaths — make the exhale longer than the inhale',
+    'Let your body get heavy. You're done for today.',
+  ]},
+},
+
+postTemplates: [
+  {emoji:'🎂', label:'Birthday',      text:'Happy birthday to '},
+  {emoji:'🌟', label:'Big news',      text:'Good news — '},
+  {emoji:'❤️', label:'Thinking of you', text:'Just thinking about you all. '},
+  {emoji:'📸', label:'Photo only',    text:''},
+],
+
+vibes: [
+  {id:'calm',    label:'Calm',    color:'#c8c0d8', filter:''},
+  {id:'cozy',    label:'Cozy',    color:'#d4b48c', filter:'sepia(.08) brightness(.99)'},
+  {id:'focused', label:'Focused', color:'#9aaabb', filter:'saturate(.88)'},
+  {id:'bright',  label:'Bright',  color:'#96c8a0', filter:'brightness(1.02) saturate(1.05)'},
+],
+
+avatarColors: ['#9b7fa0','#c4956a','#7da89c','#c47a8a','#6a8099','#a0907a','#8aaa7a','#aa8a7a','#7090b0','#b09060'],
+
+seasonalAccents: {
+  spring: {accent:'#7da89c', lt:'#eef5f3'},
+  summer: {accent:'#c4956a', lt:'#fdf3e8'},
+  autumn: {accent:'#b07840', lt:'#fdf0e0'},
+  winter: {accent:'#7a8faa', lt:'#eef2f7'},
+},
+
+};
+
+// ═══ STATE ══════════════════════════════════════════════════
+const S = {
+  user: null,           // {id, name, email, color, isAdmin}
+  sb: null,             // Supabase client
+  timeCtx: 'morning',  // morning|midday|evening|night
+  mood: null,           // good|ok|rough|null
+  vibe: 'calm',
+  seenCards: new Set(),
+  feedCards: [],
+  familyPosts: [],
+  savedItems: [],
+  hiddenModules: new Set(),
+  aiContent: null,
+  adminMode: false,
+  adminModeTimer: null,
+  composing: false,
+  composeFile: null,
+  activePanel: null,
+  lastVisit: null,
+  realtimeSub: null,
+  timerDur: 30,
+  timerRunning: false,
+  timerInterval: null,
+  timerRemaining: 30,
+  momentsMobileOpen: false,
+  online: true,
+  sbOk: false,
+  resendCooldown: 0,
+  resendInterval: null,
+  pendingDeleteId: null,
+  pendingDeleteTimer: null,
+  feedObserver: null,
+  allSignedUrls: {},   // postId -> {url, exp}
+};
+
+// ═══ UTILS ══════════════════════════════════════════════════
+const $  = id => document.getElementById(id);
+const ls = {
+  get: k => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
+  set: (k,v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) { showToast('error','💾','Storage full','Your notes couldn't be saved — your device storage is full. You can clear space in your phone settings.',null,6000); } },
+  del: k => localStorage.removeItem(k),
+};
+const rand  = arr => arr[Math.floor(Math.random() * arr.length)];
+const randN = (arr, n) => { const a = [...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a.slice(0,n); };
+const esc   = s => String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const today = () => new Date().toDateString();
+const dateKey = () => { const d=new Date(); return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`; };
+const timeAgo = ts => {
+  const d = (Date.now() - new Date(ts)) / 1000;
+  if(d < 60)    return 'just now';
+  if(d < 3600)  return Math.floor(d/60)+'m ago';
+  if(d < 86400) return Math.floor(d/3600)+'h ago';
+  return Math.floor(d/86400)+'d ago';
+};
+const getTimeCtx = () => {
+  const h = new Date().getHours();
+  if(h >= 5  && h < 12) return 'morning';
+  if(h >= 12 && h < 17) return 'midday';
+  if(h >= 17 && h < 22) return 'evening';
+  return 'night';
+};
+const getSeason = () => {
+  const m = new Date().getMonth() + 1;
+  if(m >= 3 && m <= 5)  return 'spring';
+  if(m >= 6 && m <= 8)  return 'summer';
+  if(m >= 9 && m <= 11) return 'autumn';
+  return 'winter';
+};
+const getMonthNature = () => LIB.nature[new Date().getMonth() + 1] || LIB.nature[1];
+const pruneSeenCards = () => {
+  const key = 'seen_'+dateKey();
+  const allKeys = Object.keys(localStorage).filter(k => k.startsWith('seen_') && k !== key);
+  allKeys.forEach(k => ls.del(k));
+};
+const getSeenIds = () => new Set(ls.get('seen_'+dateKey()) || []);
+const saveSeenIds = ids => ls.set('seen_'+dateKey(), [...ids]);
+const cardId = c => c.id || (c.type + '_' + (c.q||c.t||c.title||c.p||'').slice(0,20).replace(/\s/g,'_'));
+
+
+// ═══ TOAST SYSTEM ═══════════════════════════════════════════
+function showToast(type, icon, msg, why, action, dur=4500) {
+  const host = $('toast-host');
+  const t = document.createElement('div');
+  t.className = 'toast ' + type;
+  t.innerHTML = `
+    <span class="toast-icon" aria-hidden="true">${icon}</span>
+    <div class="toast-body">
+      <div class="toast-msg">${esc(msg)}</div>
+      ${why ? `<div class="toast-why">${esc(why)}</div>` : ''}
+      ${action ? `<span class="toast-action" role="button" tabindex="0">${esc(action.label)}</span>` : ''}
+    </div>`;
+  if(action) {
+    t.querySelector('.toast-action').addEventListener('click', action.fn);
+    t.querySelector('.toast-action').addEventListener('keydown', e => e.key==='Enter' && action.fn());
+  }
+  host.appendChild(t);
+  const remove = () => { t.classList.add('out'); setTimeout(() => t.remove(), 280); };
+  const timer = setTimeout(remove, dur);
+  t.addEventListener('click', () => { clearTimeout(timer); remove(); });
+  return { remove };
+}
+
+// ═══ CONNECTIVITY ═══════════════════════════════════════════
+function setOnline(val) {
+  S.online = val;
+  $('offline-bar').classList.toggle('vis', !val);
+  if(val && S.sb && !S.sbOk) retryConnection();
+}
+async function retryConnection() {
+  if(!S.sb) return;
+  try {
+    const { error } = await S.sb.from('family_posts').select('id').limit(1);
+    if(!error) {
+      S.sbOk = true;
+      $('conn-banner').classList.remove('vis');
+    }
+  } catch {}
+}
+function checkCfgPlaceholders() {
+  const hasUrl = CFG.supabaseUrl && !CFG.supabaseUrl.includes('xyz.supabase');
+  const hasKey = CFG.supabaseKey && CFG.supabaseKey.length > 20;
+  if(!hasUrl || !hasKey) {
+    const fromLs = ls.get('sb_url') && ls.get('sb_key');
+    if(!fromLs) $('cfg-banner').classList.add('vis');
+  }
+}
+
+// ═══ VERSION CHECK ═══════════════════════════════════════════
+function checkVersion() {
+  const stored = ls.get('app_version');
+  if(stored && stored !== CFG.appVersion) {
+    $('version-banner').classList.add('vis');
+  }
+  ls.set('app_version', CFG.appVersion);
+}
+
+// ═══ AUTH ════════════════════════════════════════════════════
+async function initAuth() {
+  // Check for PKCE code in URL
+  const params = new URLSearchParams(window.location.search);
+  const hash   = new URLSearchParams(window.location.hash.slice(1));
+
+  if(params.has('code') || hash.has('access_token')) {
+    showLoading('Signing you in…');
+    try {
+      if(!S.sb) await initSupabase(true);
+      if(S.sb) {
+        const { data, error } = await S.sb.auth.getSession();
+        if(data?.session) {
+          // Clean URL
+          history.replaceState({}, '', window.location.pathname);
+          await onAuthSuccess(data.session);
+          return;
+        } else if(error) {
+          hideLoading();
+          showAuthStep('as-1');
+          showAuthError('as-3');
+          return;
+        }
+      }
+    } catch(e) {
+      console.error('PKCE callback error:', e);
+    }
+    hideLoading();
+  }
+
+  // Check for expired link error
+  if(params.has('error') || hash.has('error')) {
+    hideLoading();
+    showAuthOverlay();
+    const errBox = $('auth-err-1');
+    errBox.textContent = 'That sign-in link has expired — for security, links only work for one hour. Enter your email below and we'll send a fresh one.';
+    errBox.classList.add('vis');
+    history.replaceState({}, '', window.location.pathname);
+    return;
+  }
+
+  // Check existing session
+  if(S.sb) {
+    try {
+      const { data: { session } } = await S.sb.auth.getSession();
+      if(session) {
+        await onAuthSuccess(session);
+        return;
+      }
+    } catch {}
+  }
+
+  // Check local setup
+  const localUser = ls.get('local_user');
+  if(localUser && localUser.name) {
+    S.user = localUser;
+    hideAuthOverlay();
+    return;
+  }
+
+  // Show setup
+  hideLoading();
+  showAuthOverlay();
+}
+
+function showAuthOverlay() { $('auth-overlay').classList.remove('hidden'); }
+function hideAuthOverlay() { $('auth-overlay').classList.add('hidden'); }
+function showAuthStep(id) {
+  document.querySelectorAll('.auth-step').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+}
+function showAuthError(stepId, msg) {
+  if(stepId === 'as-3') { showAuthStep('as-3'); return; }
+  const el = $('auth-err-' + stepId.replace('as-',''));
+  if(el && msg) { el.textContent = msg; el.classList.add('vis'); }
+}
+function clearAuthErrors() {
+  document.querySelectorAll('.auth-error').forEach(e => { e.textContent=''; e.classList.remove('vis'); });
+}
+
+async function authStep1Submit() {
+  clearAuthErrors();
+  const name  = $('auth-name').value.trim();
+  const email = $('auth-email').value.trim().toLowerCase();
+  if(!name) { $('auth-err-1').textContent='Please enter your name.'; $('auth-err-1').classList.add('vis'); return; }
+  if(!email || !email.includes('@')) { $('auth-err-1').textContent='Please enter a valid email address.'; $('auth-err-1').classList.add('vis'); return; }
+
+  ls.set('pending_name',  name);
+  ls.set('pending_email', email);
+
+  const btn = document.querySelector('#as-1 .auth-btn');
+  btn.disabled = true; btn.textContent = 'Sending…';
+
+  if(S.sb) {
+    try {
+      const { error } = await S.sb.auth.signInWithOtp({
+        email,
+        options: { emailRedirectTo: window.location.href, shouldCreateUser: true }
+      });
+      btn.disabled = false; btn.textContent = 'Send my sign-in link →';
+      if(error) {
+        $('auth-err-1').textContent = 'Couldn't send the link right now — this is usually a temporary issue. Please try again in a moment.';
+        $('auth-err-1').classList.add('vis');
+        return;
+      }
+    } catch(e) {
+      btn.disabled = false; btn.textContent = 'Send my sign-in link →';
+      $('auth-err-1').textContent = 'We're having trouble reaching the sign-in service right now. Check your connection and try again.';
+      $('auth-err-1').classList.add('vis');
+      return;
+    }
+  } else {
+    // No Supabase — local mode
+    const user = { id: crypto.randomUUID(), name, email, color: LIB.avatarColors[Math.floor(Math.random()*LIB.avatarColors.length)], isAdmin: false, local: true };
+    ls.set('local_user', user);
+    S.user = user;
+    btn.disabled = false;
+    hideAuthOverlay();
+    return;
+  }
+
+  $('sent-to').textContent = email;
+  showAuthStep('as-2');
+  startResendCooldown();
+  setTimeout(() => $('resend-row').style.display = 'block', 0);
+}
+
+function startResendCooldown() {
+  S.resendCooldown = 60;
+  const el = $('resend-timer');
+  if(!el) return;
+  el.style.cursor = 'default'; el.style.textDecoration = 'none';
+  S.resendInterval = setInterval(() => {
+    S.resendCooldown--;
+    if(S.resendCooldown <= 0) {
+      clearInterval(S.resendInterval);
+      el.textContent = 'Resend link';
+      el.style.cursor = 'pointer'; el.style.textDecoration = 'underline';
+    } else {
+      el.textContent = `Resend in ${S.resendCooldown}s`;
+    }
+  }, 1000);
+}
+
+async function authResend() {
+  if(S.resendCooldown > 0) return;
+  const email = ls.get('pending_email');
+  if(!email || !S.sb) return;
+  try {
+    await S.sb.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.href } });
+    showToast('success','📬','Link resent','Check your inbox and spam folder.', null);
+    startResendCooldown();
+  } catch { showToast('error','⚠️','Couldn't resend','Connection issue — please try again.', null); }
+}
+
+function authReset() {
+  clearAuthErrors();
+  $('auth-name').value = ls.get('pending_name') || '';
+  $('auth-email').value = '';
+  showAuthStep('as-1');
+}
+
+async function onAuthSuccess(session) {
+  const email = session.user.email;
+  const pendingName = ls.get('pending_name') || '';
+
+  // Check allowed emails (server-side trigger handles rejection at signup,
+  // but we do a client check too for existing sessions)
+  if(S.sb) {
+    try {
+      const { data: allowed } = await S.sb.from('allowed_emails').select('email').eq('email', email).single();
+      if(!allowed) {
+        await S.sb.auth.signOut();
+        showAuthOverlay();
+        showAuthError('as-3');
+        return;
+      }
+    } catch {
+      // If allowed_emails table doesn't exist yet, allow through (setup mode)
+    }
+  }
+
+  // Load or create profile
+  let profile = null;
+  if(S.sb) {
+    try {
+      const { data } = await S.sb.from('profiles').select('*').eq('id', session.user.id).single();
+      profile = data;
+    } catch {}
+
+    if(!profile) {
+      const color = LIB.avatarColors[Math.floor(Math.random()*LIB.avatarColors.length)];
+      const name  = pendingName || email.split('@')[0];
+      try {
+        const { data } = await S.sb.from('profiles').insert({ id: session.user.id, name, color, email, is_admin: false }).select().single();
+        profile = data;
+      } catch(e) { console.error('Profile create error:', e); }
+    }
+  }
+
+  const isAdmin = (email === CFG.adminEmail) || profile?.is_admin || false;
+  S.user = {
+    id: session.user.id,
+    name: profile?.name || pendingName || email.split('@')[0],
+    email,
+    color: profile?.color || LIB.avatarColors[0],
+    isAdmin,
+  };
+  ls.set('local_user', S.user);
+  ls.del('pending_name');
+  ls.del('pending_email');
+
+  // First-time admin? Show Supabase setup
+  if(isAdmin && (!CFG.supabaseUrl || CFG.supabaseUrl.includes('xyz'))) {
+    const sbUrl = ls.get('sb_url');
+    if(!sbUrl) {
+      hideLoading();
+      showAuthStep('as-4');
+      return;
+    }
+  }
+
+  hideAuthOverlay();
+  hideLoading();
+}
+
+function saveCfgAndFinish() {
+  const url = $('cfg-url').value.trim();
+  const key = $('cfg-key').value.trim();
+  if(url) ls.set('sb_url', url);
+  if(key) ls.set('sb_key', key);
+  hideAuthOverlay();
+  hideLoading();
+  showToast('success','✅','Setup saved','Family features will be ready after reloading.', {label:'Reload now', fn:()=>location.reload()}, 8000);
+}
+
+function skipCfg() {
+  hideAuthOverlay();
+  hideLoading();
+}
+
+// ═══ SUPABASE INIT ═══════════════════════════════════════════
+async function initSupabase(force=false) {
+  const url = CFG.supabaseUrl || ls.get('sb_url');
+  const key = CFG.supabaseKey || ls.get('sb_key');
+  if((!url || !key) && !force) return;
+  if(!url || !key) return;
+  if(!window.supabase) return;
+
+  try {
+    S.sb = window.supabase.createClient(url, key, {
+      auth: { flowType: 'pkce', autoRefreshToken: true, persistSession: true }
+    });
+    // Quick connection test
+    const { error } = await S.sb.from('profiles').select('id').limit(1);
+    if(!error) {
+      S.sbOk = true;
+      $('cfg-banner').classList.remove('vis');
+      $('conn-banner').classList.remove('vis');
+    } else {
+      $('conn-banner').classList.add('vis');
+    }
+  } catch(e) {
+    console.error('Supabase init error:', e);
+    $('conn-banner').classList.add('vis');
+  }
+}
+
+// ═══ WEATHER ════════════════════════════════════════════════
+async function fetchWeather() {
+  try {
+    const r = await fetch('https://wttr.in/?format=j1', {signal: AbortSignal.timeout(5000)});
+    if(!r.ok) throw new Error('bad response');
+    const d = await r.json();
+    const c = d.current_condition[0];
+    const desc = c.weatherDesc[0].value;
+    const f = c.temp_F + '°F';
+    const cel = c.temp_C + '°C';
+    const iconMap = {'Sunny':'☀️','Clear':'🌙','Partly cloudy':'⛅','Cloudy':'☁️','Overcast':'☁️','Mist':'🌫','Fog':'🌫','Light rain':'🌦','Moderate rain':'🌧','Heavy rain':'🌧','Thundery':'⛈','Snow':'❄️','Blizzard':'🌨','Light snow':'🌨','Patchy rain':'🌦'};
+    const wi = Object.keys(iconMap).find(k => desc.toLowerCase().includes(k.toLowerCase())) ? iconMap[Object.keys(iconMap).find(k => desc.toLowerCase().includes(k.toLowerCase()))] : '🌤';
+    $('weather-text').textContent = wi + ' ' + f + ' / ' + cel + ' · ' + desc;
+  } catch {
+    $('weather-pill').style.display = 'none';
+  }
+}
+
+// ═══ AI CONTENT ══════════════════════════════════════════════
+async function fetchAIContent() {
+  const dk = dateKey();
+  const cached = ls.get('ai_' + dk);
+  if(cached) { S.aiContent = cached; return; }
+
+  const key = CFG.aiWorkerUrl ? null : (ls.get('ai_key') || '');
+  const endpoint = CFG.aiWorkerUrl || 'https://api.anthropic.com/v1/messages';
+  if(!CFG.aiWorkerUrl && !key) return;
+
+  const prompt = `Generate a daily content pack for a calm morning app. Return ONLY valid JSON with exactly these keys — no markdown, no preamble:
+{
+  "riddle":  {"id":"ai_riddle_today", "q":"question", "a":"answer with brief explanation"},
+  "fact":    {"id":"ai_fact_today",   "e":"emoji", "t":"interesting warm fact about nature, animals, or humans — one sentence, specific detail"},
+  "joy":     {"id":"ai_joy_today",    "p":"a tiny sensory or awareness prompt — one sentence, specific action", "w":"one sentence on why it helps — plain language, no jargon"},
+  "well":    {"id":"ai_well_today",   "t":"one gentle, genuinely useful mental health tip — direct, not preachy, no productivity framing"},
+  "teaser":  {"id":"ai_tease_today",  "q":"brain teaser question", "a":"answer with brief explanation"},
+  "nature":  {"id":"ai_nature_today", "t":"one sentence about what is happening in nature right now, this month — specific, grounding, beautiful"}
+}
+No wellness buzzwords. No hustle language. No passive-voice affirmations. No productivity framing. Tone: warm, curious, grounded.`;
+
+  try {
+    const headers = { 'Content-Type': 'application/json' };
+    if(!CFG.aiWorkerUrl) {
+      headers['x-api-key'] = key;
+      headers['anthropic-version'] = '2023-06-01';
+      headers['anthropic-dangerous-direct-browser-ipc'] = 'true';
+    }
+    const r = await fetch(endpoint, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:800, messages:[{role:'user',content:prompt}] }),
+      signal: AbortSignal.timeout(15000),
+    });
+    if(!r.ok) throw new Error('API error ' + r.status);
+    const data = await r.json();
+    const text = (data.content||[]).map(b => b.text||'').join('');
+    const clean = text.replace(/```json|```/g,'').trim();
+    const parsed = JSON.parse(clean);
+    S.aiContent = parsed;
+    ls.set('ai_' + dk, parsed);
+    if(S.user?.isAdmin && !CFG.aiWorkerUrl && !ls.get('ai_key')) {
+      // quiet admin indicator
+    }
+  } catch(e) {
+    console.info('AI content: using built-in library.', e.message);
+    if(S.user?.isAdmin) {
+      showToast('info','🤖','AI content using built-in library today','The AI service may have a connection issue. Check your Worker if this continues.', null, 7000);
+    }
+  }
+}
+
+// ═══ HERO + GREETING ═════════════════════════════════════════
+function updateHero() {
+  S.timeCtx = getTimeCtx();
+  const name = S.user?.name ? ', ' + S.user.name : '';
+  const heroData = {
+    morning: { icon:'🌅', greet:'Good morning' },
+    midday:  { icon:'☀️', greet:'Good afternoon' },
+    evening: { icon:'🌇', greet:'Good evening' },
+    night:   { icon:'🌙', greet:'Still up' },
+  }[S.timeCtx];
+
+  $('hero-icon').textContent = heroData.icon;
+  $('greeting').textContent  = heroData.greet + name;
+
+  const now = new Date();
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const mons = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  $('hero-date').textContent = days[now.getDay()] + ', ' + mons[now.getMonth()] + ' ' + now.getDate();
+  if($('tb-name')) $('tb-name').textContent = '✦ ' + (S.user?.name || '');
+
+  checkNewPosts();
+  checkBirthdays();
+  applySeasonalAccent();
+}
+
+function checkNewPosts() {
+  const last = S.lastVisit;
+  if(!last || !S.sbOk) return;
+  const newCount = S.familyPosts.filter(p => new Date(p.created_at) > new Date(last)).length;
+  if(newCount > 0) {
+    const el = $('new-posts-line');
+    el.textContent = `📸 ${newCount} new family post${newCount>1?'s':''} since your last visit`;
+    el.classList.add('vis');
+  }
+}
+
+function scrollToFamily() {
+  const famCards = document.querySelectorAll('.card.family');
+  if(famCards.length) { famCards[0].scrollIntoView({behavior:'smooth',block:'start'}); }
+  $('new-posts-line').classList.remove('vis');
+  $('family-dot').classList.remove('vis');
+}
+
+function checkBirthdays() {
+  if(!CFG.specialDates?.length) return;
+  const now   = new Date();
+  const today = `${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  const match = CFG.specialDates.find(d => d.date === today);
+  if(match) {
+    $('birthday-text').textContent = match.msg || `${match.emoji||'🎂'} ${match.name ? 'Happy birthday, '+match.name+'!' : 'Special day today!'}`;
+    $('birthday-card').classList.add('vis');
+  }
+}
+
+function applySeasonalAccent() {
+  const s = LIB.seasonalAccents[getSeason()];
+  document.documentElement.style.setProperty('--seasonal',    s.accent);
+  document.documentElement.style.setProperty('--seasonal-lt', s.lt);
+}
+
+// ═══ MOOD ════════════════════════════════════════════════════
+function setMood(mood) {
+  S.mood = mood;
+  $('mood-row').classList.add('hidden');
+  ls.set('mood_'+dateKey(), mood);
+  // Re-sort feed to put mood-appropriate content first
+  buildFeed();
+}
+
+function initMood() {
+  const saved = ls.get('mood_'+dateKey());
+  if(saved) { S.mood = saved; $('mood-row').classList.add('hidden'); }
+}
+
+// ═══ CLOCK ══════════════════════════════════════════════════
+function tickClock() {
+  const n = new Date();
+  const h12 = (n.getHours()%12)||12;
+  const m   = String(n.getMinutes()).padStart(2,'0');
+  const ap  = n.getHours()>=12 ? 'pm' : 'am';
+  $('tb-clock').textContent = h12+':'+m+' '+ap;
+}
+
+// ═══ SEEN CARD TRACKER ═══════════════════════════════════════
+let seenDebounce = {};
+function initSeenTracker() {
+  if(S.feedObserver) S.feedObserver.disconnect();
+  S.seenCards = getSeenIds();
+
+  S.feedObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if(!entry.isIntersecting) return;
+      const id = entry.target.dataset.cardId;
+      if(!id || S.seenCards.has(id)) return;
+      clearTimeout(seenDebounce[id]);
+      seenDebounce[id] = setTimeout(() => {
+        S.seenCards.add(id);
+        saveSeenIds(S.seenCards);
+        checkAllSeen();
+      }, 500);
+    });
+  }, { threshold: 0.3 });
+
+  document.querySelectorAll('[data-card-id]').forEach(el => S.feedObserver.observe(el));
+}
+
+function checkAllSeen() {
+  const feedCards = document.querySelectorAll('[data-card-id]');
+  if(!feedCards.length) return;
+  const minCards = 12;
+  if(feedCards.length < minCards) return;
+  const allSeen = [...feedCards].every(el => S.seenCards.has(el.dataset.cardId));
+  if(allSeen) showEndCard();
+}
+
+function showEndCard() {
+  if($('end-card-el')) return; // already shown
+  const ctx = S.timeCtx;
+  const msg = LIB.endMessages[ctx] || LIB.endMessages.morning;
+  const div = document.createElement('div');
+  div.className = 'end-card';
+  div.id = 'end-card-el';
+  div.setAttribute('aria-live','polite');
+  div.innerHTML = `
+    <span class="end-icon">${msg.icon}</span>
+    <div class="end-msg">${esc(msg.msg)}</div>
+    <button class="end-refresh vis" onclick="refreshFeed()" aria-label="Refresh feed">See new content ↺</button>
+  `;
+  $('feed').appendChild(div);
+  div.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function refreshFeed() {
+  ls.del('seen_'+dateKey());
+  S.seenCards.clear();
+  if($('end-card-el')) $('end-card-el').remove();
+  buildFeed();
+  showToast('success','✨','Feed refreshed','Reshuffled just for you.', null, 2500);
+}
+
+
+// ═══ FEED BUILDER ════════════════════════════════════════════
+function buildFeed() {
+  const feed = $('feed');
+  // Keep end card if it exists, rebuild rest
+  const endCard = $('end-card-el');
+  feed.innerHTML = '';
+
+  const ctx = S.timeCtx;
+  const mood = S.mood;
+
+  // ── Assemble card pool ──────────────────────────────────────
+  let pool = [];
+
+  // AI content (fresh)
+  if(S.aiContent) {
+    const ai = S.aiContent;
+    if(ai.riddle) pool.push({type:'riddle',  ...ai.riddle});
+    if(ai.fact)   pool.push({type:'fact',    ...ai.fact});
+    if(ai.joy)    pool.push({type:'joy',     ...ai.joy});
+    if(ai.teaser) pool.push({type:'teaser',  ...ai.teaser});
+    if(ai.well)   pool.push({type:ctx==='evening'?'well-eve':'wellness', t:ai.well?.t||''});
+    if(ai.nature) pool.push({type:'nature',  t:ai.nature?.t||''});
+  }
+
+  // Built-in content
+  const seenKeys = S.seenCards;
+  const unusedFacts    = LIB.facts.filter(f => !seenKeys.has('fact_'+f.t.slice(0,20).replace(/\s/g,'_')));
+  const unusedRiddles  = LIB.riddles.filter(r => !seenKeys.has('riddle_'+r.q.slice(0,20).replace(/\s/g,'_')));
+  const useFacts   = (unusedFacts.length   > 4 ? unusedFacts   : LIB.facts);
+  const useRiddles = (unusedRiddles.length > 2 ? unusedRiddles : LIB.riddles);
+
+  randN(useFacts, 5).forEach(f  => pool.push({type:'fact',    id:'fact_'+f.t.slice(0,20).replace(/\s/g,'_'),    ...f}));
+  randN(useRiddles, 2).forEach(r => pool.push({type:'riddle',  id:'riddle_'+r.q.slice(0,20).replace(/\s/g,'_'),  ...r}));
+  randN(LIB.joy, 2).forEach(j   => pool.push({type:'joy',     id:'joy_'+j.p.slice(0,20).replace(/\s/g,'_'),     ...j}));
+  randN(LIB.teasers, 1).forEach(t=> pool.push({type:'teaser', id:'tease_'+t.q.slice(0,20).replace(/\s/g,'_'),   ...t}));
+
+  const wellPool = (ctx==='evening') ? LIB.wellnessEvening : LIB.wellnessMorning;
+  randN(wellPool, 2).forEach((w,i) => pool.push({type:'wellness', id:'well_'+i+'_'+w.slice(0,15).replace(/\s/g,'_'), t:w}));
+
+  randN(LIB.articles, 3).forEach(a => pool.push({type:'article', id:'art_'+a.title.slice(0,20).replace(/\s/g,'_'), ...a}));
+
+  // PostSecret
+  pool.push({type:'postsecret', id:'postsecret_weekly'});
+
+  // Nature moment
+  const natureMsgs = getMonthNature();
+  const dayOfMonth = new Date().getDate();
+  const natMsg = natureMsgs[dayOfMonth % natureMsgs.length];
+  pool.push({type:'nature', id:'nature_builtin', t:natMsg});
+
+  // ── Mood-based ordering ──────────────────────────────────────
+  if(mood === 'rough') {
+    // Lead with gentle content
+    const gentle = pool.filter(c => ['joy','wellness','nature'].includes(c.type));
+    const rest   = pool.filter(c => !['joy','wellness','nature'].includes(c.type));
+    pool = [...randN(gentle, gentle.length), ...randN(rest, rest.length)];
+  } else if(mood === 'good' || ctx === 'morning') {
+    // Lead with engaging content
+    const engaging = pool.filter(c => ['riddle','teaser','fact'].includes(c.type));
+    const rest     = pool.filter(c => !['riddle','teaser','fact'].includes(c.type));
+    pool = [...randN(engaging, engaging.length), ...randN(rest, rest.length)];
+  } else if(ctx === 'midday') {
+    const lead = pool.filter(c => ['joy','wellness'].includes(c.type));
+    const rest  = pool.filter(c => !['joy','wellness'].includes(c.type));
+    pool = [...randN(lead, lead.length), ...randN(rest, rest.length)];
+  } else if(ctx === 'evening') {
+    const lead = pool.filter(c => ['nature','joy'].includes(c.type));
+    const rest  = pool.filter(c => !['nature','joy'].includes(c.type));
+    pool = [...randN(lead, lead.length), ...randN(rest, rest.length)];
+  } else {
+    for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+  }
+
+  // ── Interleave family posts ──────────────────────────────────
+  const famPosts = [...S.familyPosts];
+  let famIdx = 0;
+  const finalCards = [];
+  pool.forEach((card, i) => {
+    if(i > 0 && i % 3 === 0 && famIdx < famPosts.length) {
+      finalCards.push({type:'family', post: famPosts[famIdx++]});
+    }
+    finalCards.push(card);
+  });
+  // Remaining family posts at end
+  while(famIdx < famPosts.length) {
+    finalCards.push({type:'family', post: famPosts[famIdx++]});
+  }
+
+  // ── Render ───────────────────────────────────────────────────
+  S.feedCards = finalCards;
+  finalCards.forEach((card, i) => {
+    const el = card.type === 'family' ? buildFamilyCard(card.post) : buildCard(card);
+    if(el) { el.style.animationDelay = Math.min(i * 40, 400) + 'ms'; feed.appendChild(el); }
+  });
+
+  // Restore end card if it was there
+  if(endCard) feed.appendChild(endCard);
+
+  // Init seen tracker
+  setTimeout(initSeenTracker, 300);
+}
+
+// ═══ CARD BUILDERS ═══════════════════════════════════════════
+function buildCard(c) {
+  const id  = c.id || cardId(c);
+  const div = document.createElement('div');
+  div.className = 'card';
+  div.dataset.cardId = id;
+
+  const saved = (ls.get('saved_items') || []).includes(id);
+  const actRow = (extraActions='') => `
+    <div class="cactions">
+      <button class="cact${saved?' saved':''}" onclick="toggleSave('${esc(id)}',this)" aria-label="${saved?'Unsave':'Save'}">
+        ${saved?'🔖 Saved':'🔖 Save'}
+      </button>
+      <button class="cact" onclick="quickHeart(this)" aria-label="Heart this">🤍</button>
+      ${S.sbOk ? `<button class="cact" onclick="shareToFamily('${esc(id)}','${esc(c.type)}',this)" aria-label="Share to family">📤 Share</button>` : ''}
+      ${extraActions}
+    </div>`;
+
+  if(c.type === 'fact' || c.type === 'nature') {
+    div.innerHTML = `
+      <span class="ctag ctag-fact">${c.type==='nature'?'Nature':'Fun Fact'}</span>
+      <div class="cbody" style="font-size:15px;color:var(--text)">${c.e?c.e+' ':''}${esc(c.t)}</div>
+      ${actRow()}`;
+  }
+  else if(c.type === 'riddle' || c.type === 'teaser') {
+    div.innerHTML = `
+      <span class="ctag ctag-riddle">${c.type==='riddle'?'Riddle':'Brain Teaser'}</span>
+      <div class="ctitle">${esc(c.q)}</div>
+      <button class="reveal-btn" onclick="revealAnswer(this)" aria-label="Reveal answer">Reveal answer</button>
+      <div class="reveal-box" role="status">${esc(c.a)}</div>
+      ${actRow()}`;
+  }
+  else if(c.type === 'joy') {
+    div.innerHTML = `
+      <span class="ctag ctag-joy">Micro-Joy</span>
+      <div class="ctitle">${esc(c.p)}</div>
+      <button class="reveal-btn" onclick="revealAnswer(this)" aria-label="Why this helps">Why this helps</button>
+      <div class="reveal-box" role="status">${esc(c.w)}</div>
+      ${actRow()}`;
+  }
+  else if(c.type === 'wellness' || c.type === 'well-eve') {
+    div.innerHTML = `
+      <span class="ctag ctag-well">Wellness</span>
+      <div class="cbody">${esc(c.t)}</div>
+      ${actRow()}`;
+  }
+  else if(c.type === 'article') {
+    div.innerHTML = `
+      <span class="ctag ctag-article">Good News</span>
+      <div class="ctitle">${esc(c.title)}</div>
+      <div class="cbody">${esc(c.desc)}</div>
+      <div class="csource">${esc(c.src)}</div>
+      <div class="cactions">
+        <button class="cact${saved?' saved':''}" onclick="toggleSave('${esc(id)}',this)" aria-label="${saved?'Unsave':'Save'}">
+          ${saved?'🔖 Saved':'🔖 Save'}
+        </button>
+        <button class="cact" onclick="quickHeart(this)" aria-label="Heart this">🤍</button>
+        <a class="cact-link" href="${esc(c.url)}" target="_blank" rel="noopener noreferrer" aria-label="Read full article">Read ↗</a>
+      </div>`;
+  }
+  else if(c.type === 'postsecret') {
+    div.innerHTML = `
+      <span class="ctag ctag-secret">PostSecret</span>
+      <div class="ctitle">This week's postcards</div>
+      <div class="cbody">PostSecret is honest. Sometimes heavy, sometimes beautiful. Worth a look when you have a quiet moment.</div>
+      <div class="cactions">
+        <a class="cact-link" href="https://postsecret.com/" target="_blank" rel="noopener noreferrer" aria-label="Visit PostSecret">Visit PostSecret ↗</a>
+      </div>`;
+  }
+  return div;
+}
+
+function revealAnswer(btn) {
+  btn.style.display = 'none';
+  const box = btn.nextElementSibling;
+  if(box) box.classList.add('shown');
+}
+
+function quickHeart(btn) {
+  btn.classList.toggle('hearted');
+  btn.textContent = btn.classList.contains('hearted') ? '❤️' : '🤍';
+  btn.setAttribute('aria-label', btn.classList.contains('hearted') ? 'Unheart' : 'Heart this');
+}
+
+async function shareToFamily(cardId, cardType, btn) {
+  // Find the card content
+  const card = S.feedCards.find(c => (c.id||'') === cardId || (c.type+'_'+(c.q||c.t||c.title||'').slice(0,20).replace(/\s/g,'_')) === cardId);
+  if(!card) return;
+  const text = card.q || card.t || card.title || card.p || 'Check this out!';
+  const post = {
+    id: crypto.randomUUID(),
+    author_id: S.user?.id,
+    author_name: S.user?.name || 'Someone',
+    author_color: S.user?.color || LIB.avatarColors[0],
+    type: 'shared_card',
+    content: '📤 Shared from the feed: "' + text.slice(0,120) + '"',
+    image_url: null,
+    created_at: new Date().toISOString(),
+  };
+  await savePost(post, btn, 'Share');
+}
+
+// ═══ FAMILY CARDS ════════════════════════════════════════════
+function buildFamilyCard(p) {
+  if(!p) return null;
+  const div = document.createElement('div');
+  div.className = 'card family';
+  div.dataset.cardId = 'fam_' + p.id;
+  div.dataset.postId = p.id;
+
+  const myReactions = ls.get('my_reactions') || {};
+  const myR = myReactions[p.id];
+  const emojis = ['❤️','🥹','😄','🌟','🙌'];
+  const reactBtns = emojis.map(e =>
+    `<button class="react-btn${myR===e?' reacted':''}" onclick="react('${esc(p.id)}','${esc(e)}',this)" aria-label="React with ${e}">${e}</button>`
+  ).join('');
+
+  const canDelete = S.user && (p.author_id === S.user.id || S.adminMode);
+  const canFlag   = S.user && p.author_id !== S.user.id;
+
+  let photoHtml = '';
+  if(p.image_url) {
+    // Use signed URL if cached
+    const su = S.allSignedUrls[p.id];
+    const src = su?.url || p.image_url;
+    photoHtml = `<img class="fam-photo" src="${esc(src)}" alt="Family photo by ${esc(p.author_name)}"
+      onclick="openLightbox('${esc(src)}')"
+      onerror="this.outerHTML='<div class=\'fam-photo-placeholder\'>📷 Photo loading… <span style=\'display:block;margin-top:4px;font-size:11px\'>Tap to retry</span></div>'"
+      loading="lazy">`;
+  }
+
+  const commentSection = `
+    <div class="comment-section" id="cs-${esc(p.id)}" style="display:none">
+      <div id="cl-${esc(p.id)}"></div>
+      <div class="comment-input-row">
+        <input class="comment-input" id="ci-${esc(p.id)}" placeholder="Add a comment…" maxlength="200" aria-label="Add a comment">
+        <button class="comment-send" onclick="submitComment('${esc(p.id)}')" id="csend-${esc(p.id)}" disabled aria-label="Send comment">Send</button>
+      </div>
+    </div>`;
+
+  div.innerHTML = `
+    <span class="ctag ctag-family">Family</span>
+    <div class="fam-author">
+      <div class="fam-av" style="background:${esc(p.author_color||'#9b7fa0')}"
+        onclick="openProfile('${esc(p.author_id||'')}')" 
+        role="button" tabindex="0" aria-label="View ${esc(p.author_name)}'s posts"
+        onkeydown="if(event.key==='Enter')openProfile('${esc(p.author_id||'')}')">
+        ${esc((p.author_name||'?')[0].toUpperCase())}
+      </div>
+      <div>
+        <div class="fam-av-name" onclick="openProfile('${esc(p.author_id||'')}')">${esc(p.author_name||'Family')}</div>
+        <div class="fam-time">${timeAgo(p.created_at)}</div>
+      </div>
+      ${canDelete ? `<button class="cact" style="margin-left:auto;font-size:11px" onclick="deletePost('${esc(p.id)}',this)" aria-label="Delete post">🗑</button>` : ''}
+      ${canFlag   ? `<button class="cact cact-more" onclick="flagPost('${esc(p.id)}',this)" aria-label="Flag post">⚑</button>` : ''}
+    </div>
+    ${p.content ? `<div class="cbody">${esc(p.content)}</div>` : ''}
+    ${photoHtml}
+    <div class="react-row">
+      ${reactBtns}
+      <span class="react-summary" id="rsumm-${esc(p.id)}"></span>
+    </div>
+    <div class="cactions" style="padding-top:8px;margin-top:0;border-top:none">
+      <button class="cact" onclick="toggleComments('${esc(p.id)}')" id="ctog-${esc(p.id)}" aria-expanded="false">
+        💬 Comments
+      </button>
+    </div>
+    ${commentSection}`;
+
+  // Load reaction summary
+  loadReactionSummary(p.id);
+  // Init comment input listener
+  setTimeout(() => {
+    const ci = $('ci-'+p.id);
+    const cs = $('csend-'+p.id);
+    if(ci && cs) {
+      ci.addEventListener('input', () => { cs.disabled = ci.value.trim().length === 0; });
+      ci.addEventListener('keydown', e => { if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); submitComment(p.id); } });
+    }
+  }, 0);
+
+  return div;
+}
+
+// ═══ REACTIONS ═══════════════════════════════════════════════
+async function react(postId, emoji, btn) {
+  if(!S.user) return;
+  const myR = ls.get('my_reactions') || {};
+  const prev = myR[postId];
+
+  // Toggle
+  if(prev === emoji) {
+    delete myR[postId];
+    btn.classList.remove('reacted');
+  } else {
+    if(prev) {
+      // Remove old reaction visual
+      const oldBtns = document.querySelectorAll(`[data-post-id="${postId}"] .react-btn`);
+      oldBtns.forEach(b => { if(b.textContent === prev) b.classList.remove('reacted'); });
+    }
+    myR[postId] = emoji;
+    btn.classList.add('reacted');
+  }
+  ls.set('my_reactions', myR);
+  loadReactionSummary(postId);
+
+  if(S.sb && S.sbOk) {
+    try {
+      if(prev) await S.sb.from('reactions').delete().match({post_id:postId, user_id:S.user.id});
+      if(myR[postId]) await S.sb.from('reactions').insert({post_id:postId, user_id:S.user.id, emoji, id:crypto.randomUUID()});
+    } catch {
+      showToast('error','⚠️','Couldn't save reaction','Connection issue — tap the emoji again to retry.', null, 4000);
+    }
+  }
+}
+
+async function loadReactionSummary(postId) {
+  const myR   = ls.get('my_reactions') || {};
+  const el    = $('rsumm-'+postId);
+  if(!el) return;
+
+  if(S.sb && S.sbOk) {
+    try {
+      const { data } = await S.sb.from('reactions').select('emoji').eq('post_id', postId);
+      if(data?.length) {
+        const counts = {};
+        data.forEach(r => { counts[r.emoji] = (counts[r.emoji]||0)+1; });
+        const top = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([e])=>e).join('');
+        el.textContent = top + ' · ' + data.length + (data.length===1?' reaction':' reactions');
+        return;
+      }
+    } catch {}
+  }
+  if(myR[postId]) el.textContent = myR[postId];
+}
+
+// ═══ COMMENTS ════════════════════════════════════════════════
+async function toggleComments(postId) {
+  const section = $('cs-'+postId);
+  const btn     = $('ctog-'+postId);
+  if(!section) return;
+  const open = section.style.display !== 'none' && section.style.display !== '';
+  section.style.display = open ? 'none' : 'block';
+  btn.setAttribute('aria-expanded', (!open).toString());
+  btn.textContent = open ? '💬 Comments' : '💬 Hide';
+  if(!open) loadComments(postId);
+}
+
+async function loadComments(postId) {
+  const list = $('cl-'+postId);
+  if(!list || !S.sb || !S.sbOk) return;
+  try {
+    const { data, error } = await S.sb.from('comments').select('*').eq('post_id', postId).order('created_at');
+    if(error) throw error;
+    if(!data?.length) { list.innerHTML = '<div style="font-size:12px;color:var(--text-3);padding:4px 0">No comments yet.</div>'; return; }
+    list.innerHTML = data.map(c => `
+      <div class="comment-item">
+        <span class="comment-author">${esc(c.author_name)}</span>
+        <span class="comment-text">${esc(c.content)}</span>
+        ${(S.user && (c.author_id===S.user.id || S.adminMode)) ?
+          `<button class="comment-del" onclick="deleteComment('${esc(c.id)}','${esc(postId)}',this)" aria-label="Delete comment">×</button>` : ''}
+      </div>`).join('');
+  } catch {
+    list.innerHTML = '<div style="font-size:12px;color:var(--text-3);padding:4px 0">Couldn't load comments — connection issue.</div>';
+  }
+}
+
+async function submitComment(postId) {
+  const input = $('ci-'+postId);
+  const text  = input?.value?.trim();
+  if(!text || !S.user) return;
+  const btn = $('csend-'+postId);
+  if(btn) btn.disabled = true;
+
+  const comment = { id:crypto.randomUUID(), post_id:postId, author_id:S.user.id, author_name:S.user.name, content:text, created_at:new Date().toISOString() };
+  if(S.sb && S.sbOk) {
+    try {
+      const { error } = await S.sb.from('comments').insert(comment);
+      if(error) throw error;
+    } catch {
+      showToast('error','⚠️','Comment didn't post','Connection issue — your text is still here. Tap Send to try again.', null);
+      if(btn) btn.disabled = false;
+      return;
+    }
+  }
+  input.value = '';
+  if(btn) btn.disabled = true;
+  loadComments(postId);
+}
+
+async function deleteComment(commentId, postId, btn) {
+  if(!S.sb || !S.sbOk) return;
+  btn.disabled = true;
+  try {
+    const { error } = await S.sb.from('comments').delete().eq('id', commentId);
+    if(error) throw error;
+    loadComments(postId);
+  } catch {
+    showToast('error','⚠️','Couldn't delete comment','Connection issue. Please try again.', null);
+    btn.disabled = false;
+  }
+}
+
+// ═══ POST SUBMISSION ══════════════════════════════════════════
+function toggleCompose() {
+  S.composing = !S.composing;
+  const panel = $('compose-panel');
+  panel.classList.toggle('open', S.composing);
+  if(S.composing) {
+    setTimeout(() => $('compose-text')?.focus(), 100);
+    // Close other panels
+    if(S.activePanel) togglePanel(S.activePanel);
+  }
+  updateComposeSubmit();
+}
+
+$('compose-text')?.addEventListener('input', updateComposeSubmit);
+
+function updateComposeSubmit() {
+  const text = $('compose-text')?.value?.trim() || '';
+  const file = S.composeFile;
+  $('compose-submit').disabled = !text && !file;
+}
+
+function onPhotoSelected(input) {
+  const file = input.files[0];
+  if(!file) return;
+
+  // Validate type
+  if(!file.type.startsWith('image/')) {
+    showToast('error','📁','Only photos can be shared here','It looks like you selected a document or file. Try taking a screenshot of what you want to share and uploading that.', null, 6000);
+    input.value = '';
+    return;
+  }
+
+  // Warn on very large files (>30MB raw)
+  if(file.size > 30 * 1024 * 1024) {
+    showToast('error','📁','File too large','This file is very large. Please try a different photo.', null, 5000);
+    input.value = '';
+    return;
+  }
+
+  S.composeFile = file;
+  const url = URL.createObjectURL(file);
+  $('compose-img').src = url;
+  $('compose-preview').style.display = 'block';
+  updateComposeSubmit();
+}
+
+function removePhoto() {
+  S.composeFile = null;
+  $('compose-photo').value = '';
+  $('compose-preview').style.display = 'none';
+  $('compose-img').src = '';
+  updateComposeSubmit();
+}
+
+async function submitPost() {
+  const text = $('compose-text').value.trim();
+  const file = S.composeFile;
+  if(!text && !file) return;
+  if(!S.user) return;
+
+  $('compose-submit').disabled = true;
+  $('compose-uploading').style.display = file ? 'block' : 'none';
+
+  const post = {
+    id: crypto.randomUUID(),
+    author_id:    S.user.id,
+    author_name:  S.user.name,
+    author_color: S.user.color,
+    type: file ? 'photo' : 'text',
+    content: text,
+    image_url: null,
+    created_at: new Date().toISOString(),
+  };
+
+  // Handle photo
+  if(file) {
+    try {
+      const compressed = await preparePhoto(file);
+      if(S.sb && S.sbOk) {
+        const ext  = 'jpg';
+        const path = `${S.user.id}/${post.id}.${ext}`;
+        const { error: upErr } = await S.sb.storage.from('family-photos').upload(path, compressed, {contentType:'image/jpeg', upsert:true});
+        if(upErr) throw upErr;
+        // Get signed URL
+        const { data: signData, error: signErr } = await S.sb.storage.from('family-photos').createSignedUrl(path, 604800);
+        if(signErr) { showToast('info','📷','Your post is live but the photo may take a moment to appear','It finished uploading but the link is still being prepared. Try refreshing in a minute.',null,7000); }
+        post.image_url = path; // store path, not signed URL
+        S.allSignedUrls[post.id] = { url: signData.signedUrl, exp: Date.now() + 604800000 };
+      } else {
+        // Local preview only
+        post.image_url = URL.createObjectURL(compressed);
+      }
+    } catch(e) {
+      $('compose-uploading').style.display = 'none';
+      $('compose-submit').disabled = false;
+      showToast('error','📷','Photo didn't upload','Your connection may have dropped for a moment. Try again — your text is still here.', null, 6000);
+      return;
+    }
+  }
+
+  $('compose-uploading').style.display = 'none';
+
+  await savePost(post, null, null);
+}
+
+async function savePost(post, triggerBtn, successLabel) {
+  if(S.sb && S.sbOk) {
+    try {
+      const { error } = await S.sb.from('family_posts').insert({
+        id: post.id, author_id: post.author_id, author_name: post.author_name,
+        author_color: post.author_color, type: post.type, content: post.content,
+        image_url: post.image_url, created_at: post.created_at,
+      });
+      if(error) throw error;
+    } catch {
+      showToast('error','⚠️','Post didn't save','Your connection may have dropped for a moment. Your text is still here — tap Post to try again.', null, 6000);
+      $('compose-submit').disabled = false;
+      return;
+    }
+  }
+
+  S.familyPosts.unshift(post);
+  buildFeed();
+  showToast('success','📸','Post shared!',null, null, 3000);
+  if(triggerBtn) { triggerBtn.textContent = '✓ Shared'; setTimeout(() => triggerBtn.textContent = '📤 Share', 3000); }
+
+  // Reset compose
+  $('compose-text').value = '';
+  removePhoto();
+  $('compose-submit').disabled = true;
+  if(S.composing) toggleCompose();
+}
+
+// ═══ PHOTO PROCESSING ════════════════════════════════════════
+async function preparePhoto(file) {
+  let processFile = file;
+
+  // HEIC conversion
+  if(file.type === 'image/heic' || file.type === 'image/heif' || file.name?.toLowerCase().endsWith('.heic') || file.name?.toLowerCase().endsWith('.heif')) {
+    try {
+      if(!window.heic2any) {
+        await loadScript('https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js');
+      }
+      processFile = await window.heic2any({ blob: file, toType: 'image/jpeg', quality: 0.85 });
+      if(Array.isArray(processFile)) processFile = processFile[0];
+    } catch(e) {
+      throw new Error('HEIC conversion failed: ' + e.message);
+    }
+  }
+
+  // Canvas compression
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(processFile);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const MAX = 1200;
+      let w = img.width, h = img.height;
+      if(w > MAX || h > MAX) {
+        if(w > h) { h = Math.round(h * MAX / w); w = MAX; }
+        else      { w = Math.round(w * MAX / h); h = MAX; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      canvas.toBlob(blob => {
+        if(!blob) { reject(new Error('Canvas compression failed')); return; }
+        // If still >500KB, compress more
+        if(blob.size > 512000) {
+          canvas.toBlob(b2 => { if(b2) resolve(b2); else resolve(blob); }, 'image/jpeg', 0.6);
+        } else {
+          resolve(blob);
+        }
+      }, 'image/jpeg', 0.82);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Could not read image file')); };
+    img.src = url;
+  });
+}
+
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    if(document.querySelector(`script[src="${src}"]`)) { resolve(); return; }
+    const s = document.createElement('script');
+    s.src = src; s.onload = resolve; s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+// ═══ DELETE + FLAG ═══════════════════════════════════════════
+async function deletePost(postId, btn) {
+  const confirmDelete = S.adminMode;
+
+  if(!confirmDelete) {
+    // Optimistic remove with undo
+    const card = document.querySelector(`[data-post-id="${postId}"]`);
+    if(card) card.style.opacity = '0.4';
+
+    S.pendingDeleteId = postId;
+    const t = showToast('info','🗑','Post removed — tap to undo within 5 seconds.', null,
+      {label:'Undo', fn:() => {
+        clearTimeout(S.pendingDeleteTimer);
+        S.pendingDeleteId = null;
+        if(card) card.style.opacity = '1';
+      }}, 5500);
+
+    S.pendingDeleteTimer = setTimeout(async () => {
+      if(S.pendingDeleteId !== postId) return;
+      await finalDeletePost(postId);
+      if(card) card.remove();
+      S.familyPosts = S.familyPosts.filter(p => p.id !== postId);
+    }, 5000);
+    return;
+  }
+
+  // Admin: immediate
+  btn.disabled = true;
+  const ok = await finalDeletePost(postId);
+  if(ok) {
+    document.querySelector(`[data-post-id="${postId}"]`)?.remove();
+    S.familyPosts = S.familyPosts.filter(p => p.id !== postId);
+    showToast('success','✅','Post deleted.', null, null, 3000);
+  }
+}
+
+async function finalDeletePost(postId) {
+  if(!S.sb || !S.sbOk) return true; // local only
+  try {
+    const { error } = await S.sb.from('family_posts').delete().eq('id', postId);
+    if(error) throw error;
+    return true;
+  } catch {
+    showToast('error','⚠️','Couldn't delete','Connection issue. The post is still showing because we want to make sure it's actually removed before it disappears. Please try again.', null, 7000);
+    return false;
+  }
+}
+
+async function flagPost(postId, btn) {
+  if(!S.user || !S.sb || !S.sbOk) return;
+  btn.disabled = true;
+  try {
+    const { error } = await S.sb.from('flags').insert({ id:crypto.randomUUID(), post_id:postId, flagged_by:S.user.id, created_at:new Date().toISOString() });
+    if(error) throw error;
+    showToast('success','⚑','Flag sent','The app owner will review this post.', null, 4000);
+    updateFlagsBadge();
+  } catch {
+    showToast('error','⚠️','Flag didn't send','Connection issue — please try again so the right person can review it.', null, 5000);
+    btn.disabled = false;
+  }
+}
+
+async function updateFlagsBadge() {
+  if(!S.user?.isAdmin || !S.sb || !S.sbOk) return;
+  try {
+    const { count } = await S.sb.from('flags').select('id', {count:'exact',head:true});
+    const badge = $('flags-badge');
+    if(count > 0) { badge.textContent = count; badge.classList.add('vis'); }
+    else { badge.classList.remove('vis'); }
+  } catch {}
+}
+
+// ═══ FAMILY POSTS LOAD ═══════════════════════════════════════
+async function loadFamilyPosts() {
+  if(!S.sb || !S.sbOk) return;
+  try {
+    const { data, error } = await S.sb.from('family_posts').select('*').order('created_at', {ascending:false}).limit(30);
+    if(error) throw error;
+    S.familyPosts = data || [];
+    await loadSignedUrls();
+  } catch {
+    $('conn-banner').classList.add('vis');
+  }
+}
+
+async function loadSignedUrls() {
+  const posts = S.familyPosts.filter(p => p.image_url && p.image_url.startsWith(p.author_id || 'x'));
+  for(const p of posts) {
+    const cached = S.allSignedUrls[p.id];
+    if(cached && cached.exp > Date.now() + 3600000) continue; // still fresh
+    try {
+      const { data } = await S.sb.storage.from('family-photos').createSignedUrl(p.image_url, 604800);
+      if(data) S.allSignedUrls[p.id] = { url: data.signedUrl, exp: Date.now() + 604800000 };
+    } catch {}
+  }
+}
+
+function subscribeRealtime() {
+  if(!S.sb || !S.sbOk) return;
+  if(S.realtimeSub) { S.realtimeSub.unsubscribe(); }
+  S.realtimeSub = S.sb.channel('family_live')
+    .on('postgres_changes', {event:'INSERT', schema:'public', table:'family_posts'}, async payload => {
+      const p = payload.new;
+      if(p.author_id === S.user?.id) return; // own post
+      S.familyPosts.unshift(p);
+      if(p.image_url) await loadSignedUrls();
+      buildFeed();
+      $('family-dot').classList.add('vis');
+      showToast('family','📸',`New from ${p.author_name||'family'}!`,'Tap to see their post.', {label:'See post', fn:scrollToFamily}, 6000);
+    })
+    .subscribe();
+}
+
+// ═══ PHOTO GALLERY + LIGHTBOX ════════════════════════════════
+function openGallery() {
+  const grid  = $('gallery-grid');
+  const empty = $('gallery-empty');
+  const photos = S.familyPosts.filter(p => p.image_url);
+
+  if(!photos.length) {
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+  } else {
+    empty.style.display = 'none';
+    grid.innerHTML = photos.map(p => {
+      const src = S.allSignedUrls[p.id]?.url || p.image_url;
+      return `<img class="photo-thumb" src="${esc(src)}" alt="Photo by ${esc(p.author_name)}" onclick="openLightbox('${esc(src)}')" loading="lazy" onerror="this.style.background='var(--border-soft)';this.alt='Photo unavailable'">`;
+    }).join('');
+  }
+  $('gallery-modal').classList.add('open');
+  togglePanel('family');
+}
+
+function openLightbox(src) {
+  $('lightbox-img').src = src;
+  $('photo-lightbox').classList.add('open');
+}
+
+function closeModal(id) {
+  $(id)?.classList.remove('open');
+}
+
+// Load gallery thumbs in panel
+function loadGalleryThumbs() {
+  const ct = $('gallery-thumbs');
+  if(!ct) return;
+  const photos = S.familyPosts.filter(p => p.image_url).slice(0,6);
+  if(!photos.length) { ct.innerHTML = '<div style="font-size:13px;color:var(--text-3);padding:8px 0">No photos shared yet.</div>'; return; }
+  ct.innerHTML = `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">` +
+    photos.map(p => {
+      const src = S.allSignedUrls[p.id]?.url || p.image_url;
+      return `<img src="${esc(src)}" alt="Family photo" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;cursor:pointer" onclick="openLightbox('${esc(src)}')" loading="lazy">`;
+    }).join('') + '</div>';
+}
+
+// ═══ PROFILE VIEW ════════════════════════════════════════════
+function openProfile(authorId) {
+  if(!authorId) return;
+  const posts = S.familyPosts.filter(p => p.author_id === authorId);
+  const name  = posts[0]?.author_name || 'Family member';
+  $('profile-title').textContent = name + ''s posts';
+  const cont = $('profile-posts');
+  if(!posts.length) {
+    cont.innerHTML = `<div class="profile-empty">${esc(name)} hasn't posted yet.</div>`;
+  } else {
+    cont.innerHTML = posts.map(p => `
+      <div class="profile-post">
+        <div style="font-size:12px;color:var(--text-3);margin-bottom:4px">${timeAgo(p.created_at)}</div>
+        ${p.content ? `<div style="font-size:14px;color:var(--text-2);line-height:1.6">${esc(p.content)}</div>` : ''}
+        ${p.image_url ? `<img src="${esc(S.allSignedUrls[p.id]?.url||p.image_url)}" style="width:100%;border-radius:8px;margin-top:8px;max-height:200px;object-fit:cover" loading="lazy" alt="Photo">` : ''}
+      </div>`).join('');
+  }
+  $('profile-modal').classList.add('open');
+}
+
+
+// ═══ TODAY'S MOMENTS (ANCHORS) ═══════════════════════════════
+function initMoments() {
+  S.hiddenModules = new Set(ls.get('hidden_modules') || []);
+  renderMomentsInline();
+  renderMomentsPanel();
+  updateMomentsPreview();
+}
+
+function getModulesByTime() {
+  const ctx = S.timeCtx;
+  const all = ['wod','stretch','timer','intention','top3','notdoing','quote','gratitude','nature'];
+  const primary = {
+    morning: ['wod','stretch','intention'],
+    midday:  ['top3','notdoing','quote'],
+    evening: ['gratitude','stretch','nature'],
+    night:   ['gratitude','nature','wod'],
+  }[ctx] || ['wod','stretch','timer'];
+
+  // Not-doing always visible as secondary
+  const secondary = all.filter(m => !primary.includes(m) && !S.hiddenModules.has(m));
+  return { primary: primary.filter(m => !S.hiddenModules.has(m)), secondary };
+}
+
+function renderMomentsInline() {
+  const body = $('moments-body');
+  if(!body) return;
+  body.innerHTML = '';
+  const {primary, secondary} = getModulesByTime();
+  const hasHidden = S.hiddenModules.size > 0;
+
+  primary.forEach(id => {
+    const el = buildModule(id);
+    if(el) body.appendChild(el);
+  });
+
+  if(secondary.length) {
+    const seeMore = document.createElement('button');
+    seeMore.className = 'see-more-btn';
+    seeMore.textContent = `See ${secondary.length} more moments ▼`;
+    seeMore.setAttribute('aria-expanded','false');
+    seeMore.onclick = () => {
+      const expanded = seeMore.getAttribute('aria-expanded') === 'true';
+      if(!expanded) {
+        secondary.forEach(id => { const el = buildModule(id); if(el) body.insertBefore(el, seeMore); });
+        seeMore.textContent = 'Show less ▲';
+        seeMore.setAttribute('aria-expanded','true');
+      } else {
+        document.querySelectorAll('.moment-secondary').forEach(el => el.remove());
+        seeMore.textContent = `See ${secondary.length} more moments ▼`;
+        seeMore.setAttribute('aria-expanded','false');
+      }
+    };
+    body.appendChild(seeMore);
+  }
+
+  if(hasHidden) {
+    const restore = document.createElement('button');
+    restore.className = 'restore-btn';
+    restore.textContent = 'Restore all hidden moments';
+    restore.onclick = () => { S.hiddenModules.clear(); ls.set('hidden_modules',[]); renderMomentsInline(); renderMomentsPanel(); updateMomentsPreview(); };
+    body.appendChild(restore);
+  }
+}
+
+function renderMomentsPanel() {
+  const body = $('moments-panel-body');
+  if(!body) return;
+  body.innerHTML = '';
+  const all = ['wod','intention','top3','notdoing','quote','gratitude','stretch','timer','nature'];
+  all.filter(id => !S.hiddenModules.has(id)).forEach(id => {
+    const el = buildModule(id);
+    if(el) body.appendChild(el);
+  });
+}
+
+function buildModule(id, secondary=false) {
+  const dk = dateKey();
+  const div = document.createElement('div');
+  div.className = 'moment-module' + (secondary ? ' moment-secondary' : '');
+
+  const hideBtn = `<button class="module-hide" onclick="hideModule('${id}')" aria-label="Hide this section" title="Hide">×</button>`;
+
+  if(id === 'wod') {
+    const idx = new Date().getDate() % LIB.words.length;
+    const cached = ls.get('wod_'+dk);
+    const w = cached || LIB.words[idx];
+    if(!cached) ls.set('wod_'+dk, w);
+    div.innerHTML = `
+      <div class="module-header">
+        <span class="module-tag" style="background:var(--mauve-lt);color:var(--mauve)">Word of the Day</span>
+        ${hideBtn}
+      </div>
+      <div class="wod-word">${esc(w.w)}</div>
+      <div class="wod-phonetic">${esc(w.ph)}</div>
+      <div class="wod-pos">${esc(w.pos)}</div>
+      <div class="wod-def">${esc(w.d)}</div>
+      ${w.ex ? `<div class="wod-example">"${esc(w.ex)}"</div>` : ''}`;
+  }
+  else if(id === 'stretch') {
+    const ctx  = S.timeCtx === 'evening' || S.timeCtx === 'night' ? 'evening' : (S.timeCtx === 'midday' ? 'midday' : 'morning');
+    const s    = LIB.stretches[ctx];
+    const stepsHtml = s.steps.map((step,i) => `<li><span class="s-num">${i+1}</span>${esc(step)}</li>`).join('');
+    div.innerHTML = `
+      <div class="module-header">
+        <span class="module-tag" style="background:var(--sage-lt);color:var(--sage)">${esc(s.tag)}</span>
+        ${hideBtn}
+      </div>
+      <div class="stretch-preview">
+        First step: ${esc(s.steps[0])}
+        <span class="stretch-expand" onclick="toggleStretch(this)" aria-expanded="false" role="button" tabindex="0" onkeydown="if(event.key==='Enter')toggleStretch(this)">See all steps</span>
+      </div>
+      <div class="stretch-steps"><ul class="stretch-list">${stepsHtml}</ul></div>`;
+  }
+  else if(id === 'timer') {
+    div.innerHTML = `
+      <div class="module-header">
+        <span class="module-tag" style="background:var(--mauve-lt);color:var(--mauve)">Calm Timer</span>
+        ${hideBtn}
+      </div>
+      <div class="timer-wrap">
+        <div class="timer-msg" id="timer-msg">Take a breath before you begin.</div>
+        <div class="timer-ring">
+          <svg viewBox="0 0 90 90" width="90" height="90" aria-hidden="true">
+            <circle class="t-bg"   cx="45" cy="45" r="40"/>
+            <circle class="t-prog" cx="45" cy="45" r="40" id="t-prog"/>
+          </svg>
+          <div id="timer-num" aria-live="polite">—</div>
+        </div>
+        <div class="timer-durs">
+          <span class="tdur sel" data-s="30"  onclick="setDur(30)"  tabindex="0" role="button" aria-label="30 seconds">30s</span>
+          <span class="tdur"     data-s="60"  onclick="setDur(60)"  tabindex="0" role="button" aria-label="1 minute">1m</span>
+          <span class="tdur"     data-s="180" onclick="setDur(180)" tabindex="0" role="button" aria-label="3 minutes">3m</span>
+        </div>
+        <div style="text-align:center;margin-top:8px">
+          <button id="timer-start" onclick="startTimer()" aria-label="Start timer">Start</button>
+        </div>
+      </div>`;
+    setDur(S.timerDur);
+  }
+  else if(id === 'intention') {
+    const today_idx = new Date().getDate() % LIB.intentions.length;
+    const suggested = LIB.intentions[today_idx];
+    const saved = ls.get('intention_'+dk) || suggested;
+    div.innerHTML = `
+      <div class="module-header">
+        <span class="module-tag" style="background:var(--sage-lt);color:var(--sage)">Today's Intention</span>
+        ${hideBtn}
+      </div>
+      <div style="font-family:'Lora',serif;font-size:22px;color:var(--mauve);margin-bottom:6px">${esc(saved)}</div>
+      <div style="font-size:12px;color:var(--text-3);cursor:pointer;text-decoration:underline" onclick="swapIntention(this,${today_idx})" tabindex="0" role="button" onkeydown="if(event.key==='Enter')swapIntention(this,${today_idx})">Try a different word</div>`;
+  }
+  else if(id === 'top3') {
+    const idx = new Date().getDay() % LIB.top3Prompts.length;
+    div.innerHTML = `
+      <div class="module-header">
+        <span class="module-tag" style="background:var(--gold-lt);color:var(--gold)">Top 3</span>
+        ${hideBtn}
+      </div>
+      <div style="font-size:14px;color:var(--text-2);line-height:1.65;font-style:italic">${esc(LIB.top3Prompts[idx])}</div>
+      ${buildOptionalNote('top3_'+dk)}`;
+  }
+  else if(id === 'notdoing') {
+    const idx = new Date().getDay() % LIB.notDoingPrompts.length;
+    div.innerHTML = `
+      <div class="module-header">
+        <span class="module-tag" style="background:var(--rose-lt);color:var(--rose)">Not Doing Today</span>
+        ${hideBtn}
+      </div>
+      <div style="font-size:14px;color:var(--text-2);line-height:1.65;font-style:italic">${esc(LIB.notDoingPrompts[idx])}</div>
+      ${buildOptionalNote('notdoing_'+dk)}`;
+  }
+  else if(id === 'quote') {
+    const idx = new Date().getDate() % LIB.quotes.length;
+    const q = LIB.quotes[idx];
+    div.innerHTML = `
+      <div class="module-header">
+        <span class="module-tag" style="background:var(--slate-lt);color:var(--slate)">Today's Quote</span>
+        ${hideBtn}
+      </div>
+      <div style="font-family:'Lora',serif;font-size:15px;font-style:italic;color:var(--text);line-height:1.6;margin-bottom:4px">"${esc(q.q)}"</div>
+      ${q.a ? `<div style="font-size:12px;color:var(--text-3)">— ${esc(q.a)}</div>` : ''}`;
+  }
+  else if(id === 'gratitude') {
+    const idx = new Date().getDay() % LIB.gratitudePrompts.length;
+    div.innerHTML = `
+      <div class="module-header">
+        <span class="module-tag" style="background:var(--rose-lt);color:var(--rose)">Gratitude</span>
+        ${hideBtn}
+      </div>
+      <div style="font-size:14px;color:var(--text-2);line-height:1.65;font-style:italic">${esc(LIB.gratitudePrompts[idx])}</div>
+      ${buildOptionalNote('grat_'+dk)}`;
+  }
+  else if(id === 'nature') {
+    const msgs  = getMonthNature();
+    const dayI  = new Date().getDate() % msgs.length;
+    const msg   = S.aiContent?.nature?.t || msgs[dayI];
+    div.innerHTML = `
+      <div class="module-header">
+        <span class="module-tag" style="background:var(--sage-lt);color:var(--sage)">Nature Moment</span>
+        ${hideBtn}
+      </div>
+      <div style="font-size:14px;color:var(--text-2);line-height:1.7">🌿 ${esc(msg)}</div>`;
+  }
+  else { return null; }
+
+  return div;
+}
+
+function buildOptionalNote(key) {
+  const saved = ls.get('note_'+key) || '';
+  const eid   = 'note_'+key.replace(/[^a-z0-9]/gi,'_');
+  return `
+    <div style="margin-top:8px">
+      <div style="font-size:11px;color:var(--text-3);margin-bottom:4px;cursor:pointer;text-decoration:underline" onclick="toggleNoteInput('${eid}')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')toggleNoteInput('${eid}')">
+        tap to add a thought (private, stays here)
+      </div>
+      <textarea id="${eid}" style="display:none;width:100%;border:1px solid var(--border);border-radius:8px;padding:8px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--bg);resize:none;outline:none;min-height:60px" placeholder="Just a thought…" aria-label="Private note" maxlength="300" onblur="saveNote('${key}',this.value)">${esc(saved)}</textarea>
+    </div>`;
+}
+
+function toggleNoteInput(id) {
+  const el = $(id);
+  if(!el) return;
+  const hidden = el.style.display === 'none' || el.style.display === '';
+  el.style.display = hidden ? 'block' : 'none';
+  if(hidden) { el.focus(); el.setSelectionRange(el.value.length, el.value.length); }
+}
+
+function saveNote(key, val) {
+  ls.set('note_'+key, val);
+}
+
+function toggleStretch(span) {
+  const steps = span.closest('.stretch-preview').nextElementSibling;
+  const open  = steps.classList.toggle('open');
+  span.textContent   = open ? 'Hide steps' : 'See all steps';
+  span.setAttribute('aria-expanded', open.toString());
+}
+
+function swapIntention(el, startIdx) {
+  const dk = dateKey();
+  const next = LIB.intentions[(startIdx + Math.floor(Math.random() * (LIB.intentions.length-1)) + 1) % LIB.intentions.length];
+  ls.set('intention_'+dk, next);
+  const display = el.previousElementSibling;
+  if(display) display.textContent = next;
+}
+
+function hideModule(id) {
+  S.hiddenModules.add(id);
+  ls.set('hidden_modules', [...S.hiddenModules]);
+  renderMomentsInline();
+  renderMomentsPanel();
+  updateMomentsPreview();
+}
+
+function updateMomentsPreview() {
+  const {primary} = getModulesByTime();
+  const first = primary[0];
+  const labels = {wod:'Word of the Day',stretch:'Daily Stretch',timer:'Calm Timer',intention:'Today's Intention',top3:'Top 3',notdoing:'Not Doing Today',quote:'Daily Quote',gratitude:'Gratitude',nature:'Nature Moment'};
+  $('moments-preview').textContent = first ? labels[first] || '' : 'All hidden';
+}
+
+function toggleMomentsInline() {
+  S.momentsMobileOpen = !S.momentsMobileOpen;
+  const body    = $('moments-body');
+  const chevron = $('moments-chevron');
+  const header  = body?.previousElementSibling;
+  body.classList.toggle('open', S.momentsMobileOpen);
+  if(chevron) chevron.classList.toggle('open', S.momentsMobileOpen);
+  if(header) header.setAttribute('aria-expanded', S.momentsMobileOpen.toString());
+  if(S.momentsMobileOpen) renderMomentsInline();
+}
+
+// ═══ TIMER ═══════════════════════════════════════════════════
+function setDur(s) {
+  if(S.timerRunning) return;
+  S.timerDur = s; S.timerRemaining = s;
+  document.querySelectorAll('.tdur').forEach(b => b.classList.toggle('sel', parseInt(b.dataset.s)===s));
+  const tn = $('timer-num');
+  if(tn) tn.textContent = fmtTime(s);
+  const tp = $('t-prog');
+  if(tp) tp.style.strokeDashoffset = '251';
+  const ts = $('timer-start');
+  if(ts) { ts.textContent = 'Start'; ts.setAttribute('aria-label','Start timer'); }
+  const tm = $('timer-msg');
+  if(tm) tm.textContent = 'Take a breath before you begin.';
+}
+
+function fmtTime(s) {
+  return Math.floor(s/60)+':'+(s%60).toString().padStart(2,'0');
+}
+
+function startTimer() {
+  const ts = $('timer-start');
+  if(S.timerRunning) {
+    clearInterval(S.timerInterval);
+    S.timerRunning = false; S.timerRemaining = S.timerDur;
+    if(ts) { ts.textContent = 'Start'; ts.setAttribute('aria-label','Start timer'); }
+    const tp = $('t-prog'); if(tp) tp.style.strokeDashoffset = '251';
+    const tn = $('timer-num'); if(tn) tn.textContent = fmtTime(S.timerDur);
+    const tm = $('timer-msg'); if(tm) tm.textContent = 'Take a breath before you begin.';
+    return;
+  }
+  S.timerRunning = true;
+  if(ts) { ts.textContent = 'Stop'; ts.setAttribute('aria-label','Stop timer'); }
+  const tm = $('timer-msg'); if(tm) tm.textContent = 'Breathe…';
+  const total = S.timerDur;
+  let rem = S.timerRemaining;
+
+  S.timerInterval = setInterval(() => {
+    rem--;
+    S.timerRemaining = rem;
+    const tn = $('timer-num'); if(tn) tn.textContent = fmtTime(rem);
+    const pct = 1 - (rem / total);
+    const tp  = $('t-prog'); if(tp) tp.style.strokeDashoffset = 251 - (251 * pct);
+    if(rem <= 0) {
+      clearInterval(S.timerInterval);
+      S.timerRunning = false;
+      const tn2 = $('timer-num'); if(tn2) { tn2.textContent = '✓'; tn2.setAttribute('aria-label','Timer complete'); }
+      const ts2 = $('timer-start'); if(ts2) { ts2.textContent = 'Again'; ts2.setAttribute('aria-label','Start again'); }
+      const tm2 = $('timer-msg'); if(tm2) tm2.textContent = 'Well done. Take that feeling into your day.';
+      // Visual pulse
+      const ring = document.querySelector('.timer-ring');
+      if(ring) { ring.classList.add('timer-pulse'); setTimeout(() => ring.classList.remove('timer-pulse'), 700); }
+    }
+  }, 1000);
+}
+
+// Handle app backgrounding (iOS)
+document.addEventListener('visibilitychange', () => {
+  if(document.hidden && S.timerRunning) {
+    clearInterval(S.timerInterval);
+    S.timerRunning = false;
+    const ts = $('timer-start'); if(ts) ts.textContent = 'Restart';
+    const tm = $('timer-msg');
+    if(tm) tm.textContent = 'Timer paused — your phone may have gone to sleep or you switched apps. Tap to restart.';
+  }
+});
+
+// ═══ PANELS ══════════════════════════════════════════════════
+function togglePanel(id) {
+  const panelId = 'panel-' + id;
+  const btnId   = 'btn-' + id;
+  const isOpen  = S.activePanel === id;
+
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('open'));
+  document.querySelectorAll('.tb-btn').forEach(b => b.classList.remove('on'));
+  S.activePanel = null;
+
+  if(!isOpen) {
+    const panel = $(panelId);
+    const btn   = $(btnId);
+    if(panel) { panel.classList.add('open'); S.activePanel = id; }
+    if(btn) btn.classList.add('on');
+
+    if(id === 'saved')   renderSavedPanel();
+    if(id === 'moments') renderMomentsPanel();
+    if(id === 'settings') renderSettings();
+    if(id === 'family') loadGalleryThumbs();
+    // Close compose if open
+    if(S.composing) toggleCompose();
+  }
+}
+
+function showPanel(id) {
+  if(S.activePanel !== id) togglePanel(id);
+  else $('panel-'+id)?.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+// ═══ VIBE ════════════════════════════════════════════════════
+function initVibes() {
+  const row = $('vibe-row');
+  LIB.vibes.forEach(v => {
+    const chip = document.createElement('div');
+    chip.className = 'vibe-chip' + (v.id === S.vibe ? ' sel' : '');
+    chip.setAttribute('role','button'); chip.setAttribute('tabindex','0');
+    chip.setAttribute('aria-label', v.label + ' vibe');
+    chip.innerHTML = `<span class="vibe-dot" style="background:${v.color}" aria-hidden="true"></span>${esc(v.label)}`;
+    chip.onclick = () => setVibe(v.id);
+    chip.onkeydown = e => { if(e.key==='Enter') setVibe(v.id); };
+    row.appendChild(chip);
+  });
+}
+
+function setVibe(id) {
+  S.vibe = id;
+  ls.set('vibe', id);
+  const v = LIB.vibes.find(x => x.id === id);
+  document.body.style.filter = v?.filter || '';
+  document.querySelectorAll('.vibe-chip').forEach(c => {
+    c.classList.toggle('sel', c.textContent.trim() === v?.label);
+  });
+}
+
+// ═══ SAVED ITEMS ═════════════════════════════════════════════
+function toggleSave(itemId, btn) {
+  const items = ls.get('saved_items') || [];
+  const idx   = items.indexOf(itemId);
+  if(idx > -1) {
+    items.splice(idx, 1);
+    btn.className = 'cact';
+    btn.textContent = '🔖 Save';
+    btn.setAttribute('aria-label','Save');
+  } else {
+    items.push(itemId);
+    btn.className = 'cact saved';
+    btn.textContent = '🔖 Saved';
+    btn.setAttribute('aria-label','Unsave');
+  }
+  ls.set('saved_items', items);
+  S.savedItems = items;
+  updateSavedBadge();
+}
+
+function updateSavedBadge() {
+  const n = (ls.get('saved_items') || []).length;
+  const b = $('saved-badge');
+  b.textContent = n;
+  n > 0 ? b.classList.add('vis') : b.classList.remove('vis');
+}
+
+function renderSavedPanel() {
+  const items  = ls.get('saved_items') || [];
+  const list   = $('saved-list');
+  const empty  = $('saved-empty');
+  const expBtn = $('export-btn');
+  if(!items.length) {
+    list.innerHTML = '';
+    empty.textContent = 'Nothing saved yet — tap 🔖 Save on any card.';
+    empty.style.display = 'block';
+    expBtn.style.display = 'none';
+    return;
+  }
+  empty.style.display = 'none';
+  expBtn.style.display = 'block';
+  // Saved items are IDs — for cards we can try to find the text
+  list.innerHTML = items.map((id, i) => `
+    <div class="saved-item">
+      <div class="saved-text">${esc(id.replace(/_/g,' ').slice(0,80))}${id.length>80?'…':''}</div>
+      <button class="saved-rm" onclick="removeSaved(${i})" aria-label="Remove saved item">×</button>
+    </div>`).join('');
+}
+
+function removeSaved(i) {
+  const items = ls.get('saved_items') || [];
+  items.splice(i, 1);
+  ls.set('saved_items', items);
+  S.savedItems = items;
+  updateSavedBadge();
+  renderSavedPanel();
+}
+
+function exportSaved() {
+  const items = ls.get('saved_items') || [];
+  if(!items.length) return;
+  const text = 'Saved Items — ' + new Date().toLocaleDateString() + '\n\n' + items.map((id,i) => `${i+1}. ${id.replace(/_/g,' ')}`).join('\n');
+  const blob = new Blob([text], {type:'text/plain'});
+  const a    = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'saved-items.txt';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+// ═══ SETTINGS ════════════════════════════════════════════════
+function renderSettings() {
+  const body = $('settings-body');
+  const sbUrl = CFG.supabaseUrl || ls.get('sb_url') || '';
+  const aiUrl = CFG.aiWorkerUrl || '';
+  body.innerHTML = `
+    <div class="settings-row">
+      <div>
+        <div class="settings-label">🌿 Vibe</div>
+        <div class="settings-sub">Adjust the colour feel</div>
+      </div>
+      <button class="tb-btn" onclick="togglePanel('vibe');togglePanel('settings')">Change</button>
+    </div>
+    <div class="settings-row">
+      <div>
+        <div class="settings-label">👤 Your name</div>
+        <div class="settings-sub">${esc(S.user?.name || 'Not set')}</div>
+      </div>
+    </div>
+    <div class="settings-row">
+      <div>
+        <div class="settings-label">📡 Family connection</div>
+        <div class="settings-sub">${sbUrl ? '✅ Connected' : '⚠️ Not configured'}</div>
+      </div>
+    </div>
+    <div class="settings-row">
+      <div>
+        <div class="settings-label">🤖 AI content</div>
+        <div class="settings-sub">${aiUrl ? '✅ Worker configured' : (ls.get('ai_key') ? '✅ Key stored' : '⚠️ Not configured')}</div>
+      </div>
+    </div>
+    ${S.user?.isAdmin ? `
+    <div class="settings-row">
+      <div>
+        <div class="settings-label">🛡 Admin mode</div>
+        <div class="settings-sub">Delete any post. Auto-disables after 10 min.</div>
+      </div>
+      <button class="toggle-btn${S.adminMode?' on':''}" id="admin-toggle" onclick="toggleAdminMode(!S.adminMode)" aria-label="Toggle admin mode" role="switch" aria-checked="${S.adminMode}">
+        <div class="toggle-knob"></div>
+      </button>
+    </div>
+    ${S.adminMode ? '<div id="admin-panel-inline"></div>' : ''}
+    ` : ''}
+    <button class="settings-danger" onclick="signOut()">Sign out</button>`;
+
+  if(S.user?.isAdmin && S.adminMode) loadFlagsAdmin();
+}
+
+async function loadFlagsAdmin() {
+  if(!S.sb || !S.sbOk) return;
+  const cont = $('admin-panel-inline');
+  if(!cont) return;
+  try {
+    const { data, error } = await S.sb.from('flags').select('*, family_posts(*)').order('created_at');
+    if(error) throw error;
+    if(!data?.length) { cont.innerHTML = '<div style="font-size:13px;color:var(--text-3);padding:10px 0">No flagged posts.</div>'; return; }
+    cont.innerHTML = data.map(f => `
+      <div class="flag-item">
+        <div class="flag-meta">Flagged ${timeAgo(f.created_at)}</div>
+        <div class="flag-content">${esc(f.family_posts?.content?.slice(0,100)||'[No text]')}</div>
+        <div class="flag-actions">
+          <button class="admin-del-btn" onclick="adminDeleteFlagged('${esc(f.post_id)}','${esc(f.id)}',this)">Delete post</button>
+          <button class="admin-dismiss-btn" onclick="dismissFlag('${esc(f.id)}',this)">Dismiss flag</button>
+        </div>
+      </div>`).join('');
+  } catch {
+    cont.innerHTML = '<div style="font-size:13px;color:var(--text-3);padding:10px 0">Couldn't load flagged posts — connection issue. Check your connection and refresh.</div>';
+  }
+}
+
+async function adminDeleteFlagged(postId, flagId, btn) {
+  btn.disabled = true;
+  await finalDeletePost(postId);
+  await dismissFlag(flagId, null);
+  document.querySelector(`[data-post-id="${postId}"]`)?.remove();
+  S.familyPosts = S.familyPosts.filter(p => p.id !== postId);
+  btn.closest('.flag-item')?.remove();
+  updateFlagsBadge();
+  showToast('success','✅','Post deleted and flag dismissed.', null, null, 3000);
+}
+
+async function dismissFlag(flagId, btn) {
+  if(!S.sb || !S.sbOk) return;
+  if(btn) btn.disabled = true;
+  try {
+    await S.sb.from('flags').delete().eq('id', flagId);
+    btn?.closest('.flag-item')?.remove();
+    updateFlagsBadge();
+  } catch {
+    showToast('error','⚠️','Couldn't dismiss flag','Connection issue. Please try again.', null);
+    if(btn) btn.disabled = false;
+  }
+}
+
+function toggleAdminMode(on) {
+  S.adminMode = on;
+  clearTimeout(S.adminModeTimer);
+  const banner = $('admin-banner');
+  const toggle = $('admin-toggle');
+  if(on) {
+    banner?.classList.add('vis');
+    toggle?.classList.add('on');
+    toggle?.setAttribute('aria-checked','true');
+    S.adminModeTimer = setTimeout(() => toggleAdminMode(false), 10 * 60 * 1000);
+    showToast('info','🛡','Admin mode on','Auto-disables in 10 minutes. You can now delete any post.', null, 5000);
+  } else {
+    banner?.classList.remove('vis');
+    toggle?.classList.remove('on');
+    toggle?.setAttribute('aria-checked','false');
+    showToast('info','🔒','Admin mode off.', null, null, 2500);
+  }
+  buildFeed(); // rebuild to show/hide delete buttons
+}
+
+async function signOut() {
+  if(S.sb) await S.sb.auth.signOut().catch(()=>{});
+  ls.del('local_user');
+  ls.del('pending_name');
+  ls.del('pending_email');
+  location.reload();
+}
+
+// ═══ TEMPLATES (COMPOSE) ═════════════════════════════════════
+function initTemplates() {
+  const row = $('tmpl-row');
+  if(!row) return;
+  LIB.postTemplates.forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'tmpl-btn';
+    btn.textContent = t.emoji + ' ' + t.label;
+    btn.setAttribute('aria-label', 'Use template: ' + t.label);
+    btn.onclick = () => {
+      $('compose-text').value = t.text;
+      $('compose-text').focus();
+      updateComposeSubmit();
+      if(t.text === '') {
+        // Photo-only: trigger file picker
+        $('compose-photo').click();
+      }
+    };
+    row.appendChild(btn);
+  });
+}
+
+// ═══ ADMIN POST PANEL ════════════════════════════════════════
+function showAdminPanel() {
+  const panel = $('admin-panel');
+  panel.classList.toggle('open', S.adminMode);
+  if(S.adminMode && S.sbOk) loadFlagsAdmin();
+}
+
+// ═══ LOADING HELPERS ═════════════════════════════════════════
+let loadingMsg = 'Getting your morning ready…';
+function showLoading(msg) {
+  const el = $('loading');
+  if(msg) el.querySelector('.load-text').textContent = msg;
+  el.classList.remove('fade');
+  el.style.display = 'flex';
+}
+function hideLoading() {
+  const el = $('loading');
+  el.classList.add('fade');
+  setTimeout(() => el.style.display = 'none', 450);
+}
+
+// ═══ ONLINE/OFFLINE EVENTS ════════════════════════════════════
+window.addEventListener('online',  () => setOnline(true));
+window.addEventListener('offline', () => setOnline(false));
+
+// ═══ PWA MANIFEST (inline) ════════════════════════════════════
+function injectPWAManifest() {
+  const manifest = {
+    name: 'Morning, You',
+    short_name: 'Morning',
+    description: 'Your calm daily space',
+    start_url: '/',
+    display: 'standalone',
+    background_color: '#f7f2ec',
+    theme_color: '#f7f2ec',
+    icons: [{src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🌿</text></svg>',sizes:'any',type:'image/svg+xml'}]
+  };
+  const blob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
+  const link = document.createElement('link');
+  link.rel = 'manifest';
+  link.href = URL.createObjectURL(blob);
+  document.head.appendChild(link);
+}
+
+// ═══ INIT ════════════════════════════════════════════════════
+async function init() {
+  injectPWAManifest();
+  pruneSeenCards();
+  checkVersion();
+  checkCfgPlaceholders();
+
+  // Restore state
+  S.vibe       = ls.get('vibe') || 'calm';
+  S.savedItems = ls.get('saved_items') || [];
+  S.lastVisit  = ls.get('last_visit');
+  ls.set('last_visit', new Date().toISOString());
+
+  // Apply vibe
+  const v = LIB.vibes.find(x => x.id === S.vibe);
+  if(v) document.body.style.filter = v.filter;
+
+  // Clock
+  tickClock();
+  setInterval(tickClock, 15000);
+
+  // Connectivity
+  setOnline(navigator.onLine);
+
+  // Init Supabase
+  await initSupabase();
+
+  // Auth
+  await initAuth();
+
+  // If no user yet, wait for auth (overlay is showing)
+  if(!S.user && !$('auth-overlay').classList.contains('hidden')) {
+    hideLoading();
+    return;
+  }
+
+  await postAuthInit();
+}
+
+async function postAuthInit() {
+  if(!S.user) return;
+
+  hideLoading();
+
+  // Hero
+  updateHero();
+  setInterval(updateHero, 5 * 60 * 1000); // update time context every 5 min
+
+  // Mood
+  initMood();
+
+  // Weather
+  fetchWeather();
+
+  // Vibes init
+  initVibes();
+
+  // Today's Moments
+  initMoments();
+
+  // Saved badge
+  updateSavedBadge();
+
+  // Templates
+  initTemplates();
+
+  // Compose submit initial state
+  updateComposeSubmit();
+
+  // AI content (async, feed rebuilds)
+  const aiPromise = fetchAIContent();
+
+  // Family posts (async)
+  if(S.sb && S.sbOk) {
+    await loadFamilyPosts();
+    subscribeRealtime();
+    if(S.user?.isAdmin) updateFlagsBadge();
+  } else if(!S.sbOk && (CFG.supabaseUrl || ls.get('sb_url'))) {
+    $('conn-banner').classList.add('vis');
+  }
+
+  // Build feed with what we have
+  buildFeed();
+
+  // Rebuild once AI content is ready
+  aiPromise.then(() => { if(S.aiContent) { buildFeed(); renderMomentsInline(); renderMomentsPanel(); } });
+
+  // FAB visibility (hide if no Supabase)
+  if(!S.sbOk && !S.sb) $('fab').classList.add('hidden');
+
+  // Show admin panel if admin mode was on
+  if(S.adminMode) $('admin-banner').classList.add('vis');
+}
+
+// Start
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
