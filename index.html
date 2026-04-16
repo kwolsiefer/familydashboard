@@ -79,7 +79,7 @@ details.setup-note ol{padding-left:16px}
 /* ═══ TOPBAR ════════════════════════════════════════════ */
 #topbar{position:sticky;top:0;z-index:200;background:rgba(247,242,236,.9);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;padding:10px 16px;transition:background .4s}
 @media(prefers-color-scheme:dark){#topbar{background:rgba(30,26,22,.9)}}
-.tb-name{font-family:"Lora",serif;font-size:13px;color:var(--text-2);font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px}
+.tb-name{font-family:"Lora",serif;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;color:var(--text-2);font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px}
 .tb-clock{font-size:12px;color:var(--text-3);letter-spacing:.06em;white-space:nowrap}
 .tb-gap{flex:1;min-width:4px}
 .tb-btn{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 12px;font-family:"DM Sans",sans-serif;font-size:12px;color:var(--text-2);cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s;white-space:nowrap;position:relative;-webkit-tap-highlight-color:transparent}
@@ -114,7 +114,7 @@ main{max-width:var(--max-w);margin:0 auto;padding:0 16px 80px}
 #hero{padding:28px 0 18px;text-align:center}
 #hero-icon{font-size:34px;margin-bottom:6px;display:block;animation:breathe 4s ease-in-out infinite}
 #greeting{font-family:"Lora",serif;font-size:clamp(22px,5vw,32px);font-weight:600;line-height:1.25;margin-bottom:4px}
-#hero-date{font-size:13px;color:var(--text-3);letter-spacing:.04em;margin-bottom:10px}
+#hero-date{font-size:14px;color:var(--text-2);letter-spacing:.02em;margin-bottom:12px;font-weight:400}
 #weather-pill{display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:5px 14px;font-size:13px;color:var(--text-2);margin-bottom:8px}
 #new-posts-line{font-size:13px;color:var(--gold);margin-top:6px;display:none;cursor:pointer}
 #new-posts-line.vis{display:block}
@@ -202,8 +202,8 @@ main{max-width:var(--max-w);margin:0 auto;padding:0 16px 80px}
 .ctitle{font-family:"Lora",serif;font-size:16px;font-weight:600;line-height:1.4;margin-bottom:7px}
 .cbody{font-size:14px;color:var(--text-2);line-height:1.7}
 .csource{font-size:11px;color:var(--text-3);margin-top:5px}
-.cactions{display:flex;align-items:center;gap:7px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border-soft);flex-wrap:wrap}
-.cact{background:none;border:1px solid var(--border);border-radius:20px;padding:6px 13px;font-size:12px;color:var(--text-2);cursor:pointer;display:flex;align-items:center;gap:4px;transition:all .15s;font-family:"DM Sans",sans-serif;min-height:36px;-webkit-tap-highlight-color:transparent}
+.cactions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:10px;border-top:1px solid var(--border-soft);align-items:center}
+.cact{border:1px solid var(--border);background:var(--bg);padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text-2);transition:all .15s;-webkit-tap-highlight-color:transparent;min-height:36px;display:inline-flex;align-items:center;gap:4px}
 .cact:hover{background:var(--bg)}
 .cact.saved{background:var(--mauve-lt);border-color:var(--mauve);color:var(--mauve)}
 .cact.hearted{background:var(--rose-lt);border-color:var(--rose);color:var(--rose)}
@@ -212,7 +212,7 @@ main{max-width:var(--max-w);margin:0 auto;padding:0 16px 80px}
 .cact-link:hover{text-decoration:underline}
 .reveal-btn{background:var(--mauve);color:#fff;border:none;border-radius:20px;padding:7px 18px;font-size:13px;cursor:pointer;font-family:"DM Sans",sans-serif;transition:opacity .2s;margin-top:9px;min-height:36px;-webkit-tap-highlight-color:transparent}
 .reveal-btn:hover{opacity:.85}
-.reveal-box{display:none;margin-top:10px;background:var(--bg);border-radius:var(--rs);padding:11px 14px;font-size:14px;color:var(--text);line-height:1.6;border:1px solid var(--border)}
+.reveal-box{display:none;margin-top:10px;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);color:var(--text-2);font-size:14px;line-height:1.5;animation:fadeIn .2s ease}
 .reveal-box.shown{display:block;animation:fadeIn .25s ease}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
@@ -237,7 +237,7 @@ main{max-width:var(--max-w);margin:0 auto;padding:0 16px 80px}
 .comment-text{flex:1;line-height:1.5}
 .comment-del{background:none;border:none;color:var(--text-3);cursor:pointer;font-size:14px;padding:0 4px;min-width:28px;min-height:28px;display:flex;align-items:center;justify-content:center}
 .comment-input-row{display:flex;gap:8px;margin-top:8px}
-.comment-input{flex:1;border:1px solid var(--border);border-radius:var(--rs);padding:8px 11px;font-size:14px;font-family:"DM Sans",sans-serif;color:var(--text);background:var(--bg);outline:none;transition:border-color .15s}
+.comment-input{flex:1;border:1px solid var(--border);border-radius:12px;padding:9px 13px;font-size:15px;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);outline:none;min-height:42px;transition:border-color .2s}
 .comment-input:focus{border-color:var(--gold)}
 .comment-send{background:var(--gold);color:#fff;border:none;border-radius:var(--rs);padding:8px 14px;font-size:13px;cursor:pointer;font-family:"DM Sans",sans-serif;transition:opacity .2s;min-height:36px;-webkit-tap-highlight-color:transparent}
 .comment-send:hover{opacity:.85}
@@ -418,6 +418,22 @@ body.vibe-forest #compose-sheet { background:#eef8f0; }
   body.vibe-focused #topbar { background:rgba(10,24,40,.92) !important; }
   body.vibe-forest  #topbar { background:rgba(10,30,16,.92) !important; }
 }
+/* ── Share comment sheet ── */
+#share-overlay{position:fixed;inset:0;background:rgba(0,0,0,0);z-index:310;display:none;transition:background .25s}
+#share-overlay.vis{display:block;background:rgba(0,0,0,.4)}
+#share-comment-sheet{position:fixed;bottom:0;left:0;right:0;z-index:320;background:var(--surface);border-radius:20px 20px 0 0;padding:16px 20px;padding-bottom:max(24px,env(safe-area-inset-bottom));box-shadow:0 -4px 30px rgba(0,0,0,.14);transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);max-height:80dvh;overflow-y:auto}
+#share-comment-sheet.open{transform:translateY(0)}
+.share-sheet-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 14px;cursor:pointer}
+.share-preview-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:10px 13px;margin-bottom:14px;font-size:13px;color:var(--text-2);line-height:1.5}
+.share-preview-type{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);margin-bottom:4px}
+.share-preview-text{color:var(--text);font-size:14px;line-height:1.5}
+#share-comment-input{width:100%;border:1px solid var(--border);border-radius:12px;padding:11px 14px;font-size:15px;font-family:"DM Sans",sans-serif;color:var(--text);background:var(--bg);resize:none;outline:none;min-height:72px;box-sizing:border-box;line-height:1.5;transition:border-color .2s}
+#share-comment-input:focus{border-color:var(--mauve)}
+#share-comment-input::placeholder{color:var(--text-3)}
+.share-sheet-actions{display:flex;gap:8px;margin-top:12px}
+.share-cancel-btn{background:none;border:1px solid var(--border);border-radius:20px;padding:10px 20px;font-size:14px;cursor:pointer;color:var(--text-2);font-family:"DM Sans",sans-serif;flex-shrink:0;min-height:44px}
+.share-submit-btn{flex:1;background:var(--mauve);color:#fff;border:none;border-radius:20px;padding:10px 20px;font-size:14px;cursor:pointer;font-family:"DM Sans",sans-serif;font-weight:500;min-height:44px;transition:opacity .2s}
+.share-submit-btn:disabled{opacity:.5;cursor:default}
 /* ── Left moments tab ── */
 #moments-left-tab{
   position:fixed;left:0;top:50%;transform:translateY(-50%);
@@ -435,12 +451,12 @@ body.vibe-forest #compose-sheet { background:#eef8f0; }
 #moments-drawer-overlay.vis{display:block;background:rgba(0,0,0,.3)}
 #moments-drawer{position:fixed;top:0;left:0;bottom:0;width:min(340px,88vw);z-index:296;background:var(--surface);box-shadow:4px 0 24px rgba(0,0,0,.12);transform:translateX(-100%);transition:transform .3s cubic-bezier(.4,0,.2,1);overflow-y:auto;padding:0;display:block}
 #moments-drawer.open{transform:translateX(0)}
-.drawer-header{position:sticky;top:0;background:var(--surface);border-bottom:1px solid var(--border);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;z-index:1}
+.drawer-header{position:sticky;top:0;background:var(--surface);border-bottom:1px solid var(--border);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;z-index:1;gap:8px}
 .drawer-title{font-family:"Lora",serif;font-size:16px;font-weight:600;display:flex;align-items:center;gap:8px}
 .drawer-close{background:none;border:none;color:var(--text-3);cursor:pointer;font-size:22px;padding:4px;min-width:36px;min-height:36px;display:flex;align-items:center;justify-content:center}
 .drawer-body{padding:16px 18px 32px}
 /* ── V2: feed filter ── */
-.feed-header{display:flex;align-items:center;justify-content:space-between;margin:22px 0 11px}
+.feed-header{display:flex;align-items:center;justify-content:space-between;margin:24px 0 12px}
 .feed-header-label{font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3)}
 .feed-filter-pills{display:flex;gap:3px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:3px}
 .filter-pill{background:none;border:none;border-radius:16px;padding:4px 12px;font-size:11px;cursor:pointer;color:var(--text-3);font-family:"DM Sans",sans-serif;transition:all .2s;font-weight:500;min-height:30px;-webkit-tap-highlight-color:transparent}
@@ -749,6 +765,22 @@ body.vibe-forest #compose-sheet { background:#eef8f0; }
   <div style="display:flex;gap:8px;margin-top:14px">
     <button id="compose-cancel" onclick="closeCompose()" style="background:none;border:1px solid var(--border);border-radius:20px;padding:10px 16px;font-size:14px;cursor:pointer;color:var(--text-2);font-family:'DM Sans',sans-serif;min-height:44px">Cancel</button>
     <button id="compose-submit" onclick="submitPost()" disabled style="flex:1;background:var(--gold);color:#fff;border:none;border-radius:20px;padding:10px;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity .2s;min-height:44px">Post ✦</button>
+  </div>
+</div>
+
+<!-- SHARE COMMENT SHEET -->
+<div id="share-overlay" onclick="closeShareSheet()"></div>
+<div id="share-comment-sheet" role="dialog" aria-label="Share to family">
+  <div class="share-sheet-handle" onclick="closeShareSheet()"></div>
+  <div style="font-family:'Lora',serif;font-size:16px;font-weight:600;margin-bottom:12px;color:var(--text)">Share with family</div>
+  <div class="share-preview-card">
+    <div class="share-preview-type" id="share-preview-type"></div>
+    <div class="share-preview-text" id="share-preview-text"></div>
+  </div>
+  <textarea id="share-comment-input" placeholder="Add a thought… (optional)" maxlength="300" aria-label="Your comment"></textarea>
+  <div class="share-sheet-actions">
+    <button class="share-cancel-btn" onclick="closeShareSheet()">Cancel</button>
+    <button class="share-submit-btn" id="share-submit-btn" onclick="submitShare()">Post to Family ✦</button>
   </div>
 </div>
 
@@ -2025,13 +2057,42 @@ function buildCard(c){
 }
 function revealAnswer(btn){ btn.style.display="none"; btn.nextElementSibling?.classList.add("shown"); }
 
-async function shareToFamily(btn, text, url="", cardType="", answer=""){
-  // Encode full card data so family can see it properly
-  const cardMeta=JSON.stringify({type:cardType,text,url,answer});
-  const post={id:crypto.randomUUID(),author_id:S.user?.id,author_name:S.user?.name||"Someone",author_color:S.user?.color||LIB.avatarColors[0],type:"shared_card",content:"CARD_DATA:"+cardMeta,image_url:null,created_at:new Date().toISOString()};
+// Share state
+const _share={btn:null,text:"",url:"",cardType:"",answer:""};
+
+function shareToFamily(btn, text, url="", cardType="", answer=""){
+  if(!S.user) return;
+  _share.btn=btn; _share.text=text; _share.url=url; _share.cardType=cardType; _share.answer=answer;
+  // Populate preview
+  const typeLabels={article:"📰 Article",riddle:"🧩 Riddle",teaser:"💡 Brain Teaser",
+    fact:"✨ Fun Fact",joy:"✨ Micro-Joy",question:"💭 Question",video:"▶ Video",
+    nature:"🌿 Nature",onthisday:"📅 On This Day",quote:"💬 Quote",postsecret:"📮 PostSecret",nasa:"🔭 Space"};
+  const pt=$("share-preview-type"); const px=$("share-preview-text");
+  if(pt) pt.textContent=typeLabels[cardType]||"Card";
+  if(px) px.textContent=text.slice(0,120)+(text.length>120?"…":"");
+  const inp=$("share-comment-input"); if(inp) inp.value="";
+  $("share-overlay").classList.add("vis");
+  $("share-comment-sheet").classList.add("open");
+  history.pushState(null,"",location.href);
+  setTimeout(()=>inp?.focus(),300);
+}
+function closeShareSheet(){
+  $("share-overlay").classList.remove("vis");
+  $("share-comment-sheet").classList.remove("open");
+}
+async function submitShare(){
+  const comment=($("share-comment-input")?.value||"").trim();
+  const btn=$("share-submit-btn"); if(btn){btn.disabled=true;btn.textContent="Posting…";}
+  const cardMeta=JSON.stringify({type:_share.cardType,text:_share.text,url:_share.url,answer:_share.answer});
+  const fullContent=(comment?comment+"\n\n":"")+"CARD_DATA:"+cardMeta;
+  const post={id:crypto.randomUUID(),author_id:S.user?.id,author_name:S.user?.name||"Someone",
+    author_color:S.user?.color||LIB.avatarColors[0],type:"shared_card",
+    content:fullContent,image_url:null,created_at:new Date().toISOString()};
   await savePost(post);
-  btn.textContent="✓ Shared"; btn.disabled=true;
-  setTimeout(()=>{btn.textContent="📤 Share";btn.disabled=false;},3000);
+  closeShareSheet();
+  if(_share.btn){_share.btn.textContent="✓ Shared";_share.btn.disabled=true;
+    setTimeout(()=>{if(_share.btn){_share.btn.textContent="📤 Share";_share.btn.disabled=false;}},3000);}
+  if(btn){btn.disabled=false;btn.textContent="Post to Family ✦";}
 }
 function shareToFamilyQuestion(q){
   openCompose();
@@ -2085,12 +2146,18 @@ function buildFamilyCard(p){
       </div>
     </div>
     ${p.content?(()=>{
-      if(p.content.startsWith("CARD_DATA:")){
+      // Handle comment + CARD_DATA (comment\n\nCARD_DATA:...)
+      const cardDataIdx=p.content.indexOf("CARD_DATA:");
+      const hasCardData=cardDataIdx>-1;
+      const commentPart=hasCardData&&cardDataIdx>0?p.content.slice(0,cardDataIdx).trim():"";
+      const rawCardData=hasCardData?p.content.slice(cardDataIdx+10):"";
+      if(hasCardData){
         try{
-          const cd=JSON.parse(p.content.slice(10));
+          const cd=JSON.parse(rawCardData);
+          const commentHtml=commentPart?`<div class="fam-content" style="font-size:15px;margin-bottom:10px;font-style:italic">"${esc(commentPart)}"</div>`:"";
           const ansId="fca-"+p.id;
           if(cd.type==="riddle"||cd.type==="teaser"){
-            return `<div style="background:var(--bg);border-radius:var(--rs);padding:12px 14px;margin-bottom:8px;border:1px solid var(--border)">
+            return commentHtml+`<div style="background:var(--bg);border-radius:var(--rs);padding:12px 14px;margin-bottom:8px;border:1px solid var(--border)">
               <div style="font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px">${cd.type==="riddle"?"🧩 Riddle":"💡 Brain Teaser"}</div>
               <div style="font-size:15px;font-weight:500;color:var(--text);margin-bottom:10px">${esc(cd.text||"")}</div>
               <button onclick="const el=document.getElementById('${ansId}');el.style.display=el.style.display==='none'?'block':'none';this.textContent=el.style.display==='none'?'Reveal answer':'Hide answer'" style="background:var(--mauve);color:#fff;border:none;border-radius:20px;padding:6px 16px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif">Reveal answer</button>
@@ -2102,14 +2169,14 @@ function buildFamilyCard(p){
               ${cd.url?`<a href="${esc(cd.url)}" target="_blank" rel="noopener noreferrer" style="font-size:15px;font-weight:500;color:var(--text);text-decoration:none;display:block;margin-bottom:6px" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">${esc(cd.text||"")} ↗</a>`:`<div style="font-size:15px;font-weight:500;color:var(--text)">${esc(cd.text||"")}</div>`}
             </div>`;
           } else if(cd.type==="joy"){
-            return `<div style="background:var(--sage-lt);border-radius:var(--rs);padding:12px 14px;margin-bottom:8px;border:1px solid var(--sage)">
+            return commentHtml+`<div style="background:var(--bg);border-radius:var(--rs);padding:12px 14px;margin-bottom:8px;border:1px solid var(--sage)">
               <div style="font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--sage);margin-bottom:6px">✨ Micro-Moment</div>
               <div style="font-size:15px;color:var(--text)">${esc(cd.text||"")}</div>
             </div>`;
           } else {
             return `<div class="fam-content">${esc(cd.text||"")}</div>`;
           }
-        }catch{ return `<div class="fam-content">${esc(p.content)}</div>`; }
+        }catch(e){ return `<div class="fam-content">${esc(p.content)}</div>`; }
       }
       return `<div class="fam-content" style="${(!urls.length)?'font-size:17px;font-family:\'Lora\',serif;line-height:1.6;padding:4px 0':''}">${esc(p.content)}</div>`;
     })():""}
@@ -2648,6 +2715,7 @@ function toggleMomentsDrawer(){
     closeMomentsDrawer();
   } else {
     history.pushState(null,"",location.href);
+    $("moments-left-tab")?.classList.add("hidden");
     drawer.classList.add("open");
     overlay.classList.add("vis");
     const btn=$("btn-moments"); if(btn) btn.classList.add("on");
@@ -2656,6 +2724,7 @@ function toggleMomentsDrawer(){
   }
 }
 function closeMomentsDrawer(){
+  $("moments-left-tab")?.classList.remove("hidden");
   $("moments-drawer").classList.remove("open");
   $("moments-drawer-overlay").classList.remove("vis");
   const btn=$("btn-moments"); if(btn) btn.classList.remove("on");
@@ -3082,6 +3151,7 @@ function hideLoading(){ const el=$("loading"); el.classList.add("fade"); setTime
 
 // ═══ ONLINE/OFFLINE ══════════════════════════════════════════════════
 window.addEventListener("popstate",()=>{
+  if($("share-comment-sheet").classList.contains("open")){ closeShareSheet(); return; }
   if($("moments-drawer").classList.contains("open")){ history.pushState(null,"",location.href); closeMomentsDrawer(); return; }
   if(document.querySelector(".modal-box")){ const m=document.querySelector('[id$="-modal"].open')||document.querySelector('[id$="lightbox"].open'); if(m){ history.pushState(null,"",location.href); m.classList.remove("open"); document.body.style.overflow=""; return; } }
   if(S.activePanel){ history.pushState(null,"",location.href); closePanel(); return; }
