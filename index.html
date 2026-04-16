@@ -2481,9 +2481,10 @@ function closeMomentsDrawer(){
   const btn=$("btn-moments"); if(btn) btn.classList.remove("on");
 }
 function updateMomentsPreview(){
+  const el=$("moments-preview"); if(!el) return;
   const {primary}=PA.getModules(S.timeCtx);
   const labels={wod:"Word of the Day",stretch:"Stretch",timer:"Calm Timer",intention:"One word for today",top3:"What gets done today",notdoing:"What can wait",quote:"Quote",gratitude:"What went right",nature:"Nature moment"};
-  $("moments-preview").textContent=primary[0]?labels[primary[0]]||"":(PA.startCollapsed()?"Tap to open":"");
+  el.textContent=primary[0]?labels[primary[0]]||"":"";
 }
 
 function buildModule(id,secondary=false){
@@ -2888,5 +2889,4 @@ async function postAuthInit(){
 document.addEventListener("DOMContentLoaded",init);
 </script>
 </body>
-</html>
-  
+</html>  
