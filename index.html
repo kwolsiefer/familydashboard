@@ -1262,6 +1262,9 @@ function toggleStar(item, btn){
   }
   ls.set("stars", stars);
   updateStarsBadge();
+  // Sync to Supabase
+  if(idx>-1) removeStarFromSupabase(item.id);
+  else saveStarToSupabase({...item, starredAt:Date.now()});
 }
 function isStarred(id){ return getStars().some(s=>s.id===id); }
 function updateStarsBadge(){
@@ -1430,6 +1433,40 @@ async function onAuthSuccess(session){
   S.user={id:session.user.id,name:profile?.name||ls.get("pending_name")||email.split("@")[0],email,color:profile?.color||LIB.avatarColors[0],isAdmin};
   ls.set("local_user",S.user); ls.del("pending_name"); ls.del("pending_email");
   hideAuthOverlay(); hideLoading();
+}
+// ── Stars sync with Supabase ─────────────────────────
+async function syncStarsFromSupabase(){
+  if(!S.sb||!S.sbOk||!S.user) return;
+  try{
+    const {data,error}=await S.sb.from("user_stars").select("*").eq("user_id",S.user.id).order("starred_at",{ascending:false});
+    if(error) throw error;
+    if(!data?.length) return;
+    // Merge remote stars into local (remote wins for items not in local)
+    const local=getStars();
+    const localIds=new Set(local.map(s=>s.id));
+    let changed=false;
+    data.forEach(row=>{
+      if(!localIds.has(row.item_id)&&row.item_data){
+        local.unshift({...row.item_data,id:row.item_id,starredAt:new Date(row.starred_at).getTime()});
+        changed=true;
+      }
+    });
+    if(changed){ ls.set("stars",local); updateStarsBadge(); }
+  }catch(e){ console.info("Stars sync:",e.message); }
+}
+async function saveStarToSupabase(item){
+  if(!S.sb||!S.sbOk||!S.user) return;
+  try{
+    await S.sb.from("user_stars").upsert({
+      user_id:S.user.id, item_id:item.id,
+      item_data:item, starred_at:new Date(item.starredAt||Date.now()).toISOString()
+    },{onConflict:"user_id,item_id"});
+  }catch(e){ console.info("Star save:",e.message); }
+}
+async function removeStarFromSupabase(itemId){
+  if(!S.sb||!S.sbOk||!S.user) return;
+  try{ await S.sb.from("user_stars").delete().match({user_id:S.user.id,item_id:itemId}); }
+  catch(e){ console.info("Star remove:",e.message); }
 }
 async function signOut(){
   if(S.sb) await S.sb.auth.signOut().catch(()=>{});
@@ -1938,7 +1975,9 @@ function buildCard(c){
 function revealAnswer(btn){ btn.style.display="none"; btn.nextElementSibling?.classList.add("shown"); }
 
 async function shareToFamily(btn, text, url="", cardType="", answer=""){
-  const post={id:crypto.randomUUID(),author_id:S.user?.id,author_name:S.user?.name||"Someone",author_color:S.user?.color||LIB.avatarColors[0],type:"shared_card",content:"📤 "+text.slice(0,150)+(answer?"\n\nAnswer: "+answer:""),image_url:null,created_at:new Date().toISOString()};
+  // Encode full card data so family can see it properly
+  const cardMeta=JSON.stringify({type:cardType,text,url,answer});
+  const post={id:crypto.randomUUID(),author_id:S.user?.id,author_name:S.user?.name||"Someone",author_color:S.user?.color||LIB.avatarColors[0],type:"shared_card",content:"CARD_DATA:"+cardMeta,image_url:null,created_at:new Date().toISOString()};
   await savePost(post);
   btn.textContent="✓ Shared"; btn.disabled=true;
   setTimeout(()=>{btn.textContent="📤 Share";btn.disabled=false;},3000);
@@ -1994,7 +2033,35 @@ function buildFamilyCard(p){
         <div class="fam-dropdown" id="fam-menu-${esc(p.id)}">${menuItems}</div>`:""}
       </div>
     </div>
-    ${p.content?`<div class="fam-content" style="${(!urls.length)?'font-size:17px;font-family:\'Lora\',serif;line-height:1.6;padding:4px 0':''}">${esc(p.content)}</div>`:""}
+    ${p.content?(()=>{
+      if(p.content.startsWith("CARD_DATA:")){
+        try{
+          const cd=JSON.parse(p.content.slice(10));
+          const ansId="fca-"+p.id;
+          if(cd.type==="riddle"||cd.type==="teaser"){
+            return `<div style="background:var(--bg);border-radius:var(--rs);padding:12px 14px;margin-bottom:8px;border:1px solid var(--border)">
+              <div style="font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px">${cd.type==="riddle"?"🧩 Riddle":"💡 Brain Teaser"}</div>
+              <div style="font-size:15px;font-weight:500;color:var(--text);margin-bottom:10px">${esc(cd.text||"")}</div>
+              <button onclick="const el=document.getElementById('${ansId}');el.style.display=el.style.display==='none'?'block':'none';this.textContent=el.style.display==='none'?'Reveal answer':'Hide answer'" style="background:var(--mauve);color:#fff;border:none;border-radius:20px;padding:6px 16px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif">Reveal answer</button>
+              <div id="${ansId}" style="display:none;margin-top:8px;font-size:14px;color:var(--text);background:var(--surface);border-radius:8px;padding:10px 12px;border:1px solid var(--border)">${esc(cd.answer||"")}</div>
+            </div>`;
+          } else if(cd.type==="article"){
+            return `<div style="background:var(--bg);border-radius:var(--rs);padding:12px 14px;margin-bottom:8px;border:1px solid var(--border)">
+              <div style="font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);margin-bottom:6px">📰 Good News</div>
+              ${cd.url?`<a href="${esc(cd.url)}" target="_blank" rel="noopener noreferrer" style="font-size:15px;font-weight:500;color:var(--text);text-decoration:none;display:block;margin-bottom:6px" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">${esc(cd.text||"")} ↗</a>`:`<div style="font-size:15px;font-weight:500;color:var(--text)">${esc(cd.text||"")}</div>`}
+            </div>`;
+          } else if(cd.type==="joy"){
+            return `<div style="background:var(--sage-lt);border-radius:var(--rs);padding:12px 14px;margin-bottom:8px;border:1px solid var(--sage)">
+              <div style="font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--sage);margin-bottom:6px">✨ Micro-Moment</div>
+              <div style="font-size:15px;color:var(--text)">${esc(cd.text||"")}</div>
+            </div>`;
+          } else {
+            return `<div class="fam-content">${esc(cd.text||"")}</div>`;
+          }
+        }catch{ return `<div class="fam-content">${esc(p.content)}</div>`; }
+      }
+      return `<div class="fam-content" style="${(!urls.length)?'font-size:17px;font-family:\'Lora\',serif;line-height:1.6;padding:4px 0':''}">${esc(p.content)}</div>`;
+    })():""}
     ${photoHtml}
     <div class="react-row">${reactBtns}<span class="react-summary" id="rsumm-${esc(p.id)}"></span></div>
     <div class="cactions" style="padding-top:8px;margin-top:4px;border-top:none">
@@ -2507,7 +2574,7 @@ function renderMomentsBody(container){
   const hintDiv=document.createElement("div");
   hintDiv.className="passive-hint";
   if(suppressed.length>0){
-    hintDiv.innerHTML=`${suppressed.length} section${suppressed.length>1?"s":""} hidden — <span class="restore-link" onclick="PA.restoreAll();renderMomentsBody(this.closest('#moments-body,#panel-moments-body'))" tabindex="0" role="button">restore all</span>`;
+    hintDiv.innerHTML=`${suppressed.length} section${suppressed.length>1?"s":""} hidden — <span class="restore-link" onclick="doRestoreAllModules()" tabindex="0" role="button">restore all</span>`;
   } else {
     hintDiv.textContent="Tap × on any section to hide it — this section learns from what you skip.";
   }
@@ -2541,6 +2608,23 @@ function closeMomentsDrawer(){
   $("moments-drawer").classList.remove("open");
   $("moments-drawer-overlay").classList.remove("vis");
   const btn=$("btn-moments"); if(btn) btn.classList.remove("on");
+}
+function doRestoreAllModules(){
+  PA.restoreAll();
+  // Re-render whichever container is currently visible
+  const drawer=$("moments-drawer");
+  const drawerBody=$("drawer-moments-body");
+  const inlineBody=$("moments-body");
+  if(drawer?.classList.contains("open")&&drawerBody){
+    renderMomentsBody(drawerBody);
+  } else if(inlineBody?.classList.contains("open")){
+    renderMomentsBody(inlineBody);
+  } else {
+    // Force open the drawer and render
+    toggleMomentsDrawer();
+  }
+  updateMomentsPreview();
+  showToast("success","🌿","All sections restored.",null,null,2500);
 }
 function updateMomentsPreview(){
   const el=$("moments-preview"); if(!el) return;
@@ -2643,11 +2727,24 @@ function buildOptionalNote(key){
   const saved=ls.get("note_"+key)||"";
   const eid="note_"+key.replace(/[^a-z0-9]/gi,"_");
   return `<div style="margin-top:8px">
-    <div style="font-size:11px;color:var(--text-3);cursor:pointer;text-decoration:underline;display:inline" onclick="toggleNoteInput('${eid}')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')toggleNoteInput('${eid}')">Tap to add a thought (private, stays here)</div>
-    <textarea id="${eid}" style="display:none;width:100%;border:1px solid var(--border);border-radius:8px;padding:8px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--bg);resize:none;outline:none;min-height:56px;margin-top:6px" placeholder="Just a thought…" aria-label="Private note" maxlength="300" onblur="saveNote('${key}',this.value)">${esc(saved)}</textarea>
+    <div style="font-size:11px;color:var(--text-3);cursor:pointer;text-decoration:underline;display:inline" onclick="toggleNoteInput('${eid}')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')toggleNoteInput('${eid}')">Add a private thought — stays on this device only</div>
+    <textarea id="${eid}" style="display:none;width:100%;border:1px solid var(--border);border-radius:8px;padding:8px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--bg);resize:none;outline:none;min-height:56px;margin-top:6px" placeholder="Just a thought…" aria-label="Private note" maxlength="300" oninput="scheduleNoteSave('${key}',this)" onblur="saveNote('${key}',this.value)">${esc(saved)}</textarea>
   </div>`;
 }
 function toggleNoteInput(id){ const el=$(id); if(!el) return; const h=el.style.display==="none"||!el.style.display; el.style.display=h?"block":"none"; if(h){el.focus();el.setSelectionRange(el.value.length,el.value.length);} }
+const _noteSaveTimers={};
+function scheduleNoteSave(key,el){
+  clearTimeout(_noteSaveTimers[key]);
+  _noteSaveTimers[key]=setTimeout(()=>{
+    ls.set("note_"+key,el.value);
+    // Show tiny saved indicator
+    const parent=el.parentElement;
+    let ind=parent.querySelector(".note-saved-ind");
+    if(!ind){ ind=document.createElement("span"); ind.className="note-saved-ind"; ind.style.cssText="font-size:10px;color:var(--sage);margin-left:6px;opacity:0;transition:opacity .3s"; parent.appendChild(ind); }
+    ind.textContent="✓ saved"; ind.style.opacity="1";
+    setTimeout(()=>{ ind.style.opacity="0"; },1800);
+  },800);
+}
 function saveNote(key,val){ ls.set("note_"+key,val); }
 function toggleStretch(span){
   const steps=span.closest(".stretch-summary").nextElementSibling;
@@ -2674,6 +2771,11 @@ function hideModule(id){
   if(mb?.classList.contains("open")) renderMomentsBody(mb);
   if($("panel-moments")?.classList.contains("open")) renderMomentsBody(pbody);
   if($("moments-drawer")?.classList.contains("open")) renderMomentsBody(dbody);
+  else if(!mb?.classList.contains("open")&&!$("panel-moments")?.classList.contains("open")) {
+    // Neither inline nor panel open — open drawer to show the change
+    if(!$("moments-drawer")?.classList.contains("open")) toggleMomentsDrawer();
+    else renderMomentsBody(dbody);
+  }
   updateMomentsPreview();
 }
 
@@ -2783,14 +2885,32 @@ function renderStarsPanel(){
     <div id="${catId}">
     ${items.sort((a,b)=>(b.starredAt||0)-(a.starredAt||0)).map(item=>{
       const emoji=item.e||{article:"📰",video:"▶️",nasa:"🔭",question:"💭",quote:"💬",postsecret:"📮",onthisday:"📅",nature:"🌿",joy:"✨"}[item.type]||"⭐";
-      const rawText=(item.p||item.t||item.q||item.title||item.text||(item.type==="joy"?"Micro-Moment":item.type==="nature"?"Nature Moment":""));
-      const text=rawText.slice(0,100);
       const dateStr=item.starredAt?new Date(item.starredAt).toLocaleDateString("en-US",{month:"short",day:"numeric"}):"";
-      const inner=`${esc(text)}${text.length>=100?"…":""}${dateStr?` <span style="font-size:10px;color:var(--text-3);margin-left:6px">${dateStr}</span>`:""}`;
-      const textHtml=item.url
-        ? `<a href="${esc(item.url)}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;flex:1;display:block" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">${inner} <span style="color:var(--mauve);font-size:11px">↗</span></a>`
-        : `<span style="flex:1">${inner}</span>`;
-      return `<div class="star-item"><span class="star-emoji">${emoji}</span>${textHtml}<button class="star-rm" onclick="removeStarById('${esc(item.id)}',this)" aria-label="Unstar">×</button></div>`;
+      let cardHtml="";
+      const rmBtn=`<button class="star-rm" onclick="removeStarById('${esc(item.id)}',this)" aria-label="Unstar" style="flex-shrink:0;align-self:flex-start">×</button>`;
+      const dateBadge=dateStr?`<span style="font-size:10px;color:var(--text-3);float:right">${dateStr}</span>`:"";
+
+      if(item.type==="riddle"||item.type==="teaser"){
+        const ansId="sa-"+item.id.replace(/[^a-z0-9]/gi,"_");
+        cardHtml=`<div style="flex:1"><div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:6px">${esc(item.q||"")} ${dateBadge}</div>
+          <button onclick="const el=document.getElementById('${ansId}');el.style.display=el.style.display==='none'?'block':'none';this.textContent=el.style.display==='none'?'Reveal answer':'Hide answer'" style="background:none;border:1px solid var(--border);border-radius:12px;padding:4px 10px;font-size:11px;cursor:pointer;color:var(--text-2);font-family:'DM Sans',sans-serif">Reveal answer</button>
+          <div id="${ansId}" style="display:none;margin-top:6px;font-size:13px;color:var(--text-2);background:var(--bg);border-radius:6px;padding:8px 10px">${esc(item.a||"")}</div></div>`;
+      } else if(item.type==="video"){
+        const vid=item.id2||item.id;
+        cardHtml=`<div style="flex:1"><a href="https://youtube.com/watch?v=${esc(vid)}" target="_blank" rel="noopener noreferrer" style="text-decoration:none;display:block"><img src="https://img.youtube.com/vi/${esc(vid)}/mqdefault.jpg" style="width:100%;border-radius:6px;display:block;margin-bottom:6px" loading="lazy" onerror="this.style.display='none'"><div style="font-size:14px;font-weight:500;color:var(--text)">${esc(item.title||"")} ${dateBadge}</div><div style="font-size:12px;color:var(--mauve);margin-top:2px">▶ Watch on YouTube ↗</div></a></div>`;
+      } else if(item.type==="article"){
+        const titleLink=item.url?`<a href="${esc(item.url)}" target="_blank" rel="noopener noreferrer" style="color:var(--text);text-decoration:none;font-size:14px;font-weight:500" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">${esc(item.title||"")} ↗</a>`:`<span style="font-size:14px;font-weight:500">${esc(item.title||"")}</span>`;
+        cardHtml=`<div style="flex:1">${dateBadge}${titleLink}${item.desc?`<div style="font-size:12px;color:var(--text-3);margin-top:4px;line-height:1.5">${esc(item.desc.slice(0,160))}…</div>`:""}</div>`;
+      } else if(item.type==="joy"){
+        cardHtml=`<div style="flex:1">${dateBadge}<div style="font-size:14px;color:var(--text);margin-bottom:4px">${esc(item.p||"Micro-Moment")}</div>${item.w?`<div style="font-size:12px;color:var(--text-3);font-style:italic;line-height:1.5">${esc(item.w)}</div>`:""}</div>`;
+      } else if(item.type==="nasa"){
+        cardHtml=`<div style="flex:1">${item.url?`<a href="${esc(item.url)}" target="_blank" rel="noopener noreferrer" style="text-decoration:none"><img src="${esc(item.url)}" style="width:100%;border-radius:6px;margin-bottom:6px" loading="lazy" onerror="this.style.display='none'"></a>`:""}<div style="font-size:14px;font-weight:500;color:var(--text)">${esc(item.title||"NASA")} ${dateBadge}</div></div>`;
+      } else {
+        const rawText=(item.p||item.t||item.q||item.title||item.text||"").slice(0,120);
+        const linkWrap=item.url?`<a href="${esc(item.url)}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;flex:1;display:block" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">${esc(rawText)} <span style="color:var(--mauve);font-size:11px">↗</span></a>`:`<span style="flex:1">${esc(rawText)}</span>`;
+        cardHtml=`<div style="flex:1">${dateBadge}${linkWrap}</div>`;
+      }
+      return `<div class="star-item" style="align-items:flex-start;gap:8px"><span class="star-emoji" style="margin-top:2px">${emoji}</span>${cardHtml}${rmBtn}</div>`;
     }).join("")}
     </div>`;
   }).join("");
@@ -2970,7 +3090,9 @@ async function postAuthInit(){
   if(S.sb&&S.sbOk){
     await loadFamilyPosts(); subscribeRealtime();
     if(S.user?.isAdmin) updateFlagsBadge();
-  } else if(!S.sbOk&&CFG.supabaseUrl){ $("conn-banner").classList.add("vis"); }
+  } else   // Sync stars from Supabase
+  if(S.sbOk) syncStarsFromSupabase();
+  if(!S.sbOk&&CFG.supabaseUrl){ $("conn-banner").classList.add("vis"); }
   // Dynamic content — fetch in background, rebuild when done
   fetchAllDynamic().then(()=>{ if(!userScrolled) buildFeed(); renderMomentsBody($("moments-body").classList.contains("open")?$("moments-body"):document.createElement("div")); });
   // Initial feed with what we have
