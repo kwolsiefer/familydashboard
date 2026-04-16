@@ -36,7 +36,7 @@
 }}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;overflow-x:hidden;transition:background .4s}
+body{font-family:"DM Sans",sans-serif;background:var(--vibe-bg,var(--bg));color:var(--text);min-height:100dvh;overflow-x:hidden;transition:background .5s}
 
 /* ═══ LOADING SCREEN ════════════════════════════════════ */
 #loading{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;z-index:999;transition:opacity .4s}
@@ -186,7 +186,7 @@ main{max-width:var(--max-w);margin:0 auto;padding:0 16px 80px}
 @keyframes timerPulse{0%,100%{box-shadow:none}50%{box-shadow:0 0 0 12px rgba(155,127,160,.2)}}
 
 /* ═══ FEED CARDS ════════════════════════════════════════ */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;margin-bottom:12px;box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s;animation:cardIn .35s ease both}
+.card{background:var(--vibe-surface,var(--surface));border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;margin-bottom:12px;box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s;animation:cardIn .35s ease both}
 @keyframes cardIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .card:hover{transform:translateY(-1px);box-shadow:var(--shadow-m)}
 .ctag{display:inline-block;font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:10px;margin-bottom:10px}
@@ -370,6 +370,15 @@ main{max-width:var(--max-w);margin:0 auto;padding:0 16px 80px}
 }
 </style>
 <style>
+/* ── V2: moments side drawer ── */
+#moments-drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0);z-index:295;display:none;transition:background .25s}
+#moments-drawer-overlay.vis{display:block;background:rgba(0,0,0,.3)}
+#moments-drawer{position:fixed;top:0;left:0;bottom:0;width:min(340px,88vw);z-index:296;background:var(--surface);box-shadow:4px 0 24px rgba(0,0,0,.12);transform:translateX(-100%);transition:transform .3s cubic-bezier(.4,0,.2,1);overflow-y:auto;padding:0;display:block}
+#moments-drawer.open{transform:translateX(0)}
+.drawer-header{position:sticky;top:0;background:var(--surface);border-bottom:1px solid var(--border);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;z-index:1}
+.drawer-title{font-family:"Lora",serif;font-size:16px;font-weight:600;display:flex;align-items:center;gap:8px}
+.drawer-close{background:none;border:none;color:var(--text-3);cursor:pointer;font-size:22px;padding:4px;min-width:36px;min-height:36px;display:flex;align-items:center;justify-content:center}
+.drawer-body{padding:16px 18px 32px}
 /* ── V2: feed filter ── */
 .feed-header{display:flex;align-items:center;justify-content:space-between;margin:22px 0 11px}
 .feed-header-label{font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3)}
@@ -392,14 +401,14 @@ main{max-width:var(--max-w);margin:0 auto;padding:0 16px 80px}
 /* ── V2: stretch with why ── */
 .stretch-step{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--border-soft)}
 .stretch-step:last-child{border-bottom:none}
-.stretch-step-name{font-size:14px;color:var(--text);line-height:1.4;margin-bottom:3px}
-.stretch-step-why{font-size:12px;color:var(--text-3);line-height:1.5;font-style:italic}
+.stretch-step-name{font-size:14px;color:var(--text);line-height:1.4;margin-bottom:3px;font-weight:500}
+.stretch-step-why{font-size:12px;color:var(--text-3);line-height:1.5;font-style:italic;margin-top:4px;padding:5px 8px;background:var(--bg);border-radius:4px;border-left:2px solid var(--sage)}
 /* ── V2: photo row ── */
 .photos-row{display:flex;gap:6px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding-bottom:4px;margin:6px 0}
 .photos-row::-webkit-scrollbar{display:none}
 .photo-item{position:relative;flex-shrink:0;border-radius:var(--rs);overflow:hidden;scroll-snap-align:start;background:var(--border-soft);cursor:pointer}
 .photo-item.p1{width:100%}
-.photo-item.p1 img{width:100%;max-height:280px;object-fit:contain;display:block;background:var(--border-soft)}
+.photo-item.p1 img{width:100%;max-height:300px;object-fit:cover;display:block;background:var(--border-soft);border-radius:0}
 .photo-item.p2,.photo-item.p3,.photo-item.p4{width:160px;height:160px}
 .photo-item.p2 img,.photo-item.p3 img,.photo-item.p4 img{width:100%;height:100%;object-fit:cover;display:block}
 .photo-dl{position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,.52);color:#fff;border:none;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;-webkit-tap-highlight-color:transparent}
@@ -433,7 +442,7 @@ main{max-width:var(--max-w);margin:0 auto;padding:0 16px 80px}
 .video-card .cactions{border-top-color:rgba(255,255,255,.07);margin-top:12px;padding-top:10px}
 .video-card .cact{border-color:rgba(255,255,255,.1);color:#9888d0;background:none}
 .video-card .cact:hover{background:rgba(255,255,255,.05)}
-.card.secret-card{background:#f8f0e4;border-color:#d8c8a8;border-width:2px}
+.card.secret-card{background:#f8f0e4;border-color:#d8c8a8;border-width:2px;box-shadow:3px 3px 0 #d8c8a8,0 2px 14px rgba(58,46,38,.07)}
 @media(prefers-color-scheme:dark){.card.secret-card{background:#1e1a10;border-color:#3a3020}}
 .secret-stamp{font-size:11px;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:#a08060;margin-bottom:14px;display:flex;align-items:center;gap:8px}
 .secret-stamp::before{content:"";display:inline-block;width:28px;height:18px;border:2px solid #c0a878;border-radius:2px}
@@ -543,7 +552,7 @@ main{max-width:var(--max-w);margin:0 auto;padding:0 16px 80px}
   <span class="tb-name" id="tb-name">✦</span>
   <span class="tb-clock" id="tb-clock"></span>
   <div class="tb-gap"></div>
-  <button class="tb-btn" id="btn-moments"  onclick="openPanel('moments')"  aria-label="Today's Moments"><span>🌿</span><span class="tb-lbl"> Today</span></button>
+  <button class="tb-btn" id="btn-moments"  onclick="toggleMomentsDrawer()"  aria-label="Today's Moments"><span>🌿</span><span class="tb-lbl"> Today</span></button>
   <button class="tb-btn" id="btn-family"   onclick="openPanel('family')"   aria-label="Family" style="position:relative"><span>📸</span><span class="tb-lbl"> Family</span><span class="notif-dot" id="family-dot"></span></button>
   <button class="tb-btn" id="btn-stars"    onclick="openPanel('stars')"    aria-label="Starred"><span>⭐</span><span class="tb-lbl"> Saved</span><span class="tb-badge" id="stars-badge"></span></button>
   <button class="tb-btn" id="btn-settings" onclick="openPanel('settings')" aria-label="Settings"><span>⚙️</span><span class="tb-badge" id="flags-badge"></span></button>
@@ -560,7 +569,7 @@ main{max-width:var(--max-w);margin:0 auto;padding:0 16px 80px}
 <div class="panel-sheet" id="panel-family">
   <div class="panel-h">📸 Family <button class="panel-close" onclick="closePanel()" aria-label="Close">×</button></div>
   <div id="gallery-thumbs"></div>
-  <button onclick="openGallery();closePanel()" style="display:block;margin:12px auto 0;background:none;border:1px solid var(--border);border-radius:20px;padding:7px 18px;font-size:13px;cursor:pointer;color:var(--text-2);font-family:'DM Sans',sans-serif">Full gallery →</button>
+  <button onclick="closePanel();setTimeout(openGallery,80)" style="display:block;margin:12px auto 0;background:none;border:1px solid var(--border);border-radius:20px;padding:7px 18px;font-size:13px;cursor:pointer;color:var(--text-2);font-family:'DM Sans',sans-serif">Full gallery →</button>
 </div>
 <div class="panel-sheet" id="panel-stars">
   <div class="panel-h">⭐ Starred <button class="panel-close" onclick="closePanel()" aria-label="Close">×</button></div>
@@ -591,12 +600,7 @@ main{max-width:var(--max-w);margin:0 auto;padding:0 16px 80px}
     <button class="mood-btn" onclick="setMood('ok')"    aria-label="Feeling okay">🌤</button>
     <button class="mood-btn" onclick="setMood('rough')" aria-label="Rough day">🌧</button>
   </div>
-  <div id="moments-inline">
-    <div class="moments-header" onclick="toggleMomentsInline()" role="button" aria-expanded="false">
-      <span class="moments-title">🌿 Today's Moments</span>
-      <span class="moments-preview" id="moments-preview"></span>
-      <span class="moments-chevron" id="moments-chevron">▼</span>
-    </div>
+  <div id="moments-inline" style="display:none">
     <div id="moments-body"></div>
   </div>
   <div id="family-empty">
@@ -614,6 +618,16 @@ main{max-width:var(--max-w);margin:0 auto;padding:0 16px 80px}
   <div id="feed"></div>
   <div id="feed-see-more"><button id="feed-see-more-btn" onclick="showMoreCards()">See more ↓</button></div>
 </main>
+
+<!-- MOMENTS DRAWER -->
+<div id="moments-drawer-overlay" onclick="closeMomentsDrawer()"></div>
+<div id="moments-drawer" role="dialog" aria-label="Today's Moments">
+  <div class="drawer-header">
+    <span class="drawer-title">🌿 Today's Moments</span>
+    <button class="drawer-close" onclick="closeMomentsDrawer()" aria-label="Close">×</button>
+  </div>
+  <div class="drawer-body" id="drawer-moments-body"></div>
+</div>
 
 <!-- FAB -->
 <button id="fab" onclick="openCompose()" aria-label="Share with family">📸 Share</button>
@@ -818,25 +832,25 @@ videos: [
 articles: [
   {title:"The Community Garden Reviving a Whole Neighborhood",
    desc:"A once-empty lot now feeds dozens of families and has become the place where neighbors who never spoke actually know each other. It started with one person, a bag of seeds, and permission.",
-   url:"https://www.goodgoodgood.co/", src:"Good Good Good", img:""},
+   url:"https://www.goodgoodgood.co/", src:"Good Good Good", img:"https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&q=80"},
   {title:"High Schoolers Built a Food Rescue Program Nobody Asked Them To",
    desc:"Students started redirecting cafeteria leftovers to local shelters on their own. No adult told them to. It is now operating in seven schools.",
-   url:"https://www.goodnewsnetwork.org/", src:"Good News Network", img:""},
+   url:"https://www.goodnewsnetwork.org/", src:"Good News Network", img:"https://images.unsplash.com/photo-1593113598332-cd288d649433?w=600&q=80"},
   {title:"Scientists Confirmed Trees Warn Each Other",
    desc:"New research confirms trees send chemical distress signals through the air and underground fungal networks to warn neighboring trees of insect attacks — sometimes hours before the insects arrive.",
-   url:"https://www.theguardian.com/environment", src:"The Guardian", img:""},
+   url:"https://www.theguardian.com/environment", src:"The Guardian", img:"https://images.unsplash.com/photo-1448375240586-882707db888b?w=600&q=80"},
   {title:"Volunteers Restored 40 Miles of Trail After the Storms",
    desc:"Weekend crews showed up for months without funding or press coverage. Just people who wanted the paths back. They brought their own tools.",
-   url:"https://www.goodgoodgood.co/", src:"Good Good Good", img:""},
+   url:"https://www.goodgoodgood.co/", src:"Good Good Good", img:"https://images.unsplash.com/photo-1551632811-561732d1e306?w=600&q=80"},
   {title:"The Quiet Comeback of the 20-Minute Neighborhood",
    desc:"Cities redesigning for walkability are seeing something unexpected: residents show significantly higher wellbeing and social connection, not just convenience. It turns out proximity matters more than anyone measured.",
-   url:"https://www.optimistdaily.com/", src:"Optimist Daily", img:""},
+   url:"https://www.optimistdaily.com/", src:"Optimist Daily", img:"https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=600&q=80"},
   {title:"Free Little Libraries Became Something Nobody Expected",
    desc:"Book exchange boxes started as a quirky neighborhood project. They've quietly become some of the most trusted and beloved civic spaces in towns across the country.",
    url:"https://littlefreelibrary.org/", src:"Little Free Library", img:""},
   {title:"The Farmer Who Turned a Dead Field Into a Forest",
    desc:"After decades of industrial farming stripped the soil, one farmer spent 15 years returning 500 acres to native woodland. The wildlife came back faster than anyone predicted.",
-   url:"https://www.theguardian.com/environment", src:"The Guardian", img:""},
+   url:"https://www.theguardian.com/environment", src:"The Guardian", img:"https://images.unsplash.com/photo-1542601906897-ecd6ba20ad7b?w=600&q=80"},
   {title:"Teenagers Are Writing Letters to Elderly Neighbors",
    desc:"A letter-writing program started by one 14-year-old has now connected thousands of young people with isolated older adults. Many of the pairs have been writing to each other for over three years.",
    url:"https://www.goodnewsnetwork.org/", src:"Good News Network", img:""},
@@ -844,8 +858,29 @@ articles: [
    desc:"A small research team spent 10 years documenting bee communication patterns. What they found about the precision of the waggle dance still surprises experienced entomologists.",
    url:"https://www.scientificamerican.com/", src:"Scientific American", img:""},
   {title:"A Library That Loans Out Experiences, Not Just Books",
-   desc:"This library lends camping gear, musical instruments, fishing equipment, and baking supplies. The idea: let people try something before committing to it. The waitlist for the telescope is three weeks long.",
-   url:"https://www.optimistdaily.com/", src:"Optimist Daily", img:""},
+   desc:"This library lends camping gear, musical instruments, fishing equipment, and baking supplies. The idea: let people try something before committing to buying it. The waitlist for the telescope is three weeks long.",
+   url:"https://www.optimistdaily.com/", src:"Optimist Daily", img:"https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=600&q=80"},
+  {title:"The Town That Decided to Feed Everyone",
+   desc:"A small Portuguese town launched a program where any resident can walk into a participating restaurant and eat for free, no questions asked. Restaurants are reimbursed by the council. Two years in, food insecurity dropped by 40 percent and restaurant revenue held steady.",
+   url:"https://www.positive.news/", src:"Positive News", img:"https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=80"},
+  {title:"Iceland's 4-Day Work Week Trial: Almost Everyone Stayed",
+   desc:"Iceland ran the largest four-day work week trial ever conducted. Productivity held steady or improved in 9 out of 10 workplaces. Most organizations permanently shifted to the shorter week when the trial ended. Workers reported significantly lower stress and better sleep.",
+   url:"https://www.bbc.com/news/business", src:"BBC", img:"https://images.unsplash.com/photo-1529927120475-c3f1bcc5a2dd?w=600&q=80"},
+  {title:"Dogs Are Being Trained to Detect Cancer With 97% Accuracy",
+   desc:"A UK charity has trained dogs to detect prostate cancer from urine samples with accuracy matching current clinical tests. The same dogs can detect bladder and kidney cancers. Researchers are studying exactly what compounds the dogs are detecting — it may lead to a new type of diagnostic test.",
+   url:"https://www.goodnewsnetwork.org/", src:"Good News Network", img:"https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80"},
+  {title:"Record Numbers of Young People Are Starting to Farm",
+   desc:"After decades of an aging farming population, agricultural colleges are reporting record enrollment and waiting lists. Many new farmers are choosing regenerative methods from the start — building soil rather than depleting it. Average age of new farmers in the US dropped 8 years in a decade.",
+   url:"https://www.optimistdaily.com/", src:"Optimist Daily", img:"https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=600&q=80"},
+  {title:"Scientists Revived a 46,000-Year-Old Frozen Worm",
+   desc:"Researchers in Russia found a microscopic worm frozen in Siberian permafrost for 46,000 years. When thawed in a lab, it came back to life and reproduced. It is the oldest living animal ever revived from suspended animation, raising profound questions about what life can survive.",
+   url:"https://www.scientificamerican.com/", src:"Scientific American", img:"https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&q=80"},
+  {title:"The Coral Reef That Grew Back",
+   desc:"A coral reef in the Caribbean that was declared dead after bleaching events in the 1990s has partially regrown on its own. Scientists studying it found that the surviving corals carry genetic traits that confer heat resistance — and they are now being used in restoration projects worldwide.",
+   url:"https://www.theguardian.com/environment", src:"The Guardian", img:"https://images.unsplash.com/photo-1546026423-cc4642628d2b?w=600&q=80"},
+  {title:"Blind Painter Creates Work That Sells for Thousands",
+   desc:"A painter who lost his sight in his 30s developed a tactile painting technique using texture and raised lines. His work now hangs in galleries across Europe. He says losing his vision changed what he wanted to say, not his ability to say it.",
+   url:"https://www.goodgoodgood.co/", src:"Good Good Good", img:"https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=600&q=80"},
 ],
 
 postsecret: [
@@ -1046,7 +1081,7 @@ const S = {
   user:null, sb:null, sbOk:false, online:true,
   timeCtx:"morning", mood:null, vibe:"calm", feedFilter:"all",
   familyPosts:[], allSignedUrls:{},
-  feedCards:[], feedShown:0, FEED_INITIAL:9, FEED_MORE:6,
+  feedCards:[], feedShown:0, FEED_INITIAL:14, FEED_MORE:8,
   pendingDeleteId:null, pendingDeleteTimer:null,
   composeFiles:[], composing:false,
   activePanel:null, momentsMobileOpen:false,
@@ -1453,6 +1488,13 @@ function setMood(mood){
   $("mood-row").classList.add("hidden");
   buildFeed();
 }
+function resetMood(){
+  S.mood=null; ls.del("mood_"+dateKey());
+  $("mood-row").classList.remove("hidden");
+  buildFeed();
+  closePanel();
+  showToast("success","🌱","Mood reset — pick a new one from the feed.",null,null,3000);
+}
 function initMood(){
   const saved=ls.get("mood_"+dateKey());
   if(saved){ S.mood=saved; $("mood-row").classList.add("hidden"); }
@@ -1478,8 +1520,11 @@ function buildFeed(){
   // Dynamic content first (NASA, news, quote, on this day, AI)
   if(S.dynContent.nasa?.hdurl||S.dynContent.nasa?.url){
     pool.push({type:"nasa",id:"nasa_"+dateKey(),...S.dynContent.nasa});
-  } else if(S.dynContent.nasa?.t){
-    pool.push({type:"fact",id:"nasa_fallback_"+dateKey(),e:"🌿",t:S.dynContent.nasa.t});
+  } else {
+    // Fallback nature card even if NASA unavailable
+    const msgs=LIB.nature[new Date().getMonth()+1]||LIB.nature[1];
+    const msg=msgs[new Date().getDate()%msgs.length];
+    pool.push({type:"nature",id:"nature_daily_"+dateKey(),t:msg});
   }
   if(S.dynContent.news?.articles?.length){
     S.dynContent.news.articles.slice(0,2).forEach((a,i)=>pool.push({type:"article",id:"news_"+i+"_"+dateKey(),...a}));
@@ -1519,11 +1564,11 @@ function buildFeed(){
 
   const mkId=(type,text)=>type+"_"+String(text||"").slice(0,18).replace(/\s/g,"_");
 
-  randN(facts,3).forEach(f=>pool.push({type:"fact",id:mkId("fact",f.t),...f}));
+  randN(facts,5).forEach(f=>pool.push({type:"fact",id:mkId("fact",f.t),...f}));
   randN([...riddles,...teasers],2).forEach(r=>pool.push({type:r.a&&r.q?("t" in r?"riddle":"teaser"):"riddle",id:mkId("riddle",r.q),...r}));
-  randN(joy,2).forEach(j=>pool.push({type:"joy",id:mkId("joy",j.p),...j}));
-  randN(questions,1).forEach(q=>pool.push({type:"question",id:mkId("quest",q.q),...q}));
-  randN(articles,2).forEach(a=>pool.push({type:"article",id:mkId("art",a.title),...a}));
+  randN(joy,3).forEach(j=>pool.push({type:"joy",id:mkId("joy",j.p),...j}));
+  randN(questions,2).forEach(q=>pool.push({type:"question",id:mkId("quest",q.q),...q}));
+  randN(articles,3).forEach(a=>pool.push({type:"article",id:mkId("art",a.title),...a}));
   if(videos.length) pool.push({type:"video",id:"video_"+rand(videos).id,...rand(videos)});
   if(secrets.length){const s=rand(secrets);pool.push({type:"postsecret",id:mkId("secret",s.text),...s});}
 
@@ -1677,7 +1722,7 @@ function renderRecentlySeen(){
       const row=document.createElement("div");
       row.style.cssText="background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:10px 13px;margin-bottom:7px;display:flex;gap:10px;align-items:flex-start;opacity:.85";
       const emoji=item.e||{article:"📰",video:"▶️",nasa:"🔭",question:"💭",quote:"💬",postsecret:"📮",onthisday:"📅"}[item.type]||"·";
-      const text=(item.t||item.q||item.title||item.text||"").slice(0,90);
+      const text=(item.p||item.p||item.t||item.q||item.title||item.text||"").slice(0,90);
       const linkHtml=item.url?`<a href="${esc(item.url)}" target="_blank" rel="noopener noreferrer" style="font-size:11px;color:var(--mauve);text-decoration:none;white-space:nowrap;padding-left:4px">↗</a>`:"";
       const starClass=isStarred(item.id)?"starred":"";
       row.innerHTML=`<span style="font-size:18px;flex-shrink:0;line-height:1.3">${emoji}</span>
@@ -1816,16 +1861,16 @@ function buildCard(c){
   else if(c.type==="postsecret"){
     div.className="card secret-card";
     div.innerHTML=`<div class="secret-stamp">PostSecret</div>
-      <div class="secret-text">${esc(c.text)}</div>
+      <div class="secret-text" style="font-family:Georgia,'Times New Roman',serif;font-size:18px;font-style:italic;line-height:1.7;color:#3a2e26;text-align:center;padding:12px 8px;letter-spacing:.02em">${esc(c.text)}</div>
       <div class="secret-sub">Real secrets shared anonymously · <a href="https://postsecret.com" target="_blank" rel="noopener noreferrer" style="color:var(--text-3)">postsecret.com ↗</a></div>
       ${actionBar()}`;
   }
   else if(c.type==="article"){
     div.className="card";
     div.innerHTML=`<span class="ctag ctag-article">📰 Good News</span>
-      ${c.img?`<img class="article-img" src="${esc(c.img)}" alt="${esc(c.title)}" loading="lazy" onerror="this.remove()">`:""}
+      ${c.img?`<img class="article-img" src="${esc(c.img)}" alt="${esc(c.title)}" loading="lazy" onerror="this.style.display='none'">`:""}
       <div class="ctitle">${esc(c.title)}</div>
-      <div class="cbody">${esc(c.desc)}</div>
+      <div class="cbody" style="font-size:14px;color:var(--text-2);line-height:1.7">${esc(c.desc)}</div>
       ${c.src?`<div class="csource">${esc(c.src)}</div>`:""}
       ${actionBar(readMore)}`;
   }
@@ -2416,6 +2461,25 @@ function toggleMomentsInline(){
   if(header) header.setAttribute("aria-expanded",S.momentsMobileOpen.toString());
   if(S.momentsMobileOpen) renderMomentsBody(body);
 }
+function toggleMomentsDrawer(){
+  const drawer=$("moments-drawer");
+  const overlay=$("moments-drawer-overlay");
+  const isOpen=drawer.classList.contains("open");
+  if(isOpen){
+    closeMomentsDrawer();
+  } else {
+    drawer.classList.add("open");
+    overlay.classList.add("vis");
+    const btn=$("btn-moments"); if(btn) btn.classList.add("on");
+    renderMomentsBody($("drawer-moments-body"));
+    closePanel();
+  }
+}
+function closeMomentsDrawer(){
+  $("moments-drawer").classList.remove("open");
+  $("moments-drawer-overlay").classList.remove("vis");
+  const btn=$("btn-moments"); if(btn) btn.classList.remove("on");
+}
 function updateMomentsPreview(){
   const {primary}=PA.getModules(S.timeCtx);
   const labels={wod:"Word of the Day",stretch:"Stretch",timer:"Calm Timer",intention:"One word for today",top3:"What gets done today",notdoing:"What can wait",quote:"Quote",gratitude:"What went right",nature:"Nature moment"};
@@ -2536,9 +2600,17 @@ function swapIntention(startIdx){
 function hideModule(id){
   S.hiddenModules.add(id); ls.set("hidden_modules",[...S.hiddenModules]);
   PA.recordHide(id);
-  const body=$("moments-body"); const pbody=$("panel-moments-body");
-  if(body.classList.contains("open")) renderMomentsBody(body);
-  if($("panel-moments").classList.contains("open")) renderMomentsBody(pbody);
+  // Also re-open the body so the change is visible immediately
+  const body=$("moments-body");
+  if(body&&!body.classList.contains("open")){
+    body.classList.add("open");
+    const chev=$("moments-chevron"); if(chev) chev.classList.add("open");
+  }
+  const mb=$("moments-body"); const pbody=$("panel-moments-body");
+  const dbody=$("drawer-moments-body");
+  if(mb?.classList.contains("open")) renderMomentsBody(mb);
+  if($("panel-moments")?.classList.contains("open")) renderMomentsBody(pbody);
+  if($("moments-drawer")?.classList.contains("open")) renderMomentsBody(dbody);
   updateMomentsPreview();
 }
 
@@ -2580,7 +2652,7 @@ function openPanel(id){
   panel.classList.add("open");
   S.activePanel=id;
   const btn=$("btn-"+id); if(btn) btn.classList.add("on");
-  if(S.composing) closeCompose();
+  if(S.composing) closeCompose(); closeMomentsDrawer();
   // Load panel content
   if(id==="moments") renderMomentsBody($("panel-moments-body"));
   if(id==="stars") renderStarsPanel();
@@ -2608,6 +2680,15 @@ function applyVibe(id){
   root.style.setProperty("--seasonal-lt",v.accentLt);
   document.querySelectorAll(".vibe-chip").forEach(c=>c.classList.toggle("sel",c.dataset.vibe===id));
   showToast("success","🎨",v.label+" vibe applied.",null,null,1800);
+
+  // Directly set body background so it's immediately visible
+  document.body.style.background = v.bg;
+  document.body.style.setProperty("--bg", v.bg);
+  document.body.style.setProperty("--surface", v.surface);
+  document.querySelectorAll(".card").forEach(c => { c.style.background = v.surface; });
+  document.querySelectorAll(".panel-sheet").forEach(p => { p.style.background = v.surface; });
+  renderVibePanel();
+  showToast("success","🎨",v.label+" vibe applied.",null,null,2000);
 }
 function renderVibePanel(){
   const grid=$("vibe-grid"); if(!grid) return;
@@ -2651,6 +2732,10 @@ function removeStarById(id,btn){
 function renderSettings(){
   const body=$("settings-body"); if(!body) return;
   body.innerHTML=`
+    <div class="settings-row">
+      <div><div class="settings-label">🌱 Today's mood</div><div class="settings-sub">${S.mood?'Set to '+S.mood:'Not set today'}</div></div>
+      <button class="cact" onclick="resetMood()">Reset</button>
+    </div>
     <div class="settings-row">
       <div><div class="settings-label">👤 Name</div><div class="settings-sub">${esc(S.user?.name||"Not set")}</div></div>
     </div>
