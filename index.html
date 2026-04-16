@@ -125,7 +125,7 @@ main{max-width:var(--max-w);margin:0 auto;padding:0 16px 80px}
 /* ═══ MOOD CHECK-IN ═════════════════════════════════════ */
 #mood-row{display:flex;justify-content:center;gap:10px;margin:10px 0 18px;animation:fadeIn .3s ease}
 #mood-row.hidden{display:none}
-.mood-btn{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:8px 18px;font-size:20px;cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent;min-height:44px;min-width:64px;display:flex;align-items:center;justify-content:center}
+.mood-btn{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:8px 16px;cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent;min-height:52px;min-width:70px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}.mood-emoji{font-size:22px;line-height:1}.mood-label{font-size:11px;color:var(--text-3);font-weight:500;letter-spacing:.02em}
 .mood-btn:hover{transform:scale(1.08);border-color:var(--seasonal)}
 .mood-btn.sel{background:var(--seasonal-lt);border-color:var(--seasonal)}
 
@@ -448,7 +448,7 @@ main{max-width:var(--max-w);margin:0 auto;padding:0 16px 80px}
 .secret-stamp::before{content:"";display:inline-block;width:28px;height:18px;border:2px solid #c0a878;border-radius:2px}
 .secret-text{font-family:"Lora",serif;font-size:17px;font-style:italic;line-height:1.6;color:var(--text);text-align:center;padding:8px 4px}
 .secret-sub{font-size:12px;color:var(--text-3);text-align:center;margin-top:10px}
-.article-img{width:100%;max-height:180px;object-fit:cover;border-radius:var(--rs);margin-bottom:12px;display:block;background:var(--border-soft)}
+.article-img-wrap{width:100%;padding-top:52%;position:relative;border-radius:var(--rs);overflow:hidden;margin-bottom:14px;background:var(--border-soft)}.article-img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block}
 /* ── V2: family card fix (no gradient bleeding) ── */
 .card.family{background:var(--surface) !important;border-color:#ddd0b8}
 @media(prefers-color-scheme:dark){.card.family{border-color:#4a3a28}}
@@ -505,7 +505,7 @@ main{max-width:var(--max-w);margin:0 auto;padding:0 16px 80px}
 <!-- LOADING -->
 <div id="loading">
   <span class="load-icon">🌿</span>
-  <span class="load-text">Getting your morning ready…</span>
+  <span class="load-text" id="load-text">Just a moment…</span>
 </div>
 
 <!-- BANNERS -->
@@ -596,9 +596,9 @@ main{max-width:var(--max-w);margin:0 auto;padding:0 16px 80px}
   </div>
   <div id="birthday-card" style="display:none"><div id="birthday-text"></div></div>
   <div id="mood-row">
-    <button class="mood-btn" onclick="setMood('good')"  aria-label="Feeling good">🌱</button>
-    <button class="mood-btn" onclick="setMood('ok')"    aria-label="Feeling okay">🌤</button>
-    <button class="mood-btn" onclick="setMood('rough')" aria-label="Rough day">🌧</button>
+    <button class="mood-btn" onclick="setMood('good')"  aria-label="Feeling good"><span class="mood-emoji">🌱</span><span class="mood-label">Good</span></button>
+    <button class="mood-btn" onclick="setMood('ok')"    aria-label="Feeling okay"><span class="mood-emoji">🌤</span><span class="mood-label">Okay</span></button>
+    <button class="mood-btn" onclick="setMood('rough')" aria-label="Rough day"><span class="mood-emoji">🌧</span><span class="mood-label">Rough</span></button>
   </div>
   <div id="moments-inline" style="display:none">
     <div id="moments-body"></div>
@@ -1059,10 +1059,10 @@ postTemplates: [
 ],
 
 vibes: [
-  {id:"calm",    label:"Calm",    desc:"Warm cream, soft",  bg:"#f7f2ec", surface:"#fdfaf6", accent:"#9b7fa0", accentLt:"#f4eef8"},
-  {id:"cozy",    label:"Cozy",    desc:"Amber, warm tones", bg:"#f5ede0", surface:"#fdf7f0", accent:"#c4956a", accentLt:"#fdf3e8"},
-  {id:"focused", label:"Focused", desc:"Cool, clear slate",  bg:"#eef2f6", surface:"#f6f8fb", accent:"#5a7a9a", accentLt:"#e4edf5"},
-  {id:"forest",  label:"Forest",  desc:"Deep sage green",   bg:"#eef5f0", surface:"#f4faf6", accent:"#4a8060", accentLt:"#e0f0e8"},
+  {id:"calm",    label:"Calm",    desc:"Warm cream & lavender", bg:"#f7f2ec", surface:"#fdfaf6", accent:"#9b7fa0", accentLt:"#f4eef8", topbar:"rgba(247,242,236,.92)"},
+  {id:"cozy",    label:"Cozy",    desc:"Warm amber & honey",    bg:"#f5e8d0", surface:"#fdf3e0", accent:"#c4700a", accentLt:"#fde8c0", topbar:"rgba(245,232,208,.92)"},
+  {id:"focused", label:"Focused", desc:"Cool blue & slate",     bg:"#e8eff8", surface:"#f0f5fc", accent:"#3060a0", accentLt:"#d0e0f5", topbar:"rgba(232,239,248,.92)"},
+  {id:"forest",  label:"Forest",  desc:"Deep green & sage",     bg:"#e4f0e8", surface:"#eef8f0", accent:"#2a6040", accentLt:"#c8e8d0", topbar:"rgba(228,240,232,.92)"},
 ],
 
 avatarColors: ["#9b7fa0","#c4956a","#7da89c","#c47a8a","#6a8099","#a0907a","#8aaa7a","#aa8a7a","#7090b0","#b09060"],
@@ -1488,6 +1488,17 @@ function setMood(mood){
   $("mood-row").classList.add("hidden");
   buildFeed();
 }
+function changeName(){
+  const current=S.user?.name||"";
+  const newName=window.prompt("Enter your name:",current);
+  if(!newName||!newName.trim()||newName.trim()===current) return;
+  S.user.name=newName.trim();
+  ls.set("local_user",S.user);
+  if($("tb-name")) $("tb-name").textContent="✦ "+S.user.name;
+  if(S.sb&&S.sbOk) S.sb.from("profiles").update({name:S.user.name}).eq("id",S.user.id).then(()=>{});
+  showToast("success","✅","Name updated.",null,null,2500);
+  renderSettings();
+}
 function resetMood(){
   S.mood=null; ls.del("mood_"+dateKey());
   $("mood-row").classList.remove("hidden");
@@ -1753,13 +1764,13 @@ function buildCard(c){
   div.dataset.cardId=id;
   try{ div.dataset.cardJson=JSON.stringify({type:c.type,e:c.e,t:c.t,q:c.q,title:c.title,text:c.text,a:c.a,url:c.url,src:c.src}); }catch{}
 
-  const learnMore=c.url?`<a href="${esc(c.url)}" target="_blank" rel="noopener noreferrer" class="cact-link" aria-label="Learn more">Learn more ↗</a>`:"";
+  const learnMore=c.url?`<a href="${esc(c.url)}" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:5px;background:var(--sage-lt);border:1px solid var(--sage);border-radius:20px;padding:5px 13px;font-size:12px;color:var(--sage);text-decoration:none;font-weight:500;margin-top:10px" aria-label="Learn more">Learn more ↗</a>`:"";
   const readMore=c.url?`<a href="${esc(c.url)}" target="_blank" rel="noopener noreferrer" class="cact-link" aria-label="Read more">Read ↗</a>`:"";
 
   const actionBar=(extra="")=>{
     const starred=isStarred(id);
     return `<div class="cactions">
-      <button class="cact${starred?" starred":""}" onclick="toggleStar(${JSON.stringify({id,type:c.type,e:c.e,t:c.t,q:c.q,title:c.title,text:c.text,a:c.a,url:c.url}).replace(/"/g,"&quot;")},this)" aria-label="${starred?"Unstar":"Star"}">⭐ ${starred?"Starred":"Save"}</button>
+      <button class="cact${starred?" starred":""}" onclick="toggleStar(${JSON.stringify({id,type:c.type,e:c.e,t:c.t,p:c.p,q:c.q,title:c.title,text:c.text,a:c.a,url:c.url}).replace(/"/g,"&quot;")},this)" aria-label="${starred?"Unstar":"Star"}">⭐ ${starred?"Starred":"Save"}</button>
       ${S.sbOk?`<button class="cact" onclick="shareToFamily(this,'${esc(String(c.t||c.q||c.title||c.text||"").slice(0,100))}')" aria-label="Share to family">📤 Share</button>`:""}
       ${extra}
     </div>`;
@@ -1772,7 +1783,8 @@ function buildCard(c){
         <span style="font-size:36px;line-height:1;flex-shrink:0">${c.e||"✨"}</span>
         <div class="cbody" style="font-size:15px;color:var(--text)">${esc(c.t)}</div>
       </div>
-      ${actionBar(learnMore)}`;
+      ${c.url?learnMore:""}
+      ${actionBar()}`;
   }
   else if(c.type==="nature"){
     div.className="card";
@@ -1810,6 +1822,7 @@ function buildCard(c){
     div.className="card question-card";
     div.innerHTML=`<span class="ctag ctag-question">💭 Question</span>
       <div class="question-q">${esc(c.q)}</div>
+      <div style="font-size:12px;color:var(--text-3);margin-top:4px;font-style:italic">Take a moment with it — no right answer.</div>
       ${S.sbOk?`<div class="question-share" onclick="shareToFamilyQuestion('${esc(c.q)}')" role="button" tabindex="0">Share this question with the family →</div>`:""}
       ${actionBar()}`;
   }
@@ -1843,12 +1856,12 @@ function buildCard(c){
   else if(c.type==="video"){
     div.className="card video-card";
     const thumb=`https://img.youtube.com/vi/${esc(c.id)}/hqdefault.jpg`;
-    div.innerHTML=`<div class="video-thumb-wrap" onclick="window.open('https://youtube.com/watch?v=${esc(c.id)}','_blank')" role="link" aria-label="Watch ${esc(c.title)}">
+    div.innerHTML=`<a class="video-thumb-wrap" href="https://youtube.com/watch?v=${esc(c.id)}" target="_blank" rel="noopener noreferrer" aria-label="Watch ${esc(c.title)}" style="display:block;text-decoration:none">
       <img class="video-thumb" src="${thumb}" alt="${esc(c.title)}" loading="lazy" onerror="this.parentElement.querySelector('.video-placeholder').style.display='flex';this.style.display='none'">
       <div class="video-placeholder" style="display:none"><span style="color:#8880b8;font-size:32px">▶</span></div>
       <div class="video-play">▶</div>
       <span class="video-dur">${esc(c.dur)}</span>
-    </div>
+    </a>
     <span class="ctag ctag-video">▶ Worth Watching</span>
     <div class="video-title">${esc(c.title)}</div>
     <div class="video-channel">${esc(c.channel)}</div>
@@ -1868,7 +1881,7 @@ function buildCard(c){
   else if(c.type==="article"){
     div.className="card";
     div.innerHTML=`<span class="ctag ctag-article">📰 Good News</span>
-      ${c.img?`<img class="article-img" src="${esc(c.img)}" alt="${esc(c.title)}" loading="lazy" onerror="this.style.display='none'">`:""}
+      ${c.img?`<div class="article-img-wrap"><img class="article-img" src="${esc(c.img)}" alt="${esc(c.title)}" loading="lazy" onerror="this.closest('.article-img-wrap').style.display='none'"></div>`:""}
       <div class="ctitle">${esc(c.title)}</div>
       <div class="cbody" style="font-size:14px;color:var(--text-2);line-height:1.7">${esc(c.desc)}</div>
       ${c.src?`<div class="csource">${esc(c.src)}</div>`:""}
@@ -1880,7 +1893,7 @@ function buildCard(c){
 function revealAnswer(btn){ btn.style.display="none"; btn.nextElementSibling?.classList.add("shown"); }
 
 async function shareToFamily(btn, text){
-  const post={id:crypto.randomUUID(),author_id:S.user?.id,author_name:S.user?.name||"Someone",author_color:S.user?.color||LIB.avatarColors[0],type:"shared_card",content:"📤 Shared from the feed: \""+text.slice(0,120)+"\"",image_urls:null,image_url:null,created_at:new Date().toISOString()};
+  const post={id:crypto.randomUUID(),author_id:S.user?.id,author_name:S.user?.name||"Someone",author_color:S.user?.color||LIB.avatarColors[0],type:"shared_card",content:"📤 Shared from the feed: \""+text.slice(0,120)+"\"",image_url:null,created_at:new Date().toISOString()};
   await savePost(post);
   btn.textContent="✓ Shared"; btn.disabled=true;
   setTimeout(()=>{btn.textContent="📤 Share";btn.disabled=false;},3000);
@@ -1936,7 +1949,7 @@ function buildFamilyCard(p){
         <div class="fam-dropdown" id="fam-menu-${esc(p.id)}">${menuItems}</div>`:""}
       </div>
     </div>
-    ${p.content?`<div class="fam-content">${esc(p.content)}</div>`:""}
+    ${p.content?`<div class="fam-content" style="${(!urls.length)?'font-size:17px;font-family:\'Lora\',serif;line-height:1.6;padding:4px 0':''}">${esc(p.content)}</div>`:""}
     ${photoHtml}
     <div class="react-row">${reactBtns}<span class="react-summary" id="rsumm-${esc(p.id)}"></span></div>
     <div class="cactions" style="padding-top:8px;margin-top:4px;border-top:none">
@@ -1975,6 +1988,7 @@ async function react(postId,emoji,btn){
     myR[postId]=emoji; btn.classList.add("reacted");
   }
   ls.set("my_reactions",myR); loadReactionSummary(postId);
+  if(navigator.vibrate) navigator.vibrate(8);
   if(S.sb&&S.sbOk){
     try{
       if(prev) await S.sb.from("reactions").delete().match({post_id:postId,user_id:S.user.id});
@@ -2061,7 +2075,7 @@ async function submitPost(){
   const prog=$("compose-prog-bar"); const fill=$("compose-prog-fill");
   prog.style.display="block"; fill.style.width="0%";
 
-  const post={id:crypto.randomUUID(),author_id:S.user.id,author_name:S.user.name,author_color:S.user.color,type:S.composeFiles.length?"photo":"text",content:text,image_urls:null,image_url:null,created_at:new Date().toISOString()};
+  const post={id:crypto.randomUUID(),author_id:S.user.id,author_name:S.user.name,author_color:S.user.color,type:S.composeFiles.length?"photo":"text",content:text,image_url:null,created_at:new Date().toISOString()};
 
   if(S.composeFiles.length){
     $("compose-upload-progress").style.display="block";
@@ -2099,7 +2113,9 @@ async function submitPost(){
 async function savePost(post){
   if(S.sb&&S.sbOk){
     try{
-      const {error}=await S.sb.from("family_posts").insert({id:post.id,author_id:post.author_id,author_name:post.author_name,author_color:post.author_color,type:post.type,content:post.content,image_url:post.image_url,image_urls:post.image_urls||null,created_at:post.created_at});
+      const insertData={id:post.id,author_id:post.author_id,author_name:post.author_name,author_color:post.author_color,type:post.type,content:post.content,image_url:post.image_url,created_at:post.created_at};
+      if(post.image_urls?.length){ try{ insertData.image_urls=post.image_urls; }catch(e){ console.warn('image_urls column may not exist — run migration SQL'); } }
+      const {error}=await S.sb.from("family_posts").insert(insertData);
       if(error) throw error;
     }catch{ showToast("error","⚠️","Post didn't save","Your connection may have dropped — your text is still here. Tap Post to try again.",null,6000); $("compose-submit").disabled=false; return; }
   }
@@ -2468,6 +2484,7 @@ function toggleMomentsDrawer(){
   if(isOpen){
     closeMomentsDrawer();
   } else {
+    history.pushState(null,"",location.href);
     drawer.classList.add("open");
     overlay.classList.add("vis");
     const btn=$("btn-moments"); if(btn) btn.classList.add("on");
@@ -2669,7 +2686,7 @@ function closePanel(){
 }
 
 // ═══ VIBE SYSTEM (CSS VARIABLES) ════════════════════════════════════
-function applyVibe(id){
+function applyVibeColors(id, userPicked=false){
   S.vibe=id; ls.set("vibe",id);
   const v=LIB.vibes.find(x=>x.id===id); if(!v) return;
   const root=document.documentElement;
@@ -2682,15 +2699,18 @@ function applyVibe(id){
   document.querySelectorAll(".vibe-chip").forEach(c=>c.classList.toggle("sel",c.dataset.vibe===id));
   showToast("success","🎨",v.label+" vibe applied.",null,null,1800);
 
-  // Directly set body background so it's immediately visible
-  document.body.style.background = v.bg;
-  document.body.style.setProperty("--bg", v.bg);
-  document.body.style.setProperty("--surface", v.surface);
-  document.querySelectorAll(".card").forEach(c => { c.style.background = v.surface; });
-  document.querySelectorAll(".panel-sheet").forEach(p => { p.style.background = v.surface; });
+  if(userPicked){
+    document.body.style.background = v.bg;
+    document.body.style.setProperty("--bg", v.bg);
+    document.body.style.setProperty("--surface", v.surface);
+    document.querySelectorAll(".card").forEach(c => { c.style.background = v.surface; });
+    document.querySelectorAll(".panel-sheet").forEach(p => { p.style.background = v.surface; });
+    if(v.topbar) $("topbar").style.background = v.topbar;
+    showToast("success","🎨",v.label+" vibe applied.",null,null,2000);
+  }
   renderVibePanel();
-  showToast("success","🎨",v.label+" vibe applied.",null,null,2000);
 }
+function applyVibe(id){ applyVibeColors(id, true); }
 function renderVibePanel(){
   const grid=$("vibe-grid"); if(!grid) return;
   grid.innerHTML=LIB.vibes.map(v=>`
@@ -2714,10 +2734,12 @@ function renderStarsPanel(){
     ${items.map(item=>{
       const emoji=item.e||{article:"📰",video:"▶️",nasa:"🔭",question:"💭",quote:"💬",postsecret:"📮",onthisday:"📅",nature:"🌿",joy:"✨"}[item.type]||"⭐";
       const text=(item.t||item.q||item.title||item.text||"").slice(0,100);
-      const linkHtml=item.url?`<a href="${esc(item.url)}" target="_blank" rel="noopener noreferrer" style="font-size:11px;color:var(--mauve);text-decoration:none;margin-left:6px">↗</a>`:"";
+      const textHtml=item.url
+        ? `<a href="${esc(item.url)}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;flex:1;display:block" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">${esc(text)}${text.length>=100?"…":""} <span style="color:var(--mauve);font-size:11px">↗</span></a>`
+        : `<span style="flex:1">${esc(text)}${text.length>=100?"…":""}</span>`;
       return `<div class="star-item">
         <span class="star-emoji">${emoji}</span>
-        <span class="star-text">${esc(text)}${text.length>=100?"…":""}${linkHtml}</span>
+        ${textHtml}
         <button class="star-rm" onclick="removeStarById('${esc(item.id)}',this)" aria-label="Unstar">×</button>
       </div>`;
     }).join("")}`).join("");
@@ -2739,6 +2761,7 @@ function renderSettings(){
     </div>
     <div class="settings-row">
       <div><div class="settings-label">👤 Name</div><div class="settings-sub">${esc(S.user?.name||"Not set")}</div></div>
+      <button class="cact" onclick="changeName()">Edit</button>
     </div>
     <div class="settings-row">
       <div><div class="settings-label">🎨 Vibe</div><div class="settings-sub">Change the color feel</div></div>
@@ -2837,12 +2860,19 @@ function showLoading(msg){ const el=$("loading"); if(msg) el.querySelector(".loa
 function hideLoading(){ const el=$("loading"); el.classList.add("fade"); setTimeout(()=>el.style.display="none",450); }
 
 // ═══ ONLINE/OFFLINE ══════════════════════════════════════════════════
+window.addEventListener("popstate",()=>{
+  if($("moments-drawer").classList.contains("open")){ history.pushState(null,"",location.href); closeMomentsDrawer(); return; }
+  if(document.querySelector(".modal-box")){ const m=document.querySelector('[id$="-modal"].open')||document.querySelector('[id$="lightbox"].open'); if(m){ history.pushState(null,"",location.href); m.classList.remove("open"); document.body.style.overflow=""; return; } }
+  if(S.activePanel){ history.pushState(null,"",location.href); closePanel(); return; }
+});
 window.addEventListener("online",()=>setOnline(true));
 window.addEventListener("offline",()=>setOnline(false));
 
 // ═══ INIT ════════════════════════════════════════════════════════════
 async function init(){
   injectPWAManifest(); pruneSeenStore();
+  const loadMsgs=["Just a moment…","Here you go…","One second…","Loading your space…","Almost there…","Coming right up…"];
+  const lt=$("load-text"); if(lt) lt.textContent=loadMsgs[Math.floor(Math.random()*loadMsgs.length)];
   const storedVersion=ls.get("app_version");
   if(storedVersion&&storedVersion!==CFG.appVersion) $("version-banner").classList.add("vis");
   ls.set("app_version",CFG.appVersion);
@@ -2850,7 +2880,7 @@ async function init(){
   // Check CFG
   if(!CFG.supabaseUrl||!CFG.supabaseKey) $("cfg-banner").classList.add("vis");
 
-  S.vibe=ls.get("vibe")||"calm"; applyVibe(S.vibe);
+  S.vibe=ls.get("vibe")||"calm"; applyVibeColors(S.vibe, false);
   S.feedFilter=ls.get("feed_filter")||"all";
   S.lastVisit=ls.get("last_visit"); ls.set("last_visit",new Date().toISOString());
   S.timerDur=30;
@@ -2879,9 +2909,20 @@ async function postAuthInit(){
     if(S.user?.isAdmin) updateFlagsBadge();
   } else if(!S.sbOk&&CFG.supabaseUrl){ $("conn-banner").classList.add("vis"); }
   // Dynamic content — fetch in background, rebuild when done
-  fetchAllDynamic().then(()=>{ buildFeed(); renderMomentsBody($("moments-body").classList.contains("open")?$("moments-body"):document.createElement("div")); });
+  fetchAllDynamic().then(()=>{ if(!userScrolled) buildFeed(); renderMomentsBody($("moments-body").classList.contains("open")?$("moments-body"):document.createElement("div")); });
   // Initial feed with what we have
   buildFeed();
+  // First-run hint (shows once)
+  if(!ls.get("seen_onboard")){
+    setTimeout(()=>{
+      showToast("info","🌿","Welcome to Morning, You",
+        "Tap Today for stretches & words · Star ⭐ anything to save it · Family ♥ to see just family posts.",
+        {label:"Got it",fn:()=>ls.set("seen_onboard",true)},10000);
+    },2500);
+  }
+  // Track if user has started reading
+  let userScrolled=false;
+  window.addEventListener("scroll",()=>{ if(window.scrollY>200) userScrolled=true; },{passive:true,once:true});
   if(!S.sbOk&&!S.sb) $("fab").classList.add("hidden");
   if(S.adminMode) $("admin-banner").classList.add("vis");
 }
@@ -2889,4 +2930,4 @@ async function postAuthInit(){
 document.addEventListener("DOMContentLoaded",init);
 </script>
 </body>
-</html>  
+</html>
