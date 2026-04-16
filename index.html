@@ -370,6 +370,51 @@ main{max-width:var(--max-w);margin:0 auto;padding:0 16px 80px}
 }
 </style>
 <style>
+
+/* ── VIBE CLASSES (body-level, respect dark mode) ── */
+body.vibe-cozy {
+  --bg:#f5e8d0; --surface:#fdf3e0; --border:#e8d0a8; --border-soft:#f0e4c8;
+  --mauve:#c4700a; --mauve-lt:#fde8c0; --seasonal:#c4700a; --seasonal-lt:#fde8c0;
+}
+body.vibe-cozy #topbar { background:rgba(245,232,208,.92) !important; }
+body.vibe-cozy .card { background:#fdf3e0; border-color:#e8d0a8; }
+body.vibe-cozy .panel-sheet { background:#fdf3e0; border-color:#e8d0a8; }
+body.vibe-cozy #moments-drawer { background:#fdf3e0; }
+body.vibe-cozy #compose-sheet { background:#fdf3e0; }
+body.vibe-cozy main { background:transparent; }
+
+body.vibe-focused {
+  --bg:#e8eff8; --surface:#f0f5fc; --border:#c8d8ec; --border-soft:#d8e6f4;
+  --mauve:#3060a0; --mauve-lt:#d0e0f5; --seasonal:#3060a0; --seasonal-lt:#d0e0f5;
+}
+body.vibe-focused #topbar { background:rgba(232,239,248,.92) !important; }
+body.vibe-focused .card { background:#f0f5fc; border-color:#c8d8ec; }
+body.vibe-focused .panel-sheet { background:#f0f5fc; border-color:#c8d8ec; }
+body.vibe-focused #moments-drawer { background:#f0f5fc; }
+body.vibe-focused #compose-sheet { background:#f0f5fc; }
+
+body.vibe-forest {
+  --bg:#e4f0e8; --surface:#eef8f0; --border:#b8d8c0; --border-soft:#cce8d0;
+  --mauve:#2a6040; --mauve-lt:#c8e8d0; --seasonal:#2a6040; --seasonal-lt:#c8e8d0;
+}
+body.vibe-forest #topbar { background:rgba(228,240,232,.92) !important; }
+body.vibe-forest .card { background:#eef8f0; border-color:#b8d8c0; }
+body.vibe-forest .panel-sheet { background:#eef8f0; border-color:#b8d8c0; }
+body.vibe-forest #moments-drawer { background:#eef8f0; }
+body.vibe-forest #compose-sheet { background:#eef8f0; }
+
+/* Dark mode + vibe combinations */
+@media(prefers-color-scheme:dark){
+  body.vibe-cozy    { --bg:#2a1e0a; --surface:#342410; --border:#4a3418; }
+  body.vibe-focused { --bg:#0a1828; --surface:#101e30; --border:#1a2e44; }
+  body.vibe-forest  { --bg:#0a1e10; --surface:#102818; --border:#1a3822; }
+  body.vibe-cozy   .card,body.vibe-cozy   .panel-sheet,body.vibe-cozy   #moments-drawer,body.vibe-cozy   #compose-sheet { background:#342410; border-color:#4a3418; }
+  body.vibe-focused .card,body.vibe-focused .panel-sheet,body.vibe-focused #moments-drawer,body.vibe-focused #compose-sheet { background:#101e30; border-color:#1a2e44; }
+  body.vibe-forest  .card,body.vibe-forest  .panel-sheet,body.vibe-forest  #moments-drawer,body.vibe-forest  #compose-sheet { background:#102818; border-color:#1a3822; }
+  body.vibe-cozy   #topbar { background:rgba(42,30,10,.92) !important; }
+  body.vibe-focused #topbar { background:rgba(10,24,40,.92) !important; }
+  body.vibe-forest  #topbar { background:rgba(10,30,16,.92) !important; }
+}
 /* ── V2: moments side drawer ── */
 #moments-drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0);z-index:295;display:none;transition:background .25s}
 #moments-drawer-overlay.vis{display:block;background:rgba(0,0,0,.3)}
@@ -1733,7 +1778,7 @@ function renderRecentlySeen(){
       const row=document.createElement("div");
       row.style.cssText="background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:10px 13px;margin-bottom:7px;display:flex;gap:10px;align-items:flex-start;opacity:.85";
       const emoji=item.e||{article:"📰",video:"▶️",nasa:"🔭",question:"💭",quote:"💬",postsecret:"📮",onthisday:"📅"}[item.type]||"·";
-      const text=(item.p||item.p||item.t||item.q||item.title||item.text||"").slice(0,90);
+      const text=(item.p||item.t||item.q||item.title||item.text||(item.type==="joy"?"Micro-Moment":item.type==="nature"?"Nature Moment":"")).slice(0,90);
       const linkHtml=item.url?`<a href="${esc(item.url)}" target="_blank" rel="noopener noreferrer" style="font-size:11px;color:var(--mauve);text-decoration:none;white-space:nowrap;padding-left:4px">↗</a>`:"";
       const starClass=isStarred(item.id)?"starred":"";
       row.innerHTML=`<span style="font-size:18px;flex-shrink:0;line-height:1.3">${emoji}</span>
@@ -1765,13 +1810,13 @@ function buildCard(c){
   try{ div.dataset.cardJson=JSON.stringify({type:c.type,e:c.e,t:c.t,q:c.q,title:c.title,text:c.text,a:c.a,url:c.url,src:c.src}); }catch{}
 
   const learnMore=c.url?`<a href="${esc(c.url)}" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:5px;background:var(--sage-lt);border:1px solid var(--sage);border-radius:20px;padding:5px 13px;font-size:12px;color:var(--sage);text-decoration:none;font-weight:500;margin-top:10px" aria-label="Learn more">Learn more ↗</a>`:"";
-  const readMore=c.url?`<a href="${esc(c.url)}" target="_blank" rel="noopener noreferrer" class="cact-link" aria-label="Read more">Read ↗</a>`:"";
+  const readMore=c.url?`<a href="${esc(c.url)}" target="_blank" rel="noopener noreferrer" class="cact-link" aria-label="Visit source">Visit ${esc(c.src||"source")} ↗</a>`:"";
 
   const actionBar=(extra="")=>{
     const starred=isStarred(id);
     return `<div class="cactions">
       <button class="cact${starred?" starred":""}" onclick="toggleStar(${JSON.stringify({id,type:c.type,e:c.e,t:c.t,p:c.p,q:c.q,title:c.title,text:c.text,a:c.a,url:c.url}).replace(/"/g,"&quot;")},this)" aria-label="${starred?"Unstar":"Star"}">⭐ ${starred?"Starred":"Save"}</button>
-      ${S.sbOk?`<button class="cact" onclick="shareToFamily(this,'${esc(String(c.t||c.q||c.title||c.text||"").slice(0,100))}')" aria-label="Share to family">📤 Share</button>`:""}
+      ${S.sbOk?`<button class="cact" onclick="shareToFamily(this,'${esc(c.q||"").slice(0,100)}','${esc(c.url||"")}}','${c.type}','${esc(c.a||"")}')" aria-label="Share to family">📤 Share</button>`:""}
       ${extra}
     </div>`;
   };
@@ -1882,7 +1927,7 @@ function buildCard(c){
     div.className="card";
     div.innerHTML=`<span class="ctag ctag-article">📰 Good News</span>
       ${c.img?`<div class="article-img-wrap"><img class="article-img" src="${esc(c.img)}" alt="${esc(c.title)}" loading="lazy" onerror="this.closest('.article-img-wrap').style.display='none'"></div>`:""}
-      <div class="ctitle">${esc(c.title)}</div>
+      <a href="${esc(c.url)}" target="_blank" rel="noopener noreferrer" class="ctitle" style="color:var(--text);text-decoration:none;display:block" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">${esc(c.title)}</a>
       <div class="cbody" style="font-size:14px;color:var(--text-2);line-height:1.7">${esc(c.desc)}</div>
       ${c.src?`<div class="csource">${esc(c.src)}</div>`:""}
       ${actionBar(readMore)}`;
@@ -1892,8 +1937,8 @@ function buildCard(c){
 }
 function revealAnswer(btn){ btn.style.display="none"; btn.nextElementSibling?.classList.add("shown"); }
 
-async function shareToFamily(btn, text){
-  const post={id:crypto.randomUUID(),author_id:S.user?.id,author_name:S.user?.name||"Someone",author_color:S.user?.color||LIB.avatarColors[0],type:"shared_card",content:"📤 Shared from the feed: \""+text.slice(0,120)+"\"",image_url:null,created_at:new Date().toISOString()};
+async function shareToFamily(btn, text, url="", cardType="", answer=""){
+  const post={id:crypto.randomUUID(),author_id:S.user?.id,author_name:S.user?.name||"Someone",author_color:S.user?.color||LIB.avatarColors[0],type:"shared_card",content:"📤 "+text.slice(0,150)+(answer?"\n\nAnswer: "+answer:""),image_url:null,created_at:new Date().toISOString()};
   await savePost(post);
   btn.textContent="✓ Shared"; btn.disabled=true;
   setTimeout(()=>{btn.textContent="📤 Share";btn.disabled=false;},3000);
@@ -2697,16 +2742,12 @@ function applyVibeColors(id, userPicked=false){
   root.style.setProperty("--seasonal",v.accent);
   root.style.setProperty("--seasonal-lt",v.accentLt);
   document.querySelectorAll(".vibe-chip").forEach(c=>c.classList.toggle("sel",c.dataset.vibe===id));
-  showToast("success","🎨",v.label+" vibe applied.",null,null,1800);
-
   if(userPicked){
-    document.body.style.background = v.bg;
-    document.body.style.setProperty("--bg", v.bg);
-    document.body.style.setProperty("--surface", v.surface);
-    document.querySelectorAll(".card").forEach(c => { c.style.background = v.surface; });
-    document.querySelectorAll(".panel-sheet").forEach(p => { p.style.background = v.surface; });
-    if(v.topbar) $("topbar").style.background = v.topbar;
-    showToast("success","🎨",v.label+" vibe applied.",null,null,2000);
+    // Remove old vibe class, add new one — CSS handles dark mode correctly
+    document.body.classList.remove("vibe-calm","vibe-cozy","vibe-focused","vibe-forest");
+    document.body.classList.add("vibe-"+id);
+    ls.set("vibe_class",id);
+    showToast("success","🎨",v.label+" vibe applied.",null,null,1800);
   }
   renderVibePanel();
 }
@@ -2729,20 +2770,38 @@ function renderStarsPanel(){
   const typeLabels={fact:"Facts",riddle:"Riddles & Teasers",teaser:"Riddles & Teasers",joy:"Micro-Joy",question:"Questions",article:"Articles",video:"Worth Watching",nasa:"Space",nature:"Nature",onthisday:"On This Day",postsecret:"PostSecret",quote:"Quotes"};
   const grouped={};
   stars.forEach(item=>{ const label=typeLabels[item.type||""]||"Other"; if(!grouped[label]) grouped[label]=[]; grouped[label].push(item); });
-  list.innerHTML=Object.entries(grouped).map(([label,items])=>`
-    <div class="stars-type-label">${esc(label)}</div>
-    ${items.map(item=>{
+  list.innerHTML=Object.entries(grouped).map(([label,items],catIdx)=>{
+    const catId="cat-"+catIdx;
+    return `
+    <div class="stars-cat-header" onclick="toggleStarCat('${catId}')" role="button" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:12px 0 6px;border-bottom:1px solid var(--border)">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3)">${esc(label)}</span>
+        <span style="font-size:11px;color:var(--text-3);background:var(--border);border-radius:10px;padding:1px 7px">${items.length}</span>
+      </div>
+      <span id="chev-${catId}" style="font-size:10px;color:var(--text-3);transition:transform .2s">▼</span>
+    </div>
+    <div id="${catId}">
+    ${items.sort((a,b)=>(b.starredAt||0)-(a.starredAt||0)).map(item=>{
       const emoji=item.e||{article:"📰",video:"▶️",nasa:"🔭",question:"💭",quote:"💬",postsecret:"📮",onthisday:"📅",nature:"🌿",joy:"✨"}[item.type]||"⭐";
-      const text=(item.t||item.q||item.title||item.text||"").slice(0,100);
+      const rawText=(item.p||item.t||item.q||item.title||item.text||(item.type==="joy"?"Micro-Moment":item.type==="nature"?"Nature Moment":""));
+      const text=rawText.slice(0,100);
+      const dateStr=item.starredAt?new Date(item.starredAt).toLocaleDateString("en-US",{month:"short",day:"numeric"}):"";
+      const inner=`${esc(text)}${text.length>=100?"…":""}${dateStr?` <span style="font-size:10px;color:var(--text-3);margin-left:6px">${dateStr}</span>`:""}`;
       const textHtml=item.url
-        ? `<a href="${esc(item.url)}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;flex:1;display:block" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">${esc(text)}${text.length>=100?"…":""} <span style="color:var(--mauve);font-size:11px">↗</span></a>`
-        : `<span style="flex:1">${esc(text)}${text.length>=100?"…":""}</span>`;
-      return `<div class="star-item">
-        <span class="star-emoji">${emoji}</span>
-        ${textHtml}
-        <button class="star-rm" onclick="removeStarById('${esc(item.id)}',this)" aria-label="Unstar">×</button>
-      </div>`;
-    }).join("")}`).join("");
+        ? `<a href="${esc(item.url)}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;flex:1;display:block" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">${inner} <span style="color:var(--mauve);font-size:11px">↗</span></a>`
+        : `<span style="flex:1">${inner}</span>`;
+      return `<div class="star-item"><span class="star-emoji">${emoji}</span>${textHtml}<button class="star-rm" onclick="removeStarById('${esc(item.id)}',this)" aria-label="Unstar">×</button></div>`;
+    }).join("")}
+    </div>`;
+  }).join("");
+}
+function toggleStarCat(catId){
+  const el=document.getElementById(catId);
+  const chev=document.getElementById("chev-"+catId);
+  if(!el) return;
+  const open=el.style.display!=="none";
+  el.style.display=open?"none":"block";
+  if(chev) chev.style.transform=open?"rotate(-90deg)":"";
 }
 function removeStarById(id,btn){
   const stars=getStars().filter(s=>s.id!==id); ls.set("stars",stars); updateStarsBadge();
@@ -2880,7 +2939,11 @@ async function init(){
   // Check CFG
   if(!CFG.supabaseUrl||!CFG.supabaseKey) $("cfg-banner").classList.add("vis");
 
-  S.vibe=ls.get("vibe")||"calm"; applyVibeColors(S.vibe, false);
+  S.vibe=ls.get("vibe")||"calm";
+  // Restore saved vibe as CSS class (respects dark mode)
+  const savedVibeClass=ls.get("vibe_class");
+  if(savedVibeClass) document.body.classList.add("vibe-"+savedVibeClass);
+  applyVibeColors(S.vibe, false);
   S.feedFilter=ls.get("feed_filter")||"all";
   S.lastVisit=ls.get("last_visit"); ls.set("last_visit",new Date().toISOString());
   S.timerDur=30;
