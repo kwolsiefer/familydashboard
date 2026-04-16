@@ -2061,7 +2061,8 @@ function revealAnswer(btn){ btn.style.display="none"; btn.nextElementSibling?.cl
 const _share={btn:null,text:"",url:"",cardType:"",answer:""};
 
 function shareToFamily(btn, text, url="", cardType="", answer=""){
-  if(!S.user) return;
+  if(!S.user){ showToast("error","⚠️","Please sign in to share with your family.",null,null,4000); return; }
+  if(!S.sbOk){ showToast("error","📡","Family connection unavailable right now.",null,null,4000); return; }
   _share.btn=btn; _share.text=text; _share.url=url; _share.cardType=cardType; _share.answer=answer;
   // Populate preview
   const typeLabels={article:"📰 Article",riddle:"🧩 Riddle",teaser:"💡 Brain Teaser",
@@ -2088,11 +2089,13 @@ async function submitShare(){
   const post={id:crypto.randomUUID(),author_id:S.user?.id,author_name:S.user?.name||"Someone",
     author_color:S.user?.color||LIB.avatarColors[0],type:"shared_card",
     content:fullContent,image_url:null,created_at:new Date().toISOString()};
-  await savePost(post);
-  closeShareSheet();
-  if(_share.btn){_share.btn.textContent="✓ Shared";_share.btn.disabled=true;
-    setTimeout(()=>{if(_share.btn){_share.btn.textContent="📤 Share";_share.btn.disabled=false;}},3000);}
+  const result=await savePost(post);
   if(btn){btn.disabled=false;btn.textContent="Post to Family ✦";}
+  if(result!==false){
+    closeShareSheet();
+    if(_share.btn){_share.btn.textContent="✓ Shared";_share.btn.disabled=true;
+      setTimeout(()=>{if(_share.btn){_share.btn.textContent="📤 Share";_share.btn.disabled=false;}},3000);}
+  }
 }
 function shareToFamilyQuestion(q){
   openCompose();
@@ -2347,7 +2350,7 @@ async function savePost(post){
       if(post.image_urls?.length){ try{ insertData.image_urls=post.image_urls; }catch(e){ console.warn('image_urls column may not exist — run migration SQL'); } }
       const {error}=await S.sb.from("family_posts").insert(insertData);
       if(error) throw error;
-    }catch{ showToast("error","⚠️","Post didn't save","Your connection may have dropped — your text is still here. Tap Post to try again.",null,6000); $("compose-submit").disabled=false; return; }
+    }catch(e){ console.error("savePost error:",e); showToast("error","⚠️","Post didn't save","Connection issue — please try again.",null,5000); $("compose-submit").disabled=false; return false; }
   }
   S.familyPosts.unshift(post); buildFeed();
   showToast("success","📸","Shared!",null,null,2500);
@@ -2691,10 +2694,11 @@ function renderMomentsBody(container){
   // Passive hint
   const hintDiv=document.createElement("div");
   hintDiv.className="passive-hint";
-  if(suppressed.length>0){
-    hintDiv.innerHTML=`${suppressed.length} section${suppressed.length>1?"s":""} hidden — <span class="restore-link" onclick="doRestoreAllModules()" tabindex="0" role="button">restore all</span>`;
+  const totalHidden=suppressed.length+S.hiddenModules.size;
+  if(totalHidden>0){
+    hintDiv.innerHTML=`${totalHidden} section${totalHidden>1?"s":""} hidden — <span class="restore-link" onclick="doRestoreAllModules()" tabindex="0" role="button">restore all</span>`;
   } else {
-    hintDiv.textContent="Tap × on any section to hide it — this section learns from what you skip.";
+    hintDiv.innerHTML=`Tap <strong>×</strong> on any section to hide it. Your choices are remembered.`;
   }
   container.appendChild(hintDiv);
 }
@@ -2730,15 +2734,21 @@ function closeMomentsDrawer(){
   const btn=$("btn-moments"); if(btn) btn.classList.remove("on");
 }
 function doRestoreAllModules(){
-  PA.restoreAll();
-  S.hiddenModules.clear();
-  ls.del("hidden_modules");
+  // Clear every store that controls visibility
   ls.del("pa_counts");
-  // Always open drawer and re-render
+  ls.del("hidden_modules");
+  S.hiddenModules.clear();
+  // Re-initialise in-memory state
+  S.hiddenModules=new Set();
+  // Re-render — drawer must be open
   const drawer=$("moments-drawer");
   const drawerBody=$("drawer-moments-body");
-  if(!drawer?.classList.contains("open")) toggleMomentsDrawer();
-  setTimeout(()=>{ if(drawerBody) renderMomentsBody(drawerBody); },100);
+  if(drawer?.classList.contains("open")){
+    renderMomentsBody(drawerBody);
+  } else {
+    toggleMomentsDrawer();
+    setTimeout(()=>renderMomentsBody($("drawer-moments-body")),150);
+  }
   updateMomentsPreview();
   showToast("success","🌿","All sections restored.",null,null,2500);
 }
